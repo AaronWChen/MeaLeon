@@ -1,6 +1,6 @@
 from flask import Flask, send_from_directory, render_template, request, abort
 from waitress import serve
-from models.wine_predictor import predict_wine
+from models.dish_predictor import find_similar_dishes
 
 app = Flask(__name__, static_url_path="/static")
 
@@ -11,20 +11,23 @@ def index():
 
 @app.route("/get_results", methods=["POST"])
 def get_results():
-    """ Predict the class of wine based on the inputs. """
+    """ Display the five most similar recipes from the database based on the 
+    inputs. """
     data = request.form
     print(data)
 
-    expected_features = ("Alcohol", "Malic acid", "Ash", "Alcalinity of ash",
-                         "Magnesium", "Total phenols", "Flavanoids", "Nonflavanoid phenols",
-                         "Proanthocyanins", "Color intensity", "Hue",
-                         "OD280/OD315 of diluted wines", "Proline")
+    expected_features = ("dish_name", "cuisine_name")
 
     if data and all(feature in data for feature in expected_features):
         # Convert the dict of fields into a list
-        test_value = [float(data[feature]) for feature in expected_features]
-        predicted_class = predict_wine(test_value)
-        return render_template("results.html", predicted_class=predicted_class)
+        dish = data['dish_name']
+        cuisine = data['cuisine_name']
+        results = find_similar_dishes(dish, cuisine)
+        return render_template("results.html", 
+                                results=results, 
+                                dish=dish,
+                                cuisine=cuisine)
+
     else:
         return abort(400)
 
