@@ -1,15 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>First Flask App Results</title>
+    <!-- the dataframe? -->
+    <title>MeaLeon Results</title>
     <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <script src="https://developer.edamam.com/attribution/badge.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Create two unequal columns that floats next to each other */
+        .column {
+            float: left;
+            padding: 10px;
+        }
+
+        .left {
+            width: 25%;
+        }
+
+        .right {
+            width: 75%;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        img { 
+            max-width: 100%;
+            height: auto;
+        }
+
+        .center {
+            text-align: center
+        }
+
+        .card:hover .overlay{
+            opacity: 1;
+            transition: all 500ms ease;
+            /* & .details {
+                opacity: 1;
+            } */
+        }
+
+    </style>
 </head>
+
 <body>
-    We predict that this wine is from class {{ predicted_class }}
-    <br>
+    <div class="container">
+        <h1 class="display-3 center">MeaLeon</h1>
+        <br>
+        <div class="row">
+            <div class="column left" style="background-color:#72E899;">
+                <img src="{{ url_for('static', filename='71M7Qm1dtDL._SX425_.jpg') }}"
+                alt = "This is a cartoon of a chameleon, the mascot of MeaLeon"> 
+            </div>
 
-    <img src="{{ url_for('static', filename='upward_sloping_chart.png') }}" alt="">
+            <div class="column right" style="background-color: white;">
+                <h2>You looked for...</h2>
+                <h4>Dish: {{ dish }}</h4>
+                <h4>Cuisine: {{ cuisine }}</h4>
+            </div>
+        </div>
 
-    <a href="/">Go back home</a>
+        <br>
+
+        <div class="row">
+            <div class="col center"><h3>Here are the top five most similar recipes!</h3></div>
+        </div>
+    
+        <br>
+    
+        <div class="row">
+        {% for result in results: %}
+            <div class="card text-white center" style="max-width: 20rem;">
+                <a href="{{ result['fixed_url'] }}" style="color: white;" target="_blank">
+                    <div class="card-body">
+                        <div style="background-color: black;">
+                            <img style="opacity: 0.7;" class="result" src="{{ url_for('static', filename=result['photo']) }}">
+                        </div>
+
+                        <div class="card-img-overlay">
+                            <h5>{{ result['title'] }}</h5>
+                            <div class="details">
+                                <p>Cuisine: {{ result['imputed_label'] }}</p>
+                                <p>Ingredient Similarity: {{ result['cosine_similarity'] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+
+            <div class="card text-white center" style= "max-width: 20rem;">
+                <a href="/" style="color: white;">
+                    <div class="card-body">
+                        <div style="background-color: black;">
+                            <img style="opacity: 0.7;" src="{{ url_for('static', filename='71M7Qm1dtDL._SX425_.jpg') }}">
+                        </div>
+
+                        <div class="card-img-overlay">
+                            <h5>Look for something else!</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
 </body>
+<br>
+<footer>
+    <div class= "center" id="edamam-badge" data-color="white"></div>
+</footer>
 </html>

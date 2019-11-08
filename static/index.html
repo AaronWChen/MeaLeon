@@ -1,48 +1,117 @@
 <html>
   <head>
-    <title>First Flask App</title>
+    <title>MeaLeon</title>
     <link rel="stylesheet" media="screen" href="/static/bootstrap.min.css">
+    <script src="https://developer.edamam.com/attribution/badge.js"></script>
+    <style>
+      * {
+            box-sizing: border-box;
+        }
+
+        /* Create two unequal columns that floats next to each other */
+        .column {
+            float: left;
+            padding: 10px;
+        }
+
+        .left {
+            width: 50%;
+        }
+
+        .right {
+            width: 50%;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        img { 
+            max-width: 50%;
+            height: auto;
+        }
+
+        .center {
+          text-align: center
+        }
+    </style>
   </head>
   <body>
     <div class="jumbotron">
       <div class="container">
-        <h1 class="display-3">Wine Predictor</h1>
+        <h1 class="display-3 center">MeaLeon</h1>
+        <br>
+        <h2 class="center">The Similar Recipe Suggester</h2>
+        <br>
         <p>
-          Some cool content will go here
+          What do you like to eat? Type it in the text box, choose the 
+          cuisine it's from with the drop down menu, and get back something 
+          with similar ingredients but from a different part of the world!
         </p>
         <p>
-          <form action="/get_results" method="post">
-            <p>Alcohol</p>
-            <input type="text" name="Alcohol" value="12.82">
-            <p>Malic acid</p>
-            <input type="text" name="Malic acid" value="3.37">
-            <p>Ash</p>
-            <input type="text" name="Ash" value="2.3">
-            <p>Alcalinity of ash</p>
-            <input type="text" name="Alcalinity of ash" value="19.5">
-            <p>Magnesium</p>
-            <input type="text" name="Magnesium" value="88.0">
-            <p>Total phenols</p>
-            <input type="text" name="Total phenols" value="1.48">
-            <p>Flavanoids</p>
-            <input type="text" name="Flavanoids" value="0.66">
-            <p>Nonflavanoid phenols</p>
-            <input type="text" name="Nonflavanoid phenols" value="0.4">
-            <p>Proanthocyanins</p>
-            <input type="text" name="Proanthocyanins" value="0.97">
-            <p>Color intensity</p>
-            <input type="text" name="Color intensity" value="10.26">
-            <p>Hue</p>
-            <input type="text" name="Hue" value="0.72">
-            <p>OD280/OD315 of diluted wines</p>
-            <input type="text" name="OD280/OD315 of diluted wines" value="1.75">
-            <p>Proline</p>
-            <input type="text" name="Proline" value="685.0">
-            <br>
-            <input type="submit" class="btn btn-primary btn-lg" value="Predict!">
-          </form>
+          <div class="row">
+            <div class="column left">
+                <img src="static/71M7Qm1dtDL._SX425_.jpg"
+                alt = "This is a cartoon of a chameleon, the mascot of MeaLeon">
+            </div>
+
+            <div class="column right">
+              <form action="/get_results" method="post">
+                <p>Dish Name</p>
+                  <input type="text" name="dish_name" value="Pizza? Tacos? Dumplings?">
+
+                <br>
+                <br>
+                
+                <p>Cuisine Style</p>
+                  <select name="cuisine_name">
+                    <option value="African">African</option>
+                    <option value="American">American</option>
+                    <option value="Asian">Asian</option>
+                    <option value="Cajun/Creole">Cajun/Creole</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Eastern European">Eastern European</option>
+                    <option value="English">English</option>
+                    <option value="French">French</option>
+                    <option value="German">German</option>
+                    <option value="Indian">Indian</option>
+                    <option value="Irish">Irish</option>
+                    <option value="Italian">Italian</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Kosher">Kosher</option>
+                    <option value="Latin American">Latin American</option>
+                    <option value="Mediterranean">Mediterranean</option>
+                    <option value="Mexican">Mexican</option>
+                    <option value="Middle Eastern">Middle Eastern</option>
+                    <option value="Moroccan">Moroccan</option>
+                    <option value="Scandinavian">Scandinavian</option>
+                    <option value="Southwestern">Southwestern</option>
+                    <option value="Thai">Thai</option>
+                    <option value="Vietnamese">Vietnamese</option>
+                  </select>
+
+                <br>
+
+                <br>
+
+                <input type="submit" class="btn btn-primary btn-lg" value="Feed me!">
+              </form>
+            </div>
+          </div>
         </p>
       </div>
     </div>
   </body>
+  <footer>
+    <div class="row">
+      <div class="col center"><h5>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank">MeaLeon</a></h3></div>
+      <div class="col center"><h5>Created by: <a href= "https://aaronwchen.github.io/" target="_blank">Aaron W. Chen</a></h3></div>
+      <div class="col center"><h5>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank">awashingtonchen</a></h3></div>
+    </div>
+    <br>
+    <div class= "center" id="edamam-badge" data-color="white"></div>
+  </footer>
 </html>
