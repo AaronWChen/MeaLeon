@@ -125,11 +125,10 @@ dmypy.json
 
 # Visual Studio Code settings
 .vscode
-
-.DS_Store
-
-.ipynb_checkpoints/
-
 .vscode/
 
+# DS_Store from MacOS
+.DS_Store
+
+# All recipe photos (the folder is too big for GitHub)
 static/photos/

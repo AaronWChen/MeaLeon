@@ -105,6 +105,7 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   reduced = expand_photo_df[['title', 'url', 'filename', 'imputed_label', 'ingredients', 'cosine_similarity']].dropna(axis=1)
   reduced['photo'] = reduced['filename'].apply(picture_placer)
   reduced['fixed_url'] = reduced["url"].apply(link_maker)
+  reduced['rounded'] = reduced['cosine_similarity'].round(3)
   reduced = reduced.drop('url', axis=1)
   return reduced
 
@@ -205,8 +206,8 @@ def find_similar_dishes(dish_name, cuisine_name):
                                       tfidf=ingred_tfidf)
                                       
     query_similar = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
-                                                                recipe_tfidf=query_tfidf, 
-                                                                X_df=prepped)
+                                          recipe_tfidf=query_tfidf, 
+                                          X_df=prepped)
     
     return query_similar.to_dict(orient='records')
     
