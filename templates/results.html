@@ -41,14 +41,19 @@
             text-align: center
         }
 
-        .card:hover .overlay{
-            opacity: 1;
-            transition: all 500ms ease;
-            /* & .details {
-                opacity: 1;
-            } */
+        .card-img-overlay .details {
+            visibility: hidden;
+            opacity: 0;
+            height: 0;
+            padding: 0;
         }
 
+        .card-img-overlay:hover .details {
+            height: auto;
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 500ms ease;
+        }
     </style>
 </head>
 
@@ -77,20 +82,23 @@
     
         <br>
     
-        <div class="row">
+        <div class="row justify-content-center">
         {% for result in results: %}
             <div class="card text-white center" style="max-width: 20rem;">
                 <a href="{{ result['fixed_url'] }}" style="color: white;" target="_blank">
                     <div class="card-body">
                         <div style="background-color: black;">
-                            <img style="opacity: 0.7;" class="result" src="{{ url_for('static', filename=result['photo']) }}">
+                            <img style="opacity: 0.8;" 
+                            class="result" 
+                            src="{{ url_for('static', filename=result['photo']) }}" 
+                            alt="This is an image from Epicurious for {{ result['title'] }}">
                         </div>
 
                         <div class="card-img-overlay">
                             <h5>{{ result['title'] }}</h5>
                             <div class="details">
                                 <p>Cuisine: {{ result['imputed_label'] }}</p>
-                                <p>Ingredient Similarity: {{ result['rounded_cos_sim'] }}%</p>
+                                <p>Cosine Similarity of Ingredients: {{ result['rounded'] }}</p>
                             </div>
                         </div>
                     </div>
@@ -102,7 +110,7 @@
                 <a href="/" style="color: white;">
                     <div class="card-body">
                         <div style="background-color: black;">
-                            <img style="opacity: 0.7;" src="{{ url_for('static', filename='71M7Qm1dtDL._SX425_.jpg') }}">
+                            <img style="opacity: 0.8;" src="{{ url_for('static', filename='71M7Qm1dtDL._SX425_.jpg') }}">
                         </div>
 
                         <div class="card-img-overlay">
