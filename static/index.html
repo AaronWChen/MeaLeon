@@ -37,74 +37,100 @@
         .center {
           text-align: center
         }
+
+        body {
+          background-color: rgba(0,0,0,0.2);
+        }
+
+        .jumbotron {
+          background-color: rgba(0,0,0,0);
+         }
+
+        .container {
+          background-color: rgba(0,0,0,0);
+        }
+
+        
+
     </style>
   </head>
   <body>
-    <div class="jumbotron">
-      <div class="container">
-        <h1 class="display-3 center">MeaLeon</h1>
+    <div class="container text-black center">
+      <div class="jumbotron">
+        <div class="view" style="background-image: url('https://www.foodserviceequipmentjournal.com/wp-content/uploads/2019/09/Boxed-Off-mise-en-place.jpg'); background-repeat: no-repeat; background-size: cover; background-position: center center;">
         <br>
-        <h2 class="center">The Similar Recipe Suggester</h2>
+        <h1 class="display-3 center text-white font-weight-bold">MeaLeon</h1>
+        <br>
+        <h2 class="center text-white font-weight-light">Machine Learning Powered Similar Recipe Suggester</h2>
+        <br>
+      </div>
+
+      <div class="row"
+        style="background: rgba(0,0,0,0.0)">
         <br>
         <p>
-          What do you like to eat? Type it in the text box, choose the 
-          cuisine it's from with the drop down menu, and get back something 
-          with similar ingredients but from a different part of the world!
+            What do you like to eat? Type it in the text box, choose the 
+            cuisine it's from with the drop down menu, and get back something 
+            with similar ingredients but from a different part of the world!
         </p>
-        <p>
-          <div class="row">
-            <div class="column left">
-                <img src="static/71M7Qm1dtDL._SX425_.jpg"
-                alt = "This is a cartoon of a chameleon, the mascot of MeaLeon">
-            </div>
+        <br>
+      </div>
 
-            <div class="column right">
-              <form action="/get_results" method="post">
-                <p>Dish Name</p>
-                  <input type="text" name="dish_name" value="Pizza? Tacos? Dumplings?">
+      <div class="row" style="background-image: url('static/photos/71737566-background-with-green-fresh-rucola-and-marble-cutting-board-on-light-gray-stone-table-healthy-food-c.jpg'); background-repeat: no-repeat; background-size: cover; background-position: center center;">
+        <div class="column left">
+            <br>
+            <img src="static/71M7Qm1dtDL._SX425_.jpg"
+            alt = "This is a cartoon of a chameleon, the mascot of MeaLeon"
+            style="opacity:0.8;">
+        </div>
 
-                <br>
-                <br>
-                
-                <p>Cuisine Style</p>
-                  <select name="cuisine_name">
-                    <option value="African">African</option>
-                    <option value="American">American</option>
-                    <option value="Asian">Asian</option>
-                    <option value="Cajun/Creole">Cajun/Creole</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Eastern European">Eastern European</option>
-                    <option value="English">English</option>
-                    <option value="French">French</option>
-                    <option value="German">German</option>
-                    <option value="Indian">Indian</option>
-                    <option value="Irish">Irish</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Kosher">Kosher</option>
-                    <option value="Latin American">Latin American</option>
-                    <option value="Mediterranean">Mediterranean</option>
-                    <option value="Mexican">Mexican</option>
-                    <option value="Middle Eastern">Middle Eastern</option>
-                    <option value="Moroccan">Moroccan</option>
-                    <option value="Scandinavian">Scandinavian</option>
-                    <option value="Southwestern">Southwestern</option>
-                    <option value="Thai">Thai</option>
-                    <option value="Vietnamese">Vietnamese</option>
-                  </select>
+        <div class="column right">
+          <form action="/get_results" method="post">
+            <br>
+            <p>Dish Name</p>
+              <input type="text" name="dish_name" value="Pizza? Tacos? Dumplings?">
 
-                <br>
+            <br>
+            <br>
 
-                <br>
+            <p>Cuisine Style</p>
+              <select name="cuisine_name">
+                <option value="African">African</option>
+                <option value="American">American</option>
+                <option value="Asian">Asian</option>
+                <option value="Cajun/Creole">Cajun/Creole</option>
+                <option value="Chinese">Chinese</option>
+                <option value="Eastern European">Eastern European</option>
+                <option value="English">English</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Indian">Indian</option>
+                <option value="Irish">Irish</option>
+                <option value="Italian">Italian</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Kosher">Kosher</option>
+                <option value="Latin American">Latin American</option>
+                <option value="Mediterranean">Mediterranean</option>
+                <option value="Mexican">Mexican</option>
+                <option value="Middle Eastern">Middle Eastern</option>
+                <option value="Moroccan">Moroccan</option>
+                <option value="Scandinavian">Scandinavian</option>
+                <option value="Southwestern">Southwestern</option>
+                <option value="Thai">Thai</option>
+                <option value="Vietnamese">Vietnamese</option>
+              </select>
 
-                <input type="submit" class="btn btn-primary btn-lg" value="Feed me!">
-              </form>
-            </div>
-          </div>
-        </p>
+            <br>
+
+            <br>
+
+            <input type="submit" class="btn btn-primary btn-lg" value="Feed me!">
+          </form>
+        </div>
       </div>
     </div>
   </body>
+
   <footer>
     <div class="row">
       <div class="col center"><h5>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank">MeaLeon</a></h3></div>
