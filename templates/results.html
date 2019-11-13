@@ -64,7 +64,7 @@
         <br>
         <div class="row">
             <div class="column left" style="background-color:#72E899;">
-                <img src="{{ url_for('static', filename='mealeon_no_bg.png') }}"
+                <img src="{{ url_for('photos', filename='mealeon_no_bg.png') }}"
                 alt = "This is a cartoon of a chameleon, the mascot of MeaLeon"> 
             </div>
 
@@ -91,7 +91,7 @@
                         <div style="background-color: black;">
                             <img style="opacity: 0.8;" 
                             class="result" 
-                            src="{{ url_for('static', filename=result['photo']) }}" 
+                            src="{{ url_for('photos', filename=result['photo']) }}" 
                             alt="This is an image from Epicurious for {{ result['title'] }}">
                         </div>
 
@@ -111,7 +111,7 @@
                 <a href="/" style="color: white;">
                     <div class="card-body">
                         <div style="background-color: black;">
-                            <img style="opacity: 0.8;" src="{{ url_for('static', filename='mealeon_no_bg.png') }}">
+                            <img style="opacity: 0.8;" src="{{ url_for('photos', filename='mealeon_no_bg.png') }}">
                         </div>
 
                         <div class="card-img-overlay">
