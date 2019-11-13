@@ -82,6 +82,7 @@ def link_maker(recipe_link):
   full_link = f'https://www.epicurious.com{recipe_link}'
   return full_link
 
+
 def find_closest_recipes(filtered_ingred_word_matrix, 
                           recipe_tfidf, 
                           X_df):
