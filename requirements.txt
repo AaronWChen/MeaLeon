@@ -23,6 +23,7 @@ defusedxml==0.6.0
 docutils==0.15.2
 entrypoints==0.3
 Flask==1.1.1
+Flask-S3==0.3.3
 gast==0.2.2
 gensim==3.8.0
 google-pasta==0.1.7
@@ -57,9 +58,6 @@ MarkupSafe==1.1.1
 matplotlib==3.1.1
 mccabe==0.6.1
 mistune==0.8.4
-mkl-fft==1.0.14
-mkl-random==1.1.0
-mkl-service==2.3.0
 more-itertools==7.2.0
 nbconvert==5.6.0
 nbformat==4.4.0
@@ -99,10 +97,6 @@ Send2Trash==1.5.0
 six==1.12.0
 smart-open==1.8.4
 statsmodels==0.10.1
-tensorboard==2.0.0
-tensorflow==2.0.0
-tensorflow-addons==0.6.0
-tensorflow-estimator==2.0.0
 termcolor==1.1.0
 terminado==0.8.2
 testpath==0.4.2
