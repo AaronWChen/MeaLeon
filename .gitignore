@@ -134,4 +134,4 @@ dmypy.json
 static/photos/
 
 # Personal credentials for Edamam API
-secrets/edamam.json
+#secrets/edamam.json
