@@ -161,13 +161,13 @@ def find_similar_dishes(dish_name, cuisine_name):
     # csv
     # Heroku does not save files to directory
     # Can work with EC2
-    with open(f"../write_data/{dt_string}_{dish_name}_edamam_api_return.json", "w") as f:
-      json.dump(resp_dict_hits, f)
+    # with open(f"../write_data/{dt_string}_{dish_name}_edamam_api_return.json", "w") as f:
+    #   json.dump(resp_dict_hits, f)
 
-    fields = [dt_string, dish_name, cuisine_name]
-    with open("../write_data/user_requests.csv", "a", newline='') as f:
-      writer = csv.writer(f)
-      writer.writerow(fields)
+    # fields = [dt_string, dish_name, cuisine_name]
+    # with open("../write_data/user_requests.csv", "a", newline='') as f:
+    #   writer = csv.writer(f)
+    #   writer.writerow(fields)
 
     urls = []
     labels = []
