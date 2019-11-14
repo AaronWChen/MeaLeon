@@ -49,19 +49,28 @@
         .container {
           background-color: rgba(0,0,0,0);
         }
-
-        
-
     </style>
   </head>
   <body>
     <div class="view" style="background-image: url('https://www.foodserviceequipmentjournal.com/wp-content/uploads/2019/09/Boxed-Off-mise-en-place.jpg'); background-repeat: no-repeat; background-size: cover; background-position: center center;">
     <div class="container text-white center">
-      <div class="jumbotron" style="background-color: rgba(0,0,0,0.3);">
+      <div class="jumbotron" style="background-color: rgba(0,0,0,0.4);">
         <h1 class="display-3 center">MeaLeon</h1>
         <br>
         <h2 class="center">The Similar Recipe Suggester</h2>
         <br>
+      <div class="row" style="background-color: rgba(0,0,0,0);">
+        <div class="col center text-white"> 
+          <h4>18k Recipes</h4>
+        </div>
+        <div class="col center text-white"> 
+          <h4>2k Ingredients</h4>
+        </div>
+        <div class="col center text-white"> 
+          <h4>24 Cuisines</h4>
+        </div>
+      </div>
+      <br>
       <div class="row">
         <p>
           What do you like to eat? Type it in the text box, choose the 
@@ -70,7 +79,7 @@
         </p>
       </div>
         <p>
-        <div class="row" style="background-color: rgba(0,0,0,0.3);">
+        <div class="row" style="background-color: rgba(0,0,0,0);">
           <div class="column left">
               <img src="static/mealeon_no_bg.png"
               alt = "This is a cartoon of a chameleon, the mascot of MeaLeon">
@@ -79,7 +88,7 @@
           <div class="column right">
             <form action="/get_results" method="post">
               <p>Dish Name</p>
-                <input type="text" name="dish_name" value="Pizza? Tacos? Dumplings?">
+                <input type="text" name="dish_name" value="In the Mood for Food?">
 
               <br>
               <br>
@@ -124,7 +133,7 @@
     </div>
   </body>
   <footer>
-    <div class="row" style="background-color: rgba(0,0,0,0.2);">
+    <div class="row" style="background-color: rgba(0,0,0,0.4);">
       <div class="col center text-white">
         <h4>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank" style="color: white"><u>MeaLeon</u></a></h4>
         <h6>Header background from <a href="https://www.foodserviceequipmentjournal.com/wp-content/uploads/2019/09/Boxed-Off-mise-en-place.jpg"target="_blank" style="color: white"><u>here</u></a></h6>
