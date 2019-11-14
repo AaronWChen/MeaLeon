@@ -56,78 +56,92 @@
   </head>
   <body>
     <div class="view" style="background-image: url('https://www.foodserviceequipmentjournal.com/wp-content/uploads/2019/09/Boxed-Off-mise-en-place.jpg'); background-repeat: no-repeat; background-size: cover; background-position: center center;">
-    <div class="jumbotron">
-      <div class="container text-white center">
+    <div class="container text-white center">
+      <div class="jumbotron" style="background-color: rgba(0,0,0,0.3);">
         <h1 class="display-3 center">MeaLeon</h1>
         <br>
         <h2 class="center">The Similar Recipe Suggester</h2>
         <br>
+      <div class="row">
         <p>
           What do you like to eat? Type it in the text box, choose the 
           cuisine it's from with the drop down menu, and get back something 
           with similar ingredients but from a different part of the world!
         </p>
+      </div>
         <p>
-          <div class="row">
-            <div class="column left">
-                <img src="static/mealeon_no_bg.png"
-                alt = "This is a cartoon of a chameleon, the mascot of MeaLeon">
-            </div>
-
-            <div class="column right">
-              <form action="/get_results" method="post">
-                <p>Dish Name</p>
-                  <input type="text" name="dish_name" value="Pizza? Tacos? Dumplings?">
-
-                <br>
-                <br>
-
-                <p>Cuisine Style</p>
-                  <select name="cuisine_name">
-                    <option value="African">African</option>
-                    <option value="American">American</option>
-                    <option value="Asian">Asian</option>
-                    <option value="Cajun/Creole">Cajun/Creole</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Eastern European">Eastern European</option>
-                    <option value="English">English</option>
-                    <option value="French">French</option>
-                    <option value="German">German</option>
-                    <option value="Indian">Indian</option>
-                    <option value="Irish">Irish</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Kosher">Kosher</option>
-                    <option value="Latin American">Latin American</option>
-                    <option value="Mediterranean">Mediterranean</option>
-                    <option value="Mexican">Mexican</option>
-                    <option value="Middle Eastern">Middle Eastern</option>
-                    <option value="Moroccan">Moroccan</option>
-                    <option value="Scandinavian">Scandinavian</option>
-                    <option value="Southwestern">Southwestern</option>
-                    <option value="Thai">Thai</option>
-                    <option value="Vietnamese">Vietnamese</option>
-                  </select>
-
-                <br>
-
-                <br>
-
-                <input type="submit" class="btn btn-primary btn-lg" value="Feed me!">
-              </form>
-            </div>
+        <div class="row" style="background-color: rgba(0,0,0,0.3);">
+          <div class="column left">
+              <img src="static/mealeon_no_bg.png"
+              alt = "This is a cartoon of a chameleon, the mascot of MeaLeon">
           </div>
+
+          <div class="column right">
+            <form action="/get_results" method="post">
+              <p>Dish Name</p>
+                <input type="text" name="dish_name" value="Pizza? Tacos? Dumplings?">
+
+              <br>
+              <br>
+
+              <p>Cuisine Style</p>
+                <select name="cuisine_name">
+                  <option value="African">African</option>
+                  <option value="American">American</option>
+                  <option value="Asian">Asian</option>
+                  <option value="Cajun/Creole">Cajun/Creole</option>
+                  <option value="Chinese">Chinese</option>
+                  <option value="Eastern European">Eastern European</option>
+                  <option value="English">English</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Indian">Indian</option>
+                  <option value="Irish">Irish</option>
+                  <option value="Italian">Italian</option>
+                  <option value="Japanese">Japanese</option>
+                  <option value="Kosher">Kosher</option>
+                  <option value="Latin American">Latin American</option>
+                  <option value="Mediterranean">Mediterranean</option>
+                  <option value="Mexican">Mexican</option>
+                  <option value="Middle Eastern">Middle Eastern</option>
+                  <option value="Moroccan">Moroccan</option>
+                  <option value="Scandinavian">Scandinavian</option>
+                  <option value="Southwestern">Southwestern</option>
+                  <option value="Thai">Thai</option>
+                  <option value="Vietnamese">Vietnamese</option>
+                </select>
+
+              <br>
+
+              <br>
+
+              <input type="submit" class="btn btn-primary btn-lg" value="Feed me!">
+            </form>
+          </div>
+        </div>
         </p>
       </div>
     </div>
   </body>
   <footer>
-    <div class="row" style="background-color: rgba(0,0,0,0.3);">
-      <div class="col center text-white"><h5>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank">MeaLeon</a></h3></div>
-      <div class="col center text-white"><h5>Created by: <a href= "https://aaronwchen.github.io/" target="_blank">Aaron W. Chen</a></h3></div>
-      <div class="col center text-white"><h5>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank">awashingtonchen</a></h3></div>
+    <div class="row" style="background-color: rgba(0,0,0,0.2);">
+      <div class="col center text-white">
+        <h4>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank" style="color: white"><u>MeaLeon</u></a></h4>
+        <h6>Header background from <a href="https://www.foodserviceequipmentjournal.com/wp-content/uploads/2019/09/Boxed-Off-mise-en-place.jpg"target="_blank" style="color: white"><u>here</u></a></h6>
+        </div>
+      <div class="col center text-white">
+        <h4>Created by: <a href= "https://aaronwchen.github.io/" target="_blank" style="color: white"><u>Aaron W. Chen</u></a></h4>
+        <h6>Chameleon from <a href="https://www.amazon.com/Adorable-Smiling-African-Chameleon-Cartoon/dp/B079R7TLJK"target="_blank" style="color: white"><u>here</u></a></h6>
+      </div>
+      <div class="col center text-white">
+        <h4>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank" style="color: white"><u>awashingtonchen</u></a></h4>
+        <h6>Body background from <a href="https://www.amazon.com/Adorable-Smiling-African-Chameleon-Cartoon/dp/B079R7TLJK"target="_blank" style="color: white"><u>here</u></a></h6>            
+      </div>
     </div>
     <br>
-    <div class= "center" id="edamam-badge" data-color="white"></div>
+      <div class="row">
+        <div class="col center" id="edamam-badge" data-color="white"></div>
+      </div>
+    
   </footer>
 </html>
