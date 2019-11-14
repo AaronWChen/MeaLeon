@@ -90,6 +90,8 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   # a dataframe made from the database (from joblib) and returns a Pandas 
   # DataFrame with the top five most similar recipes and a Pandas Series 
   # containing the similarity amount
+  m2 = (recipe_tfidf != 0).any()
+  ingreds_used = m2.index[m2].tolist()
   search_vec = np.array(recipe_tfidf).reshape(1,-1)
   res_cos_sim = cosine_similarity(filtered_ingred_word_matrix, search_vec)
   top_five = np.argsort(res_cos_sim.flatten())[-5:][::-1]
@@ -107,7 +109,7 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   reduced['fixed_url'] = reduced["url"].apply(link_maker)
   reduced['rounded'] = reduced['cosine_similarity'].round(3)
   reduced = reduced.drop('url', axis=1)
-  return reduced
+  return reduced, ingreds_used
 
 
 def find_similar_dishes(dish_name, cuisine_name):
@@ -205,11 +207,11 @@ def find_similar_dishes(dish_name, cuisine_name):
                                       cuisine_name=cuisine_name, 
                                       tfidf=ingred_tfidf)
                                       
-    query_similar = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
+    query_similar, ingreds_used = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
                                           recipe_tfidf=query_tfidf, 
                                           X_df=prepped)
     
-    return query_similar.to_dict(orient='records')
+    return query_similar.to_dict(orient='records'), ingreds_used
     
     
   else:
