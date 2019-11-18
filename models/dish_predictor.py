@@ -141,10 +141,10 @@ def find_similar_dishes(dish_name, cuisine_name):
   f.close()
 
   app_id = cred["id"]
-  app_id_s = f"&app_id=${app_id}"
+  app_id_s = f"&app_id={app_id}"
 
   app_key = cred["key"]
-  app_key_s = f"&app_key=${app_key}"
+  app_key_s = f"&app_key={app_key}"
   
   # Level up: 
   # Explicitly ask for a few recipes using limiter and make an "average version"
