@@ -182,7 +182,7 @@ def find_similar_dishes(dish_name, cuisine_name):
         urls.append(recipe_path['url'])
         labels.append(recipe_path['label'])
         sources.append(recipe_path['source'])
-        ingreds.append([item['food'] for item in recipe_path['ingredients']])
+        ingreds.append([item['text'] for item in recipe_path['ingredients']])
         
     all_recipes = {'url': urls,
                   'label': labels, 
