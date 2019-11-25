@@ -132,3 +132,6 @@ dmypy.json
 
 # All recipe photos (the folder is too big for GitHub)
 static/photos/
+
+# Personal credentials for Edamam API
+#secrets/edamam.json
