@@ -82,6 +82,7 @@ def link_maker(recipe_link):
   full_link = f'https://www.epicurious.com{recipe_link}'
   return full_link
 
+
 def find_closest_recipes(filtered_ingred_word_matrix, 
                           recipe_tfidf, 
                           X_df):
@@ -90,6 +91,8 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   # a dataframe made from the database (from joblib) and returns a Pandas 
   # DataFrame with the top five most similar recipes and a Pandas Series 
   # containing the similarity amount
+  m2 = (recipe_tfidf != 0).any()
+  ingreds_used = m2.index[m2].tolist()
   search_vec = np.array(recipe_tfidf).reshape(1,-1)
   res_cos_sim = cosine_similarity(filtered_ingred_word_matrix, search_vec)
   top_five = np.argsort(res_cos_sim.flatten())[-5:][::-1]
@@ -107,7 +110,7 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   reduced['fixed_url'] = reduced["url"].apply(link_maker)
   reduced['rounded'] = reduced['cosine_similarity'].round(3)
   reduced = reduced.drop('url', axis=1)
-  return reduced
+  return reduced, ingreds_used
 
 
 def find_similar_dishes(dish_name, cuisine_name):
@@ -133,15 +136,15 @@ def find_similar_dishes(dish_name, cuisine_name):
 
   # Currently, just does an API call, may hit API limit if continuing with this
   # version
-  f = open("../secrets/edamam.json","r")
+  f = open("secrets/edamam.json","r")
   cred = json.load(f)
   f.close()
 
   app_id = cred["id"]
-  app_id_s = f"&app_id=${app_id}"
+  app_id_s = f"&app_id={app_id}"
 
   app_key = cred["key"]
-  app_key_s = f"&app_key=${app_key}"
+  app_key_s = f"&app_key={app_key}"
   
   # Level up: 
   # Explicitly ask for a few recipes using limiter and make an "average version"
@@ -161,13 +164,13 @@ def find_similar_dishes(dish_name, cuisine_name):
     # csv
     # Heroku does not save files to directory
     # Can work with EC2
-    with open(f"../write_data/{dt_string}_{dish_name}_edamam_api_return.json", "w") as f:
-      json.dump(resp_dict_hits, f)
+    # with open(f"../write_data/{dt_string}_{dish_name}_edamam_api_return.json", "w") as f:
+    #   json.dump(resp_dict_hits, f)
 
-    fields = [dt_string, dish_name, cuisine_name]
-    with open("../write_data/user_requests.csv", "a", newline='') as f:
-      writer = csv.writer(f)
-      writer.writerow(fields)
+    # fields = [dt_string, dish_name, cuisine_name]
+    # with open("../write_data/user_requests.csv", "a", newline='') as f:
+    #   writer = csv.writer(f)
+    #   writer.writerow(fields)
 
     urls = []
     labels = []
@@ -179,7 +182,7 @@ def find_similar_dishes(dish_name, cuisine_name):
         urls.append(recipe_path['url'])
         labels.append(recipe_path['label'])
         sources.append(recipe_path['source'])
-        ingreds.append([item['food'] for item in recipe_path['ingredients']])
+        ingreds.append([item['text'] for item in recipe_path['ingredients']])
         
     all_recipes = {'url': urls,
                   'label': labels, 
@@ -205,11 +208,11 @@ def find_similar_dishes(dish_name, cuisine_name):
                                       cuisine_name=cuisine_name, 
                                       tfidf=ingred_tfidf)
                                       
-    query_similar = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
+    query_similar, ingreds_used = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
                                           recipe_tfidf=query_tfidf, 
                                           X_df=prepped)
     
-    return query_similar.to_dict(orient='records')
+    return query_similar.to_dict(orient='records'), ingreds_used
     
     
   else:
