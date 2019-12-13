@@ -38,7 +38,9 @@ The database, from a foodie's point of view, could use more data.
 cuisine types and this should be fleshed out.
 
 2. In an effort to add more recipes to the database, other sites and recipes
-will be scraped, classified, and added to the database.
+will be scraped, classified, and added to the database. If you know of any 
+recipes or recipe sites, especially for the cuisines of Africa, Southeast Asia,
+Oceania, and South America, please help!
 
 3. Other recipes should ideally contribute to under represented cuisines in the
 database.
