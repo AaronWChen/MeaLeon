@@ -9,6 +9,7 @@ import re
 import pandas as pd
 import numpy as np
 import nltk
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 import string
@@ -19,7 +20,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import joblib
 
 # Load stopwords and prepare lemmatizer
-stopwords_loc = "../write_data/food_stopwords.csv"
+stopwords_loc = "../../write_data/food_stopwords.csv"
 with open(stopwords_loc, "r") as myfile:
     reader = csv.reader(myfile)
     food_stopwords = [col for row in reader for col in row]
@@ -62,6 +63,7 @@ def cuisine_namer(text):
 filename = "../raw_data/recipes-en-201706/epicurious-recipes_m2.json"
 with open(filename, "r") as f:
     datastore = json.load(f)
+    f.close()
 
 
 def load_data(filepath, test_size=0.1, random_state=10):
@@ -109,17 +111,27 @@ def prep_data(X):
         inplace=True,
     )
 
+    # cols = [
+    #     "id",
+    #     "description",
+    #     "title",
+    #     "url",
+    #     "photo_data",
+    #     "ingredients",
+    #     "steps",
+    #     "category",
+    #     "name",
+    #     "remove",
+    # ]
+
     cols = [
-        "id",
-        "description",
         "title",
-        "url",
+        "url", 
         "photo_data",
         "ingredients",
-        "steps",
         "category",
         "name",
-        "remove",
+        "remove"
     ]
 
     concat.columns = cols
@@ -129,7 +141,7 @@ def prep_data(X):
     cuisine_only = concat[concat["category"] == "cuisine"]
     cuisine_only.dropna(axis=0, inplace=True)
     cuisine_only["imputed_label"] = cuisine_only["name"].apply(cuisine_namer)
-
+    cuisine_only.drop('name', axis=1, inplace=True)
     return cuisine_only
 
 
