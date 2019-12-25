@@ -16,6 +16,8 @@ import pandas as pd
 import numpy as np
 from pandas.io.json import json_normalize
 import nltk
+nltk.download('wordnet')
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk import word_tokenize, FreqDist
 from nltk.stem.wordnet import WordNetLemmatizer
