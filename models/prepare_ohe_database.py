@@ -93,7 +93,6 @@ def prep_data(X):
   expansion"""
   X.drop(
       [
-          'hed',
           "pubDate",
           "author",
           "type",
