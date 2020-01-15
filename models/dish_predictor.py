@@ -24,7 +24,7 @@ import string
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity, pairwise_distances
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 
 # Define all functions
 
@@ -32,14 +32,14 @@ def import_stored_files():
   # Load in the stored Epicurious database, TFIDF Vectorizer object to transform,
   # the input, and the TFIDF word matrix from joblib and created by 
   # prepare_database.py
-  with open("joblib/recipe_dataframe.joblib", "rb") as fo:
-    prepped = joblib.load("joblib/recipe_dataframe.joblib")
+  with open("joblib/tfidf_recipe_dataframe.joblib", "rb") as fo:
+    prepped = joblib.load("joblib/tfidf_recipe_dataframe.joblib")
 
   with open("joblib/recipe_tfidf.joblib", "rb") as fo:
     ingred_tfidf = joblib.load("joblib/recipe_tfidf.joblib")
 
-  with open("joblib/recipe_word_matrix.joblib", "rb") as fo:
-    ingred_word_matrix = joblib.load("joblib/recipe_word_matrix.joblib")
+  with open("joblib/recipe_word_matrix_tfidf.joblib", "rb") as fo:
+    ingred_word_matrix = joblib.load("joblib/recipe_word_matrix_tfidf.joblib")
 
   return prepped, ingred_tfidf, ingred_word_matrix
 
@@ -105,13 +105,13 @@ def find_closest_recipes(filtered_ingred_word_matrix,
                             columns=['cosine_similarity'], 
                             index=suggest_df.index)
   full_df = pd.concat([suggest_df, proximity], axis=1)
-  expand_photo_df = pd.concat([full_df.drop(["photo_data"], axis=1), 
-                                full_df["photo_data"].apply(pd.Series)], axis=1)
-  reduced = expand_photo_df[['title', 'url', 'filename', 'imputed_label', 'ingredients', 'cosine_similarity']].dropna(axis=1)
+  expand_photo_df = pd.concat([full_df.drop(["photoData"], axis=1), 
+                                full_df["photoData"].apply(pd.Series)], axis=1)
+  reduced = expand_photo_df[['title', 'recipe_url', 'filename', 'imputed_label', 'ingredients', 'cosine_similarity']].dropna(axis=1)
   reduced['photo'] = reduced['filename'].apply(picture_placer)
-  reduced['fixed_url'] = reduced["url"].apply(link_maker)
+  reduced['fixed_url'] = reduced["recipe_url"].apply(link_maker)
   reduced['rounded'] = reduced['cosine_similarity'].round(3)
-  reduced = reduced.drop('url', axis=1)
+  reduced = reduced.drop('recipe_url', axis=1)
   return reduced, ingreds_used
 
 

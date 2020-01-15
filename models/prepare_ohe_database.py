@@ -23,6 +23,7 @@ import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity, pairwise_distances
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.feature_extraction.text import CountVectorizer
 import joblib
 
 # Load stopwords and prepare lemmatizer
@@ -86,59 +87,46 @@ def load_data(filepath, test_size=0.1, random_state=10):
 
 
 def prep_data(X):
-    """ This function takes a dataframe X, drops columns that will not be used,
-    expands the hierarchical column into the dataframe, renames the columns
-    to be more human-readable, and drops one column created during dataframe
-    expansion"""
-    X.drop(
-        [
-            'hed',
-            "pubDate",
-            "author",
-            "type",
-            "aggregateRating",
-            "reviewsCount",
-            "willMakeAgainPct",
-            "dateCrawled",
-            'prepSteps'
-        ],
-        axis=1,
-        inplace=True,
-    )
+  """ This function takes a dataframe X, drops columns that will not be used,
+  expands the hierarchical column into the dataframe, renames the columns
+  to be more human-readable, and drops one column created during dataframe
+  expansion"""
+  X.drop(
+      [
+          'hed',
+          "pubDate",
+          "author",
+          "type",
+          "aggregateRating",
+          "reviewsCount",
+          "willMakeAgainPct",
+          "dateCrawled",
+          'prepSteps'
+      ],
+      axis=1,
+      inplace=True,
+  )
 
-    X.rename({'url': 'recipe_url'}, axis=1, inplace=True)     
-
-    concat = pd.concat([X.drop(["tag"], axis=1), X["tag"].apply(pd.Series)], axis=1)
-    concat.drop(
-        [
-            0,
-            "photosBadgeAltText",
-            "photosBadgeFileName",
-            "photosBadgeID",
-            "photosBadgeRelatedUri",
-            "url"
-        ],
-        axis=1,
-        inplace=True,
-    )
-
-    # cols = [
-    #     "title",
-    #     "url", 
-    #     "photo_data",
-    #     "ingredients",
-    #     "category",
-    #     "name",
-    #     "remove"
-    # ]
-
-    # print(concat.columns)
-    
-    cuisine_only = concat[concat["category"] == "cuisine"]
-    cuisine_only.dropna(axis=0, inplace=True)
-    cuisine_only["imputed_label"] = cuisine_only["name"].apply(cuisine_namer)
-    cuisine_only.drop('name', axis=1, inplace=True)
-    return cuisine_only
+  X.rename({'url': 'recipe_url'}, axis=1, inplace=True)     
+  
+  concat = pd.concat([X.drop(["tag"], axis=1), X["tag"].apply(pd.Series)], axis=1)
+  concat.drop(
+      [
+          0,
+          "photosBadgeAltText",
+          "photosBadgeFileName",
+          "photosBadgeID",
+          "photosBadgeRelatedUri",
+          "url"
+      ],
+      axis=1,
+      inplace=True,
+  )
+  cuisine_only = concat[concat["category"] == "cuisine"]
+  cuisine_only.dropna(axis=0, inplace=True)
+  cuisine_only["imputed_label"] = cuisine_only["name"].apply(cuisine_namer)
+  cuisine_only.drop('name', axis=1, inplace=True)
+  return cuisine_only
 
 def lemmatize_training_recipes(ingredients, stopwords_list):
   list_ingreds = ingredients.tolist()
@@ -168,58 +156,25 @@ def lemmatize_training_recipes(ingredients, stopwords_list):
   return lemmatized_recipes, unique_ingreds
 
 def fit_transform_ohe_matrix(X_df, stopwords_list):
+  ohe = CountVectorizer(
+        stop_words=stopwords_list,
+        min_df=2,
+        token_pattern=r"(?u)\b[a-zA-Z]{2,}\b",
+        preprocessor=lemmatizer.lemmatize,
+    )
   ingreds = X_df["ingredients"].apply(" ".join).str.lower()
-  X_df['lemma_ingredients'], unique_ingreds = lemmatize_training_recipes(ingreds, stopwords_list)
-  
-  # unique_list = np.array(list(unique_ingreds))
-  # unique_ingreds_array = np.array(list(unique_ingreds)).reshape(1,-1)
-
-  ohe = OneHotEncoder()
-  ohe.fit(X_df['lemma_ingredients'].to_numpy().reshape(1,-1).flatten())
-  response = X_df['lemma_ingredients'].apply(ohe.transform)
-  # response = ohe.transform(X_df['lemma_ingredients'].to_numpy().flatten().reshape(1,-1))
-  print(response)
-  
-  # print("just DF:")
-  # print(X_df['lemma_ingredients'])
-  # print("DF to numpy")
-  # print(X_df['lemma_ingredients'].to_numpy())
-  # print(X_df['lemma_ingredients'].to_numpy().shape)
-  # print("flattened numpy")
-  # print(X_df['lemma_ingredients'].to_numpy().flatten())
-  # print(len(X_df['lemma_ingredients'].to_numpy().flatten()))
-  # print(len(X_df['lemma_ingredients'][0].to_numpy().flatten()))
-  # unique_list2 = X_df['lemma_ingredients'].to_numpy().flatten().reshape(1,-1)
-  # ohe = OneHotEncoder()
-  # ohe.fit(unique_list2)
-  # print("categories are:")
-  # print(ohe.categories_)
-  # response = ohe.transform(X_df['lemma_ingredients'].to_numpy().flatten().reshape(1,-1))
-  # print(response)
-
-  # # lemma_array = np.array(lemma_ingreds)
-  # # lemma_array_reshape = lemma_array.reshape(1,-1)
-  
-  # # ohe = OneHotEncoder()
-  # # ohe.fit(lemma_array_reshape)
-  # # response = ohe.transform(X_df['lemma_ingredients'])
-  # response = ohe.transform((X_df['lemma_ingredients'].to_numpy()).flatten().reshape(1,-1))
-
-  # ingred_matrix = pd.DataFrame(
-  #                               response.toarray(), 
-  #                               columns=ohe.get_feature_names(),
-  #                               index=X_df.index
-  #                             )
-  # print(ingred_matrix)
-  # return ohe, ingred_matrix
-  return 1, 2
+  ohe.fit(ingreds)
+  response = ohe.transform(ingreds)
+  ohe_matrix = pd.DataFrame(response.toarray(), 
+                              columns=ohe.get_feature_names(), 
+                              index=X_df.index
+                            )
+  return ohe, ohe_matrix
   
 
-def transform_ohe(ohe, recipe, stopwords_list):
-  ingreds = recipe['ingredients']
-  lemma_ingreds = [[{[lemmatizer.lemmatize(ingred) for ingred in ingreds if ingred not in stopwords_list]}]]
-  
-  response = ohe.transform(lemma_ingreds)
+def transform_ohe(ohe, recipe):
+  ingreds = recipe['ingredients'].apply(" ".join).str.lower()
+  response = ohe.transform(ingreds)
 
   ohe_transformed_recipe = pd.DataFrame(
                                         response.toarray(),
@@ -230,11 +185,9 @@ def transform_ohe(ohe, recipe, stopwords_list):
   return ohe_transformed_recipe
 
 
-def transform_from_test_ohe(ohe, df, idx, stopwords_list):
-  recipe = [" ".join(df.iloc[idx]["ingredients"])]
-  lemma_ingreds = [[{[lemmatizer.lemmatize(ingred) for ingred in ingreds if ingred not in stopwords_list]}]]
-  
-  response = ohe.transform(lemma_ingreds)
+def transform_from_test_ohe(ohe, df, idx):
+  recipe = df['ingredients'].iloc[idx].apply(' '.join).str.lower()
+  response = ohe.transform(recipe)
   ohe_transformed_test_recipe = pd.DataFrame(
                                             response.toarray(), 
                                             columns=ohe.get_feature_names()
