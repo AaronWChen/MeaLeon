@@ -107,7 +107,7 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   full_df = pd.concat([suggest_df, proximity], axis=1)
   expand_photo_df = pd.concat([full_df.drop(["photoData"], axis=1), 
                                 full_df["photoData"].apply(pd.Series)], axis=1)
-  reduced = expand_photo_df[['title', 'recipe_url', 'filename', 'imputed_label', 'ingredients', 'cosine_similarity']].dropna(axis=1)
+  reduced = expand_photo_df[['hed', 'recipe_url', 'filename', 'imputed_label', 'ingredients', 'cosine_similarity']].dropna(axis=1)
   reduced['photo'] = reduced['filename'].apply(picture_placer)
   reduced['fixed_url'] = reduced["recipe_url"].apply(link_maker)
   reduced['rounded'] = reduced['cosine_similarity'].round(3)

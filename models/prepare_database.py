@@ -87,7 +87,6 @@ def prep_data(X):
   to be more human-readable, and drops one column created during dataframe
   expansion"""
   X.drop([
-          'hed',
           "pubDate",
           "author",
           "type",
