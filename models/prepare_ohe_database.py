@@ -180,7 +180,7 @@ def transform_ohe(ohe, recipe):
                                         columns=ohe.get_feature_names(),
                                         index=recipe.index
                                         )
-
+  print(ohe_transformed_recipe.to_numpy().where(ohe_transformed_recipe.to_numpy() != (0.0 or 1.0), 'not 1 or 0', '1 or 0'))
   return ohe_transformed_recipe
 
 
@@ -212,60 +212,6 @@ def find_closest_recipes(filtered_ingred_word_matrix, recipe_ohe_transform, X_df
   suggest_df = X_df.loc[recipe_ids]
 
   return suggest_df, proximity
-
-
-# def fit_transform_tfidf_matrix(X_df, stopwords_list):
-#     tfidf = TfidfVectorizer(
-#         stop_words=stopwords_list,
-#         min_df=2,
-#         token_pattern=r"(?u)\b[a-zA-Z]{2,}\b",
-#         preprocessor=lemmatizer.lemmatize,
-#     )
-
-#     tfidf.fit(temp)
-#     response = tfidf.transform(temp)
-#     print(response.shape)
-#     word_matrix = pd.DataFrame(
-#         response.toarray(), columns=tfidf.get_feature_names(), index=X_df.index
-#     )
-
-#     return tfidf, word_matrix
-
-
-# def transform_tfidf(tfidf, recipe):
-#     response = tfidf.transform(recipe["ingredients"])
-
-#     transformed_recipe = pd.DataFrame(
-#         response.toarray(), columns=tfidf.get_feature_names(), index=recipe.index
-#     )
-#     return transformed_recipe
-
-
-# def transform_from_test_tfidf(tfidf, df, idx):
-#     recipe = [" ".join(df.iloc[idx]["ingredients"])]
-#     response = tfidf.transform(recipe)
-#     transformed_recipe = pd.DataFrame(
-#         response.toarray(), columns=tfidf.get_feature_names()
-#     )
-#     return transformed_recipe
-
-
-# def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name, tfidf):
-#     combo = pd.concat([ingred_word_matrix, X_df["imputed_label"]], axis=1)
-#     filtered_ingred_word_matrix = combo[combo["imputed_label"] != cuisine_name].drop(
-#         "imputed_label", axis=1
-#     )
-#     return filtered_ingred_word_matrix
-
-
-# def find_closest_recipes(filtered_ingred_word_matrix, recipe_tfidf, X_df):
-#     search_vec = np.array(recipe_tfidf).reshape(1, -1)
-#     res_cos_sim = cosine_similarity(filtered_ingred_word_matrix, search_vec)
-#     top_five = np.argsort(res_cos_sim.flatten())[-5:][::-1]
-#     proximity = res_cos_sim[top_five]
-#     recipe_ids = [filtered_ingred_word_matrix.iloc[idx].name for idx in top_five]
-#     suggest_df = X_df.loc[recipe_ids]
-#     return suggest_df, proximity
 
 
 # Create the dataframe
