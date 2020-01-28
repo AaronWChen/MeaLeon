@@ -23,12 +23,13 @@ def get_results():
         # Convert the dict of fields into a list
         dish = data['dish_name']
         cuisine = data['cuisine_name']
-        results, ingreds = find_similar_dishes(dish, cuisine)
+        results, ingreds, most_sim = find_similar_dishes(dish, cuisine)
         return render_template("results.html", 
                                 results=results, 
                                 dish=dish,
                                 cuisine=cuisine,
-                                ingreds=ingreds)
+                                ingreds=ingreds,
+                                most_sim=most_sim)
 
     else:
         return abort(400)

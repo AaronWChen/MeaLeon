@@ -100,6 +100,7 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   top_five = np.argsort(res_cos_sim.flatten())[-5:][::-1]
   
   recipe_ids = [filtered_ingred_word_matrix.iloc[idx].name for idx in top_five]
+  most_sim = filtered_ingred_word_matrix.index.isin(top_five)
   suggest_df = X_df.loc[recipe_ids]
   proximity = pd.DataFrame(data=res_cos_sim[top_five], 
                             columns=['cosine_similarity'], 
@@ -112,7 +113,7 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   reduced['fixed_url'] = reduced["recipe_url"].apply(link_maker)
   reduced['rounded'] = reduced['cosine_similarity'].round(3)
   reduced = reduced.drop('recipe_url', axis=1)
-  return reduced, ingreds_used
+  return reduced, ingreds_used, most_sim
 
 
 def find_similar_dishes(dish_name, cuisine_name):
@@ -210,7 +211,7 @@ def find_similar_dishes(dish_name, cuisine_name):
                                       cuisine_name=cuisine_name, 
                                       tfidf=ingred_tfidf)
                                       
-    query_similar, ingreds_used = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
+    query_similar, ingreds_used, most_sim = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
                                           recipe_tfidf=query_tfidf, 
                                           X_df=prepped)
     

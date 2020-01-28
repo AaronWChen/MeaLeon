@@ -48,10 +48,11 @@ def transform_ohe(ingred_ohe, recipe):
   # This function takes in a OHE/CountVectorizer object and a recipe, then 
   # creates/transforms the given recipe into a CountVectorizer form
 
-  recipe = [' '.join(recipe['ingredients'][0])]
-  response = ingred_ohe.transform(recipe)
+  ingreds = recipe['ingredients'].apply(" ".join).str.lower()
+  response = ingred_ohe.transform(ingreds)
   transformed_recipe = pd.DataFrame(response.toarray(),
-                                    columns=ingred_ohe.get_feature_names())
+                                    columns=ingred_ohe.get_feature_names(),
+                                    index=recipe.index)
   return transformed_recipe
 
 
@@ -100,6 +101,11 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   top_five = np.argsort(res_cos_sim.flatten())[-5:][::-1]
   
   recipe_ids = [filtered_ingred_word_matrix.iloc[idx].name for idx in top_five]
+  most_sim = filtered_ingred_word_matrix.index.isin(top_five)
+  # most_sim = filtered_ingred_word_matrix[filtered_ingred_word_matrix[filtered_ingred_word_matrix.index.isin(top_five)].filter(ingreds_used, axis='columns') > 0]
+  
+  
+  print(most_sim)
   suggest_df = X_df.loc[recipe_ids]
   proximity = pd.DataFrame(data=res_cos_sim[top_five], 
                             columns=['cosine_similarity'], 
@@ -112,7 +118,7 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   reduced['fixed_url'] = reduced["recipe_url"].apply(link_maker)
   reduced['rounded'] = reduced['cosine_similarity'].round(3)
   reduced = reduced.drop('recipe_url', axis=1)
-  return reduced, ingreds_used
+  return reduced, ingreds_used, most_sim
 
 
 def find_similar_dishes(dish_name, cuisine_name):
@@ -210,11 +216,11 @@ def find_similar_dishes(dish_name, cuisine_name):
                                       cuisine_name=cuisine_name, 
                                       ohe=ingred_ohe)
                                       
-    query_similar, ingreds_used = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
+    query_similar, ingreds_used, most_sim = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
                                           recipe_ohe=query_ohe, 
                                           X_df=prepped)
     
-    return query_similar.to_dict(orient='records'), ingreds_used
+    return query_similar.to_dict(orient='records'), ingreds_used, most_sim
     
     
   else:
