@@ -94,7 +94,10 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   # a dataframe made from the database (from joblib) and returns a Pandas 
   # DataFrame with the top five most similar recipes and a Pandas Series 
   # containing the similarity amount
+
   m2 = (recipe_ohe != 0).any()
+  recipe_ohe_weights = recipe_ohe.iloc[0][recipe_ohe.iloc[0] != 0].to_dict()
+
   ingreds_used = m2.index[m2].tolist()
   search_vec = np.array(recipe_ohe).reshape(1,-1)
   res_cos_sim = cosine_similarity(filtered_ingred_word_matrix, search_vec)
@@ -104,15 +107,13 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   
   recipe_ids = [filtered_ingred_word_matrix.iloc[idx].name for idx in top_five]
   
-  zipped = zip(top_five_list, recipe_ids)
-  most_sim = filtered_ingred_word_matrix.iloc[top_five_list]
-  most_sim_reduced = most_sim[ingreds_used]
+  # most_sim = filtered_ingred_word_matrix.iloc[top_five_list]
+  # most_sim_reduced = most_sim[ingreds_used]
 
   suggest_df = X_df.loc[recipe_ids]
   proximity = pd.DataFrame(data=res_cos_sim[top_five], 
                             columns=['cosine_similarity'], 
                             index=suggest_df.index)
-  
   
   full_df = pd.concat([suggest_df, proximity], axis=1)
   expand_photo_df = pd.concat([full_df.drop(["photoData"], axis=1), 
@@ -121,25 +122,13 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   reduced['photo'] = reduced['filename'].apply(picture_placer)
   reduced['fixed_url'] = reduced["recipe_url"].apply(link_maker)
   reduced['rounded'] = reduced['cosine_similarity'].round(3)
-  
-  # items = dict()
-  # reduced['ingred_weights'] = items
+
   reduced = reduced.drop('recipe_url', axis=1)
 
-
   ingr_weights = [filtered_ingred_word_matrix.iloc[num][filtered_ingred_word_matrix.iloc[num] != 0].to_dict() for num in top_five_list]
-  
   reduced['ingred_weights'] = ingr_weights
-  # for num, rec_id in zipped:
-  #   sub_df = filtered_ingred_word_matrix.iloc[num]
-  #   sub_df_converted = sub_df[sub_df != 0].to_dict()
-  #   # print(num, rec_id)
-  #   print(reduced.loc[rec_id]['ingred_weights'])
-  #   print(sub_df_converted)
-    # reduced.loc[rec_id, 'ingred_weights'] = sub_df_converted
 
-  print(reduced['ingred_weights'])
-  return reduced, ingreds_used, most_sim_reduced
+  return reduced, ingreds_used, recipe_ohe_weights
 
 
 def find_similar_dishes(dish_name, cuisine_name):
@@ -237,11 +226,11 @@ def find_similar_dishes(dish_name, cuisine_name):
                                       cuisine_name=cuisine_name, 
                                       ohe=ingred_ohe)
                                       
-    query_similar, ingreds_used, most_sim = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
+    query_similar, ingreds_used, rec_weights = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
                                           recipe_ohe=query_ohe, 
                                           X_df=prepped)
     
-    return query_similar.to_dict(orient='records'), ingreds_used, most_sim
+    return query_similar.to_dict(orient='records'), ingreds_used, rec_weights
     
     
   else:
