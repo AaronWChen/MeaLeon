@@ -160,6 +160,7 @@ def fit_transform_ohe_matrix(X_df, stopwords_list):
         min_df=2,
         token_pattern=r"(?u)\b[a-zA-Z]{2,}\b",
         preprocessor=lemmatizer.lemmatize,
+        binary=True,
     )
   ingreds = X_df["ingredients"].apply(" ".join).str.lower()
   ohe.fit(ingreds)

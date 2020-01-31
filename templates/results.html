@@ -85,6 +85,7 @@
         <br>
     
         <div class="row justify-content-center">
+        
         {% for result in results: %}
             <div class="card text-white center" style="max-width: 20rem;">
                 <a href="{{ result['fixed_url'] }}" style="color: white;" target="_blank">
@@ -101,7 +102,7 @@
                             <div class="details">
                                 <p>Cuisine: {{ result['imputed_label'] }}</p>
                                 <p>Cosine Similarity of Ingredients: {{ result['rounded'] }}</p>
-                                <p>Ingredient Vector: {{ most_sim.filter(ingreds, axis='columns') }}</p>
+                                <p>Ingredient Vector: {{ result['ingred_weights'] }} </p>
                             </div>
                         </div>
                     </div>
