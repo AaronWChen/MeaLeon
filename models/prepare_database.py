@@ -116,19 +116,6 @@ def prep_data(X):
       inplace=True,
   )
 
-    # cols = [
-    #     "id",
-    #     "description",
-    #     "title",
-    #     "url",
-    #     "photo_data",
-    #     "ingredients",
-    #     "steps",
-    #     "category",
-    #     "name",
-    #     "remove",
-    # ]
-
   cuisine_only = concat[concat["category"] == "cuisine"]
   cuisine_only.dropna(axis=0, inplace=True)
   cuisine_only["imputed_label"] = cuisine_only["name"].apply(cuisine_namer)
@@ -147,10 +134,10 @@ def fit_transform_tfidf_matrix(X_df, stopwords_list):
     temp = X_df["ingredients"].apply(" ".join).str.lower()
     tfidf.fit(temp)
     response = tfidf.transform(temp)
-    print(response.shape)
-    word_matrix = pd.DataFrame(
-        response.toarray(), columns=tfidf.get_feature_names(), index=X_df.index
-    )
+    word_matrix = pd.DataFrame(response.toarray(), 
+                                columns=tfidf.get_feature_names(), 
+                                index=X_df.index
+                            )
 
     return tfidf, word_matrix
 
@@ -160,8 +147,10 @@ def transform_tfidf(tfidf, recipe):
   response = tfidf.transform(ingreds)
 
   transformed_recipe = pd.DataFrame(
-      response.toarray(), columns=tfidf.get_feature_names(), index=recipe.index
-  )
+                                    response.toarray(), 
+                                    columns=tfidf.get_feature_names(), 
+                                    index=recipe.index
+                                    )
   return transformed_recipe
 
 
@@ -169,8 +158,9 @@ def transform_from_test_tfidf(tfidf, df, idx):
     recipe = df['ingredients'].iloc[idx].apply(' '.join).str.lower()
     response = tfidf.transform(recipe)
     transformed_recipe = pd.DataFrame(
-        response.toarray(), columns=tfidf.get_feature_names()
-    )
+                                        response.toarray(), 
+                                        columns=tfidf.get_feature_names()
+                                        )
     return transformed_recipe
 
 
