@@ -226,7 +226,7 @@ def find_similar_dishes(dish_name, cuisine_name):
                                           recipe_tfidf=query_tfidf, 
                                           X_df=prepped)
     
-    return query_similar.to_dict(orient='records'), ingreds_used
+    return query_similar.to_dict(orient='records'), ingreds_used, recipe_weights
     
     
   else:
