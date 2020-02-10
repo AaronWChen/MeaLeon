@@ -48,10 +48,11 @@ def transform_tfidf(ingred_tfidf, recipe):
   # This function takes in a TFIDF Vectorizer object and a recipe, then 
   # creates/transforms the given recipe into a TFIDF form
 
-  recipe = [' '.join(recipe['ingredients'][0])]
-  response = ingred_tfidf.transform(recipe)
+  ingreds = recipe['ingredients'].apply(" ".join).str.lower()
+  response = ingred_tfidf.transform(ingreds)
   transformed_recipe = pd.DataFrame(response.toarray(),
-                                    columns=ingred_tfidf.get_feature_names())
+                                    columns=ingred_tfidf.get_feature_names(),
+                                    index=recipe.index)
   return transformed_recipe
 
 
@@ -93,18 +94,23 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   # a dataframe made from the database (from joblib) and returns a Pandas 
   # DataFrame with the top five most similar recipes and a Pandas Series 
   # containing the similarity amount
+
   m2 = (recipe_tfidf != 0).any()
+  recipe_weights = recipe_tfidf.iloc[0][recipe_tfidf.iloc[0] != 0].to_dict()
+
   ingreds_used = m2.index[m2].tolist()
   search_vec = np.array(recipe_tfidf).reshape(1,-1)
   res_cos_sim = cosine_similarity(filtered_ingred_word_matrix, search_vec)
   top_five = np.argsort(res_cos_sim.flatten())[-5:][::-1]
+  top_five_list = top_five.tolist()
   
   recipe_ids = [filtered_ingred_word_matrix.iloc[idx].name for idx in top_five]
-  most_sim = filtered_ingred_word_matrix.index.isin(top_five)
+
   suggest_df = X_df.loc[recipe_ids]
   proximity = pd.DataFrame(data=res_cos_sim[top_five], 
                             columns=['cosine_similarity'], 
                             index=suggest_df.index)
+  
   full_df = pd.concat([suggest_df, proximity], axis=1)
   expand_photo_df = pd.concat([full_df.drop(["photoData"], axis=1), 
                                 full_df["photoData"].apply(pd.Series)], axis=1)
@@ -112,8 +118,13 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   reduced['photo'] = reduced['filename'].apply(picture_placer)
   reduced['fixed_url'] = reduced["recipe_url"].apply(link_maker)
   reduced['rounded'] = reduced['cosine_similarity'].round(3)
+
   reduced = reduced.drop('recipe_url', axis=1)
-  return reduced, ingreds_used, most_sim
+
+  ingr_weights = [filtered_ingred_word_matrix.iloc[num][filtered_ingred_word_matrix.iloc[num] != 0].to_dict() for num in top_five_list]
+  reduced['ingred_weights'] = ingr_weights
+
+  return reduced, ingreds_used, recipe_weights
 
 
 def find_similar_dishes(dish_name, cuisine_name):
@@ -211,11 +222,11 @@ def find_similar_dishes(dish_name, cuisine_name):
                                       cuisine_name=cuisine_name, 
                                       tfidf=ingred_tfidf)
                                       
-    query_similar, ingreds_used, most_sim = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
+    query_similar, ingreds_used, recipe_weights = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
                                           recipe_tfidf=query_tfidf, 
                                           X_df=prepped)
     
-    return query_similar.to_dict(orient='records'), ingreds_used
+    return query_similar.to_dict(orient='records'), ingreds_used, recipe_weights
     
     
   else:
