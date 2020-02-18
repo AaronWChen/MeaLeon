@@ -47,8 +47,11 @@ def import_stored_files():
 def transform_ohe(ingred_ohe, recipe):
   # This function takes in a OHE/CountVectorizer object and a recipe, then 
   # creates/transforms the given recipe into a CountVectorizer form
-
+  pd.set_option('display.max_colwidth', 500)
+  print('Raw ingredients')
+  print(recipe['ingredients'])
   ingreds = recipe['ingredients'].apply(" ".join).str.lower()
+  print(ingreds)
   response = ingred_ohe.transform(ingreds)
   transformed_recipe = pd.DataFrame(response.toarray(),
                                     columns=ingred_ohe.get_feature_names(),
@@ -107,9 +110,6 @@ def find_closest_recipes(filtered_ingred_word_matrix,
   
   recipe_ids = [filtered_ingred_word_matrix.iloc[idx].name for idx in top_five]
   
-  # most_sim = filtered_ingred_word_matrix.iloc[top_five_list]
-  # most_sim_reduced = most_sim[ingreds_used]
-
   suggest_df = X_df.loc[recipe_ids]
   proximity = pd.DataFrame(data=res_cos_sim[top_five], 
                             columns=['cosine_similarity'], 
@@ -127,7 +127,7 @@ def find_closest_recipes(filtered_ingred_word_matrix,
 
   ingr_weights = [filtered_ingred_word_matrix.iloc[num][filtered_ingred_word_matrix.iloc[num] != 0].to_dict() for num in top_five_list]
   reduced['ingred_weights'] = ingr_weights
-
+  print(ingr_weights)
   return reduced, ingreds_used, recipe_ohe_weights
 
 

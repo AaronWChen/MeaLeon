@@ -127,32 +127,6 @@ def prep_data(X):
   cuisine_only.drop('name', axis=1, inplace=True)
   return cuisine_only
 
-# def lemmatize_training_recipes(ingredients, stopwords_list):
-#   list_ingreds = ingredients.tolist()
-#   no_dash_ingreds = [ingred.replace('-', ' ') for ingred in list_ingreds]
-#   no_splat_ingreds = [ingred.replace('*', ' ') for ingred in no_dash_ingreds]
-#   recipe_ingreds = [ingred.replace('/', ' ') for ingred in no_splat_ingreds]
-#   token_recipes = [word_tokenize(ingred) for ingred in recipe_ingreds]
-
-#   unique_ingreds = set()
-#   lemmatized_recipes = []
-
-#   for recipe in token_recipes:
-#     lemmatized_recipe = []
-#     for token in recipe:
-#         try:
-#           float(token)
-#           continue
-#         except:
-#           if token in stopwords_list:
-#             continue
-#           else:
-#             unique_ingreds.add(lemmatizer.lemmatize(token)) 
-#             lemmatized_recipe.append(lemmatizer.lemmatize(token))
-
-#     lemmatized_recipes.append(lemmatized_recipe)
-
-#   return lemmatized_recipes, unique_ingreds
 
 def fit_transform_ohe_matrix(X_df, stopwords_list):
   ohe = CountVectorizer(
