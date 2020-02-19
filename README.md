@@ -32,6 +32,8 @@ The app uses the user inputs to call upon the Edamam API and takes the top 10
 recipes returned to create a query vector that is then compared to the database
 recipes via cosine similarity.
 
+This particular branch (ohe_master) is intended to be a baseline performance comparison for other branches using more sophisticated similarity measures.
+
 # Future Steps
 The database, from a foodie's point of view, could use more data.
 1. The cuisine classifications do not dive into deep classifications for many
