@@ -32,6 +32,8 @@ The app uses the user inputs to call upon the Edamam API and takes the top 10
 recipes returned to create a query vector that is then compared to the database
 recipes via cosine similarity.
 
+This particular branch (tfidf_master) is intended to be the standard branch that is used for MeaLeon.
+
 # Future Steps
 The database, from a foodie's point of view, could use more data.
 1. The cuisine classifications do not dive into deep classifications for many
@@ -55,6 +57,8 @@ should return Sichuan, Chinese, and East Asian for cuisine.
 5. Other implementations of this would be interesting for home cooks. One 
 example would be an Alexa skill or Google Home integration to display or read 
 aloud the proposed recipe steps and ingredients via smart home devices.
+
+6. After discussion with Karen Warmbein (https://github.com/karenkathryn), I will attempt a model using Word2Vec with a CBoW architecture using a CBoW window of 1 word to see the difference. She suggested that the initial training would speed up as compared to TF-IDF and I wonder if the size of the deployed app would be smaller.
 
 # Requirements
 This repo uses Python 3.7.4. All python packages can be found in the 
