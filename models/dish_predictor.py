@@ -82,15 +82,15 @@ def filter_out_cuisine(ingred_word_matrix,
                   'Thai', 'Vietnamese']
 
   if cuisine_name in east_asian:
-    choices = all_cuisines.remove(east_asian)
+    choices = [cuis for cuis in all_cuisines if cuis not in east_asian]
   elif cuisine_name in southeast_asian:
-    choices = all_cuisines.remove(southeast_asian)
+    choices = [cuis for cuis in all_cuisines if cuis not in southeast_asian]
   elif cuisine_name in euro_islands:
-    choices = all_cuisines.remove(euro_islands)
+    choices = [cuis for cuis in all_cuisines if cuis not in euro_islands]
   elif cuisine_name in euro_continental:
-    choices = all_cuisines.remove(euro_continental)
+    choices = [cuis for cuis in all_cuisines if cuis not in euro_continental]
   elif cuisine_name in mediterranean:
-    choices = all_cuisines.remove(mediterranean)
+    choices = [cuis for cuis in all_cuisines if cuis not in mediterranean]
   else:
     choices = all_cuisines.remove(cuisine_name)
 
