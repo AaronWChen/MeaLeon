@@ -66,8 +66,36 @@ def filter_out_cuisine(ingred_word_matrix,
   # a word sub matrix that removes all recipes with the same cuisine as the 
   # inputted recipe.
 
+  east_asian = ['Asian', 'Chinese', 'Japanese']
+
+  southeast_asian = ['Thai', 'Vietnamese']
+
+  euro_islands = ['English', 'Irish']
+
+  euro_continental = ['French', 'German', 'Eastern European']
+
+  mediterranean = ['Italian', 'Mediterranean', 'Kosher', 'Middle Eastern']
+
+  all_cuisines = ['African', 'American', 'Asian', 'Cajun/Creole', 'Chinese', 'Eastern European', 'English',
+                  'French', 'German', 'Indian', 'Irish', 'Italian', 'Japanese', 'Kosher', 'Latin American', 
+                  'Mediterranean', 'Mexican', 'Middle Eastern', 'Moroccan', 'Scandinavian', 'Southwestern', 
+                  'Thai', 'Vietnamese']
+
+  if cuisine_name in east_asian:
+    choices = all_cuisines.remove(east_asian)
+  elif cuisine_name in southeast_asian:
+    choices = all_cuisines.remove(southeast_asian)
+  elif cuisine_name in euro_islands:
+    choices = all_cuisines.remove(euro_islands)
+  elif cuisine_name in euro_continental:
+    choices = all_cuisines.remove(euro_continental)
+  elif cuisine_name in mediterranean:
+    choices = all_cuisines.remove(mediterranean)
+  else:
+    choices = all_cuisines.remove(cuisine_name)
+
   combo = pd.concat([ingred_word_matrix, X_df['imputed_label']], axis=1)
-  filtered_ingred_word_matrix = combo[combo['imputed_label'] != cuisine_name].drop('imputed_label', 
+  filtered_ingred_word_matrix = combo[combo['imputed_label'].isin(choices)].drop('imputed_label', 
                                                                     axis=1)
   return filtered_ingred_word_matrix
 
