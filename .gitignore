@@ -135,3 +135,6 @@ static/photos/
 
 # Personal credentials for Edamam API
 # secrets/edamam.json
+
+heroku_key.pub
+heroku_key
