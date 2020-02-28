@@ -92,7 +92,7 @@ def filter_out_cuisine(ingred_word_matrix,
   elif cuisine_name in mediterranean:
     choices = [cuis for cuis in all_cuisines if cuis not in mediterranean]
   else:
-    choices = all_cuisines.remove(cuisine_name)
+    choices = [cuis for cuis in all_cuisines if cuis != cuisine_name]
 
   combo = pd.concat([ingred_word_matrix, X_df['imputed_label']], axis=1)
   filtered_ingred_word_matrix = combo[combo['imputed_label'].isin(choices)].drop('imputed_label', 
