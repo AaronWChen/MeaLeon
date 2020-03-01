@@ -72,7 +72,6 @@
                 <h2>You looked for...</h2>
                 <h4>Dish: {{ dish }}</h4>
                 <h4>Cuisine: {{ cuisine }}</h4>
-                <h4>Ingredients: {{ recipe_weights }}</h4>
             </div>
         </div>
 
@@ -108,10 +107,7 @@
                         
                     </div>
                 </a>
-                <div class="card-body" style="color: black;">
-                    <h5> Recipe Ingredient Vector: </h5>
-                    <p> {{ result['ingred_weights'] }} </p>
-                </div>
+                
             </div>
         {% endfor %}
 
