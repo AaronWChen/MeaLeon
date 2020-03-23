@@ -1,4 +1,4 @@
-FROM  ubuntu:18.04
+FROM  python:3.6
 
 MAINTAINER Aaron W. Chen "awc33@cornell.edu"
 
