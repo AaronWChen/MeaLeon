@@ -1,4 +1,4 @@
-FROM UBUNTU:18.04
+FROM  ubuntu:18.04
 
 MAINTAINER Aaron W. Chen "awc33@cornell.edu"
 
@@ -9,7 +9,7 @@ COPY . /app
 
 WORKDIR /app
 
-RUN pip install -r requirements.txt
+RUN pip install -r docker_requirements.txt
 
 COPY . /app
 
