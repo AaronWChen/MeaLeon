@@ -92,7 +92,8 @@ python app.py
 ## Running from Docker Container
 
 If running via Docker, the CLI instructions I used that worked were
-```docker run -it --rm -p 5000:5000 awashingtonchen/mealeon_docker
+```bash
+docker run -it --rm -p 5000:5000 awashingtonchen/mealeon_docker
 ```
 
 The -p flag is needed to specify the port. The --rm flag is used to clean up the container afterwards (good for quick tests on development). The -it tag is for interactive and I used it initially because there are some bash commands inside the script to download NLTK if it isn't installed, or to access files inside the container. 
