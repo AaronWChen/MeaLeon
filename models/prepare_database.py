@@ -11,17 +11,18 @@ import numpy as np
 import nltk
 nltk.download('wordnet')
 nltk.download('stopwords')
+nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 import string
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity, pairwise_distances
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import joblib
 
 # Load stopwords and prepare lemmatizer
-stopwords_loc = "../../write_data/food_stopwords.csv"
+stopwords_loc = "../food_stopwords.csv"
 with open(stopwords_loc, "r") as myfile:
     reader = csv.reader(myfile)
     food_stopwords = [col for row in reader for col in row]
@@ -61,7 +62,7 @@ def cuisine_namer(text):
         return text
 
 
-filename = "../raw_data/recipes-en-201706/epicurious-recipes_m2.json"
+filename = "../secrets/recipes-en-201706/epicurious-recipes_m2.json"
 with open(filename, "r") as f:
     datastore = json.load(f)
     f.close()
@@ -81,69 +82,45 @@ def load_data(filepath, test_size=0.1, random_state=10):
 
 
 def prep_data(X):
-    """ This function takes a dataframe X, drops columns that will not be used,
-    expands the hierarchical column into the dataframe, renames the columns
-    to be more human-readable, and drops one column created during dataframe
-    expansion"""
-    X.drop(
-        [
-            "pubDate",
-            "author",
-            "type",
-            "aggregateRating",
-            "reviewsCount",
-            "willMakeAgainPct",
-            "dateCrawled",
+  """ This function takes a dataframe X, drops columns that will not be used,
+  expands the hierarchical column into the dataframe, renames the columns
+  to be more human-readable, and drops one column created during dataframe
+  expansion"""
+  X.drop([
+          "pubDate",
+          "author",
+          "type",
+          "aggregateRating",
+          "reviewsCount",
+          "willMakeAgainPct",
+          "dateCrawled",
+          'prepSteps'
         ],
         axis=1,
         inplace=True,
-    )
+        )
 
-    concat = pd.concat([X.drop(["tag"], axis=1), X["tag"].apply(pd.Series)], axis=1)
-    concat.drop(
-        [
-            0,
-            "photosBadgeAltText",
-            "photosBadgeFileName",
-            "photosBadgeID",
-            "photosBadgeRelatedUri",
-        ],
-        axis=1,
-        inplace=True,
-    )
+  X.rename({'url': 'recipe_url'}, axis=1, inplace=True)
 
-    # cols = [
-    #     "id",
-    #     "description",
-    #     "title",
-    #     "url",
-    #     "photo_data",
-    #     "ingredients",
-    #     "steps",
-    #     "category",
-    #     "name",
-    #     "remove",
-    # ]
+  concat = pd.concat([X.drop(["tag"], axis=1), X["tag"].apply(pd.Series)], axis=1)
+  concat.drop(
+      [
+          0,
+          "photosBadgeAltText",
+          "photosBadgeFileName",
+          "photosBadgeID",
+          "photosBadgeRelatedUri",
+          "url"
+      ],
+      axis=1,
+      inplace=True,
+  )
 
-    cols = [
-        "title",
-        "url", 
-        "photo_data",
-        "ingredients",
-        "category",
-        "name",
-        "remove"
-    ]
-
-    concat.columns = cols
-
-    concat.drop("remove", axis=1, inplace=True)
-
-    cuisine_only = concat[concat["category"] == "cuisine"]
-    cuisine_only.dropna(axis=0, inplace=True)
-    cuisine_only["imputed_label"] = cuisine_only["name"].apply(cuisine_namer)
-    cuisine_only.drop('name', axis=1, inplace=True)
-    return cuisine_only
+  cuisine_only = concat[concat["category"] == "cuisine"]
+  cuisine_only.dropna(axis=0, inplace=True)
+  cuisine_only["imputed_label"] = cuisine_only["name"].apply(cuisine_namer)
+  cuisine_only.drop('name', axis=1, inplace=True)
+  return cuisine_only
 
 
 def fit_transform_tfidf_matrix(X_df, stopwords_list):
@@ -157,29 +134,33 @@ def fit_transform_tfidf_matrix(X_df, stopwords_list):
     temp = X_df["ingredients"].apply(" ".join).str.lower()
     tfidf.fit(temp)
     response = tfidf.transform(temp)
-    print(response.shape)
-    word_matrix = pd.DataFrame(
-        response.toarray(), columns=tfidf.get_feature_names(), index=X_df.index
-    )
+    word_matrix = pd.DataFrame(response.toarray(), 
+                                columns=tfidf.get_feature_names(), 
+                                index=X_df.index
+                            )
 
     return tfidf, word_matrix
 
 
 def transform_tfidf(tfidf, recipe):
-    response = tfidf.transform(recipe["ingredients"])
+  ingreds = recipe['ingredients'].apply(" ".join).str.lower()
+  response = tfidf.transform(ingreds)
 
-    transformed_recipe = pd.DataFrame(
-        response.toarray(), columns=tfidf.get_feature_names(), index=recipe.index
-    )
-    return transformed_recipe
+  transformed_recipe = pd.DataFrame(
+                                    response.toarray(), 
+                                    columns=tfidf.get_feature_names(), 
+                                    index=recipe.index
+                                    )
+  return transformed_recipe
 
 
 def transform_from_test_tfidf(tfidf, df, idx):
-    recipe = [" ".join(df.iloc[idx]["ingredients"])]
+    recipe = df['ingredients'].iloc[idx].apply(' '.join).str.lower()
     response = tfidf.transform(recipe)
     transformed_recipe = pd.DataFrame(
-        response.toarray(), columns=tfidf.get_feature_names()
-    )
+                                        response.toarray(), 
+                                        columns=tfidf.get_feature_names()
+                                        )
     return transformed_recipe
 
 
@@ -204,17 +185,17 @@ def find_closest_recipes(filtered_ingred_word_matrix, recipe_tfidf, X_df):
 # Create the dataframe
 X_train, X_test = load_data(filename)
 
-with open("joblib/test_subset.joblib", "wb") as fo:
+with open("../joblib/tfidf_test_subset.joblib", "wb") as fo:
   joblib.dump(X_test, fo, compress=True)
 
 prepped = prep_data(X_train)
-with open("joblib/recipe_dataframe.joblib", "wb") as fo:
+with open("../joblib/tfidf_recipe_dataframe.joblib", "wb") as fo:
   joblib.dump(prepped, fo, compress=True)
 
 # Create the ingredients TF-IDF matrix
 ingred_tfidf, ingred_word_matrix = fit_transform_tfidf_matrix(prepped, stopwords_list)
-with open("joblib/recipe_tfidf.joblib", "wb") as fo:
+with open("../joblib/recipe_tfidf.joblib", "wb") as fo:
   joblib.dump(ingred_tfidf, fo, compress=True)
 
-with open("joblib/recipe_word_matrix.joblib", "wb") as fo:
+with open("../joblib/recipe_word_matrix_tfidf.joblib", "wb") as fo:
   joblib.dump(ingred_word_matrix, fo, compress=True)
