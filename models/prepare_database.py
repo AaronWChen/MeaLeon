@@ -9,13 +9,9 @@ import re
 import pandas as pd
 import numpy as np
 import nltk
-<<<<<<< HEAD
 nltk.download('wordnet')
 nltk.download('stopwords')
 nltk.download('punkt')
-=======
-# nltk.download('stopwords')
->>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 import string
@@ -26,18 +22,8 @@ from sklearn.metrics.pairwise import cosine_similarity, pairwise_distances
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import joblib
 
-# Load stopwords and prepare lemmatizer
 stopwords_loc = "../food_stopwords.csv"
 =======
-from sklearn.feature_extraction.text import TfidfVectorizer
-import joblib
-
-# Load stopwords and prepare lemmatizer
-stopwords_loc = "../write_data/food_stopwords.csv"
->>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
-with open(stopwords_loc, "r") as myfile:
-    reader = csv.reader(myfile)
-    food_stopwords = [col for row in reader for col in row]
 
 stopwords_list = stopwords.words("english") + list(string.punctuation) + food_stopwords
 
