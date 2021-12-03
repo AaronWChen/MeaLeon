@@ -18,14 +18,12 @@ import string
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity, pairwise_distances
+<<<<<<< HEAD
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import joblib
 
-# Load stopwords and prepare lemmatizer
 stopwords_loc = "../food_stopwords.csv"
-with open(stopwords_loc, "r") as myfile:
-    reader = csv.reader(myfile)
-    food_stopwords = [col for row in reader for col in row]
+=======
 
 stopwords_list = stopwords.words("english") + list(string.punctuation) + food_stopwords
 
