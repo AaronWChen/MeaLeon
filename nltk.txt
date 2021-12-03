@@ -1,1 +1,6 @@
+<<<<<<< HEAD
 wordnet
+=======
+wordnet
+stopwords
+>>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
