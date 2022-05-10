@@ -139,4 +139,4 @@ static/photos/
 heroku_key.pub
 heroku_key
 
-secrets/
+secrets/**
