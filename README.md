@@ -2,6 +2,7 @@
 - [How did MeaLeon come about?](#how-did-mealeon-come-about)
 - [How it works](#how-it-works)
 - [Future Steps](#future-steps)
+  - [To Do](#to-do)
 - [Requirements](#requirements)
 - [Running the Flask Application](#running-the-flask-application)
   - [Running from CLI](#running-from-cli)
@@ -20,7 +21,7 @@ their disgust by saying "every culture has a gross pickled cabbage dish."
 
 2. One day, the creator was making ground beef tacos but ran out of cumin. In
 desperation, he grabbed something that he thought contained mostly cumin and 
-used that: madras curry powder. Taco Tuesday suddenly had an Indian twist 
+used that: garam masala powder. Taco Tuesday suddenly had an Indian twist 
 despite keeping most of the ingredients the same. 
 
 3. The creator regularly cooks, but tends to make the same dishes over and over
@@ -70,6 +71,17 @@ example would be an Alexa skill or Google Home integration to display or read
 aloud the proposed recipe steps and ingredients via smart home devices.
 
 7. After discussion with [Karen Warmbein](https://github.com/karenkathryn), I will attempt a model using Word2Vec with a CBoW architecture using a CBoW window of 1 word to see the difference. She suggested that the initial training would speed up as compared to TF-IDF and I wonder if the size of the deployed app would be smaller.
+
+## To Do
+1. Incorporate a better template for notebook files
+2. Refactor to use [spaCy](https://spacy.io/) or [stanza](https://github.com/stanfordnlp/stanza) over NLTK
+3. Update to new git branch architecture: main with parallel dev branch, branch has sub parallels with features. Each feature branch starts with date_initials_feature
+4. Update heroku deployment as it is currently down (likely due to security vulnerability)
+5. Incorporate Data Version Control for database and relational data store for MLFlow
+6. Source for SQL database for MLFlow and also object store for Data Version Control
+7. Docker container alternate installation instructions/set up
+8. Update database of recipes
+9. Switch off of Edamam API or update knowledge of how it works since the results it returns have changed significantly.
 
 # Requirements
 This repo has switched to using Python 3.10 via ASDF and Python package management via Poetry.
