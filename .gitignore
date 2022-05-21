@@ -140,3 +140,5 @@ heroku_key.pub
 heroku_key
 
 secrets/**
+
+data/
