@@ -16,12 +16,11 @@ class NLP_Processor:
     This class is needed to add a custom tokenizer in sklearn that is pickled for use in other steps in an MLFlow Project. Import this class to gain access to the tokenizer and this can all be pickled.
     """
 
-    def __init__(self, pretrained_str: String):  # model_uri: str):
+    def __init__(self, pretrained_str: String) -> None:  # model_uri: str):
         """Initialize an instance with the MLFlow URI for a spaCy model
         Args:
             URI for MLFlow.spacy model"""
-        # self.spacy_model = model_uri
-        # self.nlp = mlflow.spacy.load_model(model_uri=model_uri)
+        
         self.nlp = spacy.load(pretrained_str)
 
     def custom_tokenizer(self, report_text: str) -> List:
