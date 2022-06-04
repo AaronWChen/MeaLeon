@@ -1,5 +1,10 @@
 """
-This script creates a class with a custom scikit-learn tokenizer using spaCy. The class is necessary to preserve pickling via pickle or joblib a scikit-learn transformer.
+This script creates a class with a custom scikit-learn tokenizer using spaCy. 
+
+The class is necessary to preserve pickling via pickle or joblib a scikit-learn transformer.
+
+Typical usage example:
+Create custom class to be pickled and included with Scikit-learn CountVectorizer objects.
 
 MVP: Just deliver the custom class to use in a pipeline.
 
@@ -23,7 +28,23 @@ class NLP_Processor:
         
         self.nlp = spacy.load(pretrained_str)
 
-    def custom_tokenizer(self, report_text: str) -> List:
+    def custom_preprocessor(self, recipe_ingreds: String) -> List:
+        """This function replaces the default sklearn CountVectorizer preprocessor to use spaCy. sklearn CountVectorizer's preprocessor only performs accent removal and lowercasing.
+
+        Args:
+            A string to tokenize from a recipe representing the ingredients used in the recipe
+
+        Returns:
+            A list of strings that have been de-accented and lowercased to be used in tokenization
+        """
+        preprocessed = [
+            token
+            for token in self.nlp(recipe_ingreds.lower())
+        ]
+
+        return preprocessed
+
+    def custom_tokenizer(self, report_text: String) -> List:
         """This function replaces the default sklearn CountVectorizer tokenizer to use spaCy. It also uses spaCy attributes for filtering. It expects a string and returns a list of tokenized strings.
         Args:
             A string to tokenize from a citation
