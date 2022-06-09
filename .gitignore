@@ -142,3 +142,5 @@ heroku_key
 secrets/**
 
 data/
+
+*Zone.Identifier
