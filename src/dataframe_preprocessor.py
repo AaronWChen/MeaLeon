@@ -2,6 +2,7 @@
 """
 
 import pandas as pd
+from typing import Dict, Text
 
 
 def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -14,7 +15,7 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame
     """
 
-    def null_filler(to_check: dict['str','str'], key_target: str) -> str:
+    def null_filler(to_check: Dict[Text, Text], key_target: Text) -> Text:
         """ This function takes in a dictionary that is currently fed in with a lambda function and then performs column specific preprocessing.
         
         Args:
@@ -68,6 +69,8 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     # This function takes in the given pubDate column and creates a new column with the pubDate values converted to datetime objects
     df['date_published'] = pd.to_datetime(df['pubDate'], infer_datetime_format=True)
+
+    # this function takes in the given url column and 
     
     # drop some original columns to clean up the dataframe
     df.drop(labels=["tag", 'photoData', "author", "type", 'dateCrawled', 'pubDate'], axis=1, inplace=True)
