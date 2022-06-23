@@ -12,9 +12,10 @@ import re
 import pandas as pd
 import numpy as np
 import nltk
-nltk.download('wordnet')
-nltk.download('stopwords')
-nltk.download('punkt')
+
+nltk.download("wordnet")
+nltk.download("stopwords")
+nltk.download("punkt")
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -39,12 +40,12 @@ lemmatizer = WordNetLemmatizer()
 
 # Define functions
 def cuisine_namer(text):
-    """This function converts redundant and/or rare categories into more common 
-  ones/umbrella ones.
-  
-  In the future, there's a hope that this renaming mechanism will not have 
-  under sampled cuisine tags.
-  """
+    """This function converts redundant and/or rare categories into more common
+    ones/umbrella ones.
+
+    In the future, there's a hope that this renaming mechanism will not have
+    under sampled cuisine tags.
+    """
     if text == "Central American/Caribbean":
         return "Caribbean"
     elif text == "Jewish":
@@ -74,8 +75,8 @@ with open(filename, "r") as f:
 
 
 def load_data(filepath, test_size=0.1, random_state=10):
-    """ This function uses a filepath, test_size, and random_state
-    to load the Epicurious JSON into a dataframe and then split into 
+    """This function uses a filepath, test_size, and random_state
+    to load the Epicurious JSON into a dataframe and then split into
     train/test sets."""
     with open(filepath, "r") as f:
         datastore = json.load(f)
@@ -87,121 +88,117 @@ def load_data(filepath, test_size=0.1, random_state=10):
 
 
 def prep_data(X):
-  """ This function takes a dataframe X, drops columns that will not be used,
-  expands the hierarchical column into the dataframe, renames the columns
-  to be more human-readable, and drops one column created during dataframe
-  expansion"""
-  X.drop(
-      [
-          "pubDate",
-          "author",
-          "type",
-          "aggregateRating",
-          "reviewsCount",
-          "willMakeAgainPct",
-          "dateCrawled",
-          'prepSteps'
-      ],
-      axis=1,
-      inplace=True,
-  )
+    """This function takes a dataframe X, drops columns that will not be used,
+    expands the hierarchical column into the dataframe, renames the columns
+    to be more human-readable, and drops one column created during dataframe
+    expansion"""
+    X.drop(
+        [
+            "pubDate",
+            "author",
+            "type",
+            "aggregateRating",
+            "reviewsCount",
+            "willMakeAgainPct",
+            "dateCrawled",
+            "prepSteps",
+        ],
+        axis=1,
+        inplace=True,
+    )
 
-  X.rename({'url': 'recipe_url'}, axis=1, inplace=True)     
-  
-  concat = pd.concat([X.drop(["tag"], axis=1), X["tag"].apply(pd.Series)], axis=1)
-  concat.drop(
-      [
-          0,
-          "photosBadgeAltText",
-          "photosBadgeFileName",
-          "photosBadgeID",
-          "photosBadgeRelatedUri",
-          "url"
-      ],
-      axis=1,
-      inplace=True,
-  )
-  cuisine_only = concat[concat["category"] == "cuisine"]
-  cuisine_only.dropna(axis=0, inplace=True)
-  cuisine_only["imputed_label"] = cuisine_only["name"].apply(cuisine_namer)
-  cuisine_only.drop('name', axis=1, inplace=True)
-  return cuisine_only
+    X.rename({"url": "recipe_url"}, axis=1, inplace=True)
+
+    concat = pd.concat([X.drop(["tag"], axis=1), X["tag"].apply(pd.Series)], axis=1)
+    concat.drop(
+        [
+            0,
+            "photosBadgeAltText",
+            "photosBadgeFileName",
+            "photosBadgeID",
+            "photosBadgeRelatedUri",
+            "url",
+        ],
+        axis=1,
+        inplace=True,
+    )
+    cuisine_only = concat[concat["category"] == "cuisine"]
+    cuisine_only.dropna(axis=0, inplace=True)
+    cuisine_only["imputed_label"] = cuisine_only["name"].apply(cuisine_namer)
+    cuisine_only.drop("name", axis=1, inplace=True)
+    return cuisine_only
 
 
 def fit_transform_ohe_matrix(X_df, stopwords_list):
-  ohe = CountVectorizer(
+    ohe = CountVectorizer(
         stop_words=stopwords_list,
         min_df=2,
         token_pattern=r"(?u)\b[a-zA-Z]{2,}\b",
         preprocessor=lemmatizer.lemmatize,
         binary=True,
     )
-  ingreds = X_df["ingredients"].apply(" ".join).str.lower()
-  ohe.fit(ingreds)
-  response = ohe.transform(ingreds)
-  ohe_matrix = pd.DataFrame(response.toarray(), 
-                              columns=ohe.get_feature_names(), 
-                              index=X_df.index
-                            )
-  return ohe, ohe_matrix
-  
+    ingreds = X_df["ingredients"].apply(" ".join).str.lower()
+    ohe.fit(ingreds)
+    response = ohe.transform(ingreds)
+    ohe_matrix = pd.DataFrame(
+        response.toarray(), columns=ohe.get_feature_names(), index=X_df.index
+    )
+    return ohe, ohe_matrix
+
 
 def transform_ohe(ohe, recipe):
-  ingreds = recipe['ingredients'].apply(" ".join).str.lower()
-  response = ohe.transform(ingreds)
+    ingreds = recipe["ingredients"].apply(" ".join).str.lower()
+    response = ohe.transform(ingreds)
 
-  ohe_transformed_recipe = pd.DataFrame(
-                                        response.toarray(),
-                                        columns=ohe.get_feature_names(),
-                                        index=recipe.index
-                                        )
-  return ohe_transformed_recipe
+    ohe_transformed_recipe = pd.DataFrame(
+        response.toarray(), columns=ohe.get_feature_names(), index=recipe.index
+    )
+    return ohe_transformed_recipe
 
 
 def transform_from_test_ohe(ohe, df, idx):
-  recipe = df['ingredients'].iloc[idx].apply(' '.join).str.lower()
-  response = ohe.transform(recipe)
-  ohe_transformed_test_recipe = pd.DataFrame(
-                                            response.toarray(), 
-                                            columns=ohe.get_feature_names()
-                                            )
+    recipe = df["ingredients"].iloc[idx].apply(" ".join).str.lower()
+    response = ohe.transform(recipe)
+    ohe_transformed_test_recipe = pd.DataFrame(
+        response.toarray(), columns=ohe.get_feature_names()
+    )
 
-  return ohe_transformed_test_recipe
+    return ohe_transformed_test_recipe
 
 
 def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name, ohe):
-  combo = pd.concat([ingred_word_matrix, X_df["imputed_label"]], axis=1)
-  filtered_ingred_word_matrix = combo[combo["imputed_label"] != cuisine_name].drop(
-      "imputed_label", axis=1
-  )
-  return filtered_ingred_word_matrix
+    combo = pd.concat([ingred_word_matrix, X_df["imputed_label"]], axis=1)
+    filtered_ingred_word_matrix = combo[combo["imputed_label"] != cuisine_name].drop(
+        "imputed_label", axis=1
+    )
+    return filtered_ingred_word_matrix
 
 
 def find_closest_recipes(filtered_ingred_word_matrix, recipe_ohe_transform, X_df):
-  search_vec = np.array(recipe_ohe_transform).reshape(1, -1)
-  res_cos_sim = cosine_similarity(filtered_ingred_word_matrix, search_vec)
-  top_five = np.argsort(res_cos_sim.flatten())[-5:][::-1]
-  proximity = res_cos_sim[top_five]
-  recipe_ids = [filtered_ingred_word_matrix.iloc[idx].name for idx in top_five]
-  suggest_df = X_df.loc[recipe_ids]
+    search_vec = np.array(recipe_ohe_transform).reshape(1, -1)
+    res_cos_sim = cosine_similarity(filtered_ingred_word_matrix, search_vec)
+    top_five = np.argsort(res_cos_sim.flatten())[-5:][::-1]
+    proximity = res_cos_sim[top_five]
+    recipe_ids = [filtered_ingred_word_matrix.iloc[idx].name for idx in top_five]
+    suggest_df = X_df.loc[recipe_ids]
 
-  return suggest_df, proximity
+    return suggest_df, proximity
 
 
 # Create the dataframe
 X_train, X_test = load_data(filename)
 
 with open("../joblib/ohe_test_subset.joblib", "wb") as fo:
-  joblib.dump(X_test, fo, compress=True)
+    joblib.dump(X_test, fo, compress=True)
 
 prepped = prep_data(X_train)
 with open("../joblib/ohe_recipe_dataframe.joblib", "wb") as fo:
-  joblib.dump(prepped, fo, compress=True)
+    joblib.dump(prepped, fo, compress=True)
 
 # Create the ingredients OHE matrix
 ingred_ohe, ingred_word_matrix = fit_transform_ohe_matrix(prepped, stopwords_list)
 with open("../joblib/recipe_ohe.joblib", "wb") as fo:
-  joblib.dump(ingred_ohe, fo, compress=True)
+    joblib.dump(ingred_ohe, fo, compress=True)
 
 with open("../joblib/recipe_word_matrix_ohe.joblib", "wb") as fo:
-  joblib.dump(ingred_word_matrix, fo, compress=True)
+    joblib.dump(ingred_word_matrix, fo, compress=True)
