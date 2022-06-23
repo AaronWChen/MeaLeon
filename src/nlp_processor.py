@@ -25,7 +25,7 @@ class NLP_Processor:
         """Initialize an instance with the MLFlow URI for a spaCy model
         Args:
             URI for MLFlow.spacy model"""
-        
+
         self.nlp = spacy.load(pretrained_str)
 
     def custom_preprocessor(self, recipe_ingreds: String) -> List:
@@ -37,10 +37,7 @@ class NLP_Processor:
         Returns:
             A list of strings that have been de-accented and lowercased to be used in tokenization
         """
-        preprocessed = [
-            token
-            for token in self.nlp(recipe_ingreds.lower())
-        ]
+        preprocessed = [token for token in self.nlp(recipe_ingreds.lower())]
 
         return preprocessed
 
