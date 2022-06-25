@@ -15,10 +15,17 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame
     """
 
+    def drop_null_ingredient_records(df: pd.DataFrame) -> pd.DataFrame:
+        """This function looks for recipes which somehow have no ingredients at all and will remove them from the dataframe to allow further processing"""
+        df.drop(df[df['ingredients'].isna()].index, inplace=True)
+        return df
+
+
     def link_maker(recipe_link: Text) -> Text:
         """This function takes in the incomplete recipe link from the dataframe and returns the complete one."""
         full_link = f"https://www.epicurious.com{recipe_link}"
         return full_link
+
 
     def null_filler(to_check: Dict[Text, Text], key_target: Text) -> Text:
         """This function takes in a dictionary that is currently fed in with a lambda function and then performs column specific preprocessing.
@@ -59,6 +66,8 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                     # Otherwise, there should be no issue with returning
                     return to_check[key_target]
 
+    df = drop_null_ingredient_records(df)
+    
     # Dive into the tag column and extract the cuisine label. Put into new column or fills with "missing data"
     df["cuisine_name"] = df["tag"].apply(
         lambda x: null_filler(to_check=x, key_target="name")
