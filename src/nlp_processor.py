@@ -51,6 +51,6 @@ class NLP_Processor:
         lemmas = [
             token.lemma_
             for token in self.nlp(report_text.lower())
-            if (token.is_alpha and token.lemma_ != "-PRON-" and len(token.lemma_) > 1)
+            if (token.is_alpha and token.pos_ not in ["PRON", "VERB"] and len(token.lemma_) > 1)
         ]
         return lemmas
