@@ -146,3 +146,5 @@ heroku_key
 data/
 
 *Zone.Identifier
+
+joblib/

@@ -25,6 +25,34 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         """This function takes in the incomplete recipe link from the dataframe and returns the complete one."""
         full_link = f"https://www.epicurious.com{recipe_link}"
         return full_link
+    
+    def cuisine_namer(text: Text):
+        """This function converts redundant and/or rare categories into more common
+        ones/umbrella ones.
+
+        In the future, there's a hope that this renaming mechanism will not have
+        under sampled cuisine tags.
+        """
+        if text == "Central American/Caribbean":
+            return "Caribbean"
+        elif text == "Jewish":
+            return "Kosher"
+        elif text == "Eastern European/Russian":
+            return "Eastern European"
+        elif text in ["Spanish/Portuguese", "Greek"]:
+            return "Mediterranean"
+        elif text == "Central/South American":
+            return "Latin American"
+        elif text == "Sushi":
+            return "Japanese"
+        elif text == "Southern Italian":
+            return "Italian"
+        elif text in ["Southern", "Tex-Mex"]:
+            return "American"
+        elif text in ["Southeast Asian", "Korean"]:
+            return "Asian"
+        else:
+            return text
 
 
     def null_filler(to_check: Dict[Text, Text], key_target: Text) -> Text:
@@ -73,6 +101,9 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         lambda x: null_filler(to_check=x, key_target="name")
     )  # type:ignore
 
+    # This apply uses the cuisune_namer function above to relabel the cuisines to more general ones 
+    df["cuisine_name"] = df["cuisine_name"].apply(cuisine_namer)
+
     # this lambda function goes into the photo data column and extracts just the filename from the dictionary
     df["photo_filename"] = df["photoData"].apply(
         lambda x: null_filler(to_check=x, key_target="filename")
@@ -85,7 +116,7 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     # for the above, maybe they can be refactored to one function where the arguments are a column name, dictionary key name, the substring return
 
-    # this lambda funciton goes into the author column and extract the author name or fills iwth "missing data"
+    # this lambda funciton goes into the author column and extract the author name or fills with "missing data"
     df["author_name"] = df["author"].apply(
         lambda x: x[0]["name"] if x else "Missing Author Name"
     )  # type:ignore
