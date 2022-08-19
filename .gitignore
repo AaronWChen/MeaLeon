@@ -144,3 +144,5 @@ heroku_key
 .elasticbeanstalk/
 
 data/
+
+*Zone.Identifier
