@@ -28,7 +28,7 @@ class NLP_Processor:
 
         self.nlp = spacy.load(pretrained_str)
 
-    def custom_preprocessor(self, recipe_ingreds: Text) -> List[Any]: #List[Token]:
+    def custom_preprocessor(self, recipe_ingreds: Text) -> List[Any]:  # List[Token]:
         """This function replaces the default sklearn CountVectorizer preprocessor to use spaCy. sklearn CountVectorizer's preprocessor only performs accent removal and lowercasing.
 
         Args:
@@ -41,18 +41,26 @@ class NLP_Processor:
 
         return preprocessed
 
-    def custom_lemmatizer(self, ingredients:List) -> List[Text]: 
-        """This takes in a string representing the recipe and an NLP model and lemmatize with the NER. 
+    def custom_lemmatizer(self, ingredients: List) -> List[Text]:
+        """This takes in a string representing the recipe and an NLP model and lemmatize with the NER.
         Pronouns (like "I" and "you" get lemmatized to '-PRON-', so I'm removing those.
         Remove punctuation
 
         Args:
             ingredients: string
             nlp_mod: spacy model (try built in first, by default called nlp)
-    
+
         Returns:
             List[String]
         """
-        lemmas = [token.lemma_ for token in ingredients if (token.is_alpha and token.pos_ not in ["PRON", "VERB"] and len(token.lemma_) > 1)]
+        lemmas = [
+            token.lemma_
+            for token in ingredients
+            if (
+                token.is_alpha
+                and token.pos_ not in ["PRON", "VERB"]
+                and len(token.lemma_) > 1
+            )
+        ]
 
         return lemmas
