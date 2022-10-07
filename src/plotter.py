@@ -151,19 +151,3 @@ def create_bokeh_plot(
     )
 
     return p
-
-
-# cv_path = joblib_basepath + 'countvec.joblib'
-# tfidf_path = joblib_basepath + 'tfidf.joblib'
-# full_df_path = joblib_basepath + 'recipes_with_cv.joblib'
-# reduced_df_path = joblib_basepath + 'reduced_df.joblib'
-# rfc_path = joblib_basepath + 'rfc_clf.joblib'
-# X_path = joblib_basepath + 'X.joblib'
-# y_path = joblib_basepath + 'y.joblib'
-# truncSVD_path = joblib_basepath + 'truncSVD.joblib'
-# truncSVD_transformed_path = joblib_basepath + 'truncSVD_transformed.joblib'
-# svd_numpy_path = joblib_basepath + 'SVD_numpy.joblib'
-# to_plot_path = joblib_basepath + 'to_plot.joblib'
-# tsne_path = joblib_basepath + 'tsne.joblib'
-# tsne_vis_path = joblib_basepath + 'tsne_vis.joblib'
-# kmeans_path = joblib_basepath + 'kmeans.joblib'
