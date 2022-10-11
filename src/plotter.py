@@ -4,33 +4,10 @@
 from bokeh import palettes
 from bokeh.models import ColumnDataSource, HoverTool, Label, LabelSet
 from bokeh.plotting import figure, output_file, save, show
-from bokeh.io import output_notebook
-from datetime import datetime
 from joblib import dump, load
-import matplotlib.pyplot as plt
-import matplotlib.text as mlt
 import numpy as np
-from openTSNE import TSNE
 import pandas as pd
-from sklearn import Estimator, Tree
-from sklearn.base import TransformerMixin
 from sklearn.cluster import KMeans
-from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_extraction.text import (
-    CountVectorizer,
-    TfidfTransformer,
-    TfidfVectorizer,
-)
-from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-import spacy
-from tkinter import N
-import en_core_web_sm
-from spacy.lang.en.stop_words import STOP_WORDS
-from tqdm import tqdm
-from turtle import color
 from typing import Any
 
 
@@ -38,11 +15,12 @@ def find_important_ingredients(
     recipes_post_cv_df: pd.DataFrame, tsne_transformed_df: pd.DataFrame, n_most: int = 5
 ) -> pd.DataFrame:
     """
-    This function takes in the pandas DataFrame containing the processed recipes concatenated with thei CountVectorizer/TF-IDF transformed sparse ingredient matrices and returns a new pandas DataFrame with recipe ID as an index and top n_most ingredients as a column.
+    This function takes in the pandas DataFrame containing the processed recipes concatenated with their CountVectorizer/TF-IDF transformed sparse ingredient matrices and returns a new pandas DataFrame with recipe ID as an index and top n_most ingredients as a column.
 
     Args:
-        int
-        , pd.DataFrame
+        recipes_post_cv_df: pd.DataFrame, concatenated recipe df from concat_matrices_to_df
+        tnse_transformed_df: pd.DataFrame, three column pd.DataFrame with X, Y, and cuisine label
+        n_most: int, number of ingredients to include
 
     Returns:
         pd.DataFrame
@@ -87,7 +65,8 @@ def find_important_ingredients(
 
 def create_bokeh_plot(
     tsne_transformed_df: pd.DataFrame,
-    kmeans: Estimator,
+    n_clusters: int = 12,
+    kmeans_random_state: int = 30,
     sample_size: int = 200,
     random_state: int = 313,
 ) -> figure:
@@ -111,6 +90,10 @@ def create_bokeh_plot(
     x_min, x_max = random_200["x"].min() - 1, random_200["x"].max() + 1
     y_min, y_max = random_200["y"].min() - 1, random_200["y"].max() + 1
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+
+    kmeans = KMeans(n_clusters=n_clusters, random_state=kmeans_random_state).fit(
+        random_200.drop(["cuisine_name", "cuisine_id_num"], axis=1)
+    )
 
     # Obtain labels for each point in mesh. Use last trained model.
     Z = kmeans.predict(np.c_[xx.ravel(), yy.ravel()])
