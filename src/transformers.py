@@ -8,12 +8,16 @@ from joblib import dump, load
 import matplotlib.pyplot as plt
 import matplotlib.text as mlt
 import numpy as np
-from openTSNE import TSNE
+from openTSNE.sklearn import TSNE
 import pandas as pd
 from sklearn.base import TransformerMixin
 from sklearn.cluster import KMeans
 from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, TfidfVectorizer
+from sklearn.feature_extraction.text import (
+    CountVectorizer,
+    TfidfTransformer,
+    TfidfVectorizer,
+)
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 import spacy
@@ -27,11 +31,271 @@ import umap
 import dataframe_preprocessor as dfpp
 import nlp_processor as nlp_proc
 
-def concat_matrices_to_df(df: pd.DataFrame, vectorized_ingred_matrix: scipy.sparse.csr_matrix, cv: ):
+
+def prepare_dataframe(
+    data_path: Text = "../../data/recipes-en-201706/epicurious-recipes_m2.json",
+) -> pd.DataFrame:
+    """
+    This function uses the preprocess script to prepare the dataframe
+
+    Args:
+        data_path: string representing location of data
+
+    Returns:
+        df: processed pandas DataFrame
+    """
+    source_df = pd.read_json(path_or_buf=data_path)
+
+    preprocessed_df = dfpp.preprocess_dataframe(df=source_df)
+
+    return preprocessed_df
+
+
+def prepare_nlp(
+    stopwords_path: Text = "../../food_stopwords.csv",
+    pretrained_parameter: Text = "en_core_web_sm",
+) -> tuple[Language, list[float | _str | LiteralString]]:
+    """
+    This function prepares the items needed to do the CountVectorization. It will perform text processing with spaCy and generate the custom stopwords set
+
+    Args:
+        stopwords_path: string representing location of custom stopwords
+        pretrained_parameters: string representing pretrained spaCy model
+
+    Returns:
+        NLP_Processor: custom class/object based on spaCy
+
+    """
+    nlp = spacy.load(pretrained_parameter)
+
+    total_stopwords = {x for x in pd.read_csv(stopwords_path)}
+    cooking_specific_stopwords = {
+        "red",
+        "green",
+        "black",
+        "yellow",
+        "white",
+        "inch",
+        "mince",
+        "chop",
+        "fry",
+        "trim",
+        "flat",
+        "beat",
+        "brown",
+        "golden",
+        "balsamic",
+        "halve",
+        "blue",
+        "divide",
+        "trim",
+        "unbleache",
+        "granulate",
+        "Frank",
+        "alternative",
+        "american",
+        "annie",
+        "asian",
+        "balance",
+        "band",
+        "barrel",
+        "bay",
+        "bayou",
+        "beam",
+        "beard",
+        "bell",
+        "betty",
+        "bird",
+        "blast",
+        "bob",
+        "bone",
+        "breyers",
+        "calore",
+        "carb",
+        "card",
+        "chachere",
+        "change",
+        "circle",
+        "coffee",
+        "coil",
+        "country",
+        "cow",
+        "crack",
+        "cracker",
+        "crocker",
+        "crystal",
+        "dean",
+        "degree",
+        "deluxe",
+        "direction",
+        "duncan",
+        "earth",
+        "eggland",
+        "ener",
+        "envelope",
+        "eye",
+        "fantastic",
+        "far",
+        "fat",
+        "feather",
+        "flake",
+        "foot",
+        "fourth",
+        "frank",
+        "french",
+        "fusion",
+        "genoa",
+        "genovese",
+        "germain",
+        "giada",
+        "gold",
+        "granule",
+        "greek",
+        "hamburger",
+        "helper",
+        "herbe",
+        "hines",
+        "hodgson",
+        "hunt",
+        "instruction",
+        "interval",
+        "italianstyle",
+        "jim",
+        "jimmy",
+        "kellogg",
+        "lagrille",
+        "lake",
+        "land",
+        "laurentiis",
+        "lawry",
+        "lipton",
+        "litre",
+        "ll",
+        "maid",
+        "malt",
+        "mate",
+        "mayer",
+        "meal",
+        "medal",
+        "medallion",
+        "member",
+        "mexicanstyle",
+        "monte",
+        "mori",
+        "nest",
+        "nu",
+        "oounce",
+        "oscar",
+        "ox",
+        "paso",
+        "pasta",
+        "patty",
+        "petal",
+        "pinche",
+        "preserve",
+        "quartere",
+        "ranch",
+        "ranchstyle",
+        "rasher",
+        "redhot",
+        "resemble",
+        "rice",
+        "ro",
+        "roni",
+        "scissor",
+        "scrap",
+        "secret",
+        "semicircle",
+        "shard",
+        "shear",
+        "sixth",
+        "sliver",
+        "smucker",
+        "snicker",
+        "source",
+        "spot",
+        "state",
+        "strand",
+        "sun",
+        "supreme",
+        "tablepoon",
+        "tail",
+        "target",
+        "tm",
+        "tong",
+        "toothpick",
+        "triangle",
+        "trimming",
+        "tweezer",
+        "valley",
+        "vay",
+        "wise",
+        "wishbone",
+        "wrapper",
+        "yoplait",
+        "ziploc",
+    }
+
+    total_stopwords = total_stopwords.union(STOP_WORDS)
+    total_stopwords = total_stopwords.union(cooking_specific_stopwords)
+
+    total_stopwords_list = list(total_stopwords)
+
+    return nlp, total_stopwords_list
+
+
+def text_handling_transformer_pipeline(
+    preprocessed_df: pd.DataFrame, nlp_processor: Any, custom_stopwords: List
+) -> tuple["pd.DataFrame", "Pipeline"]:
+    """
+    This function takes the preprocessed dataframe, custome NLP Processor, and custom stopwords to perform sklearn pipeline to result in transformed dataframe
+
+    Args:
+        preprocessed_df: pandas DataFrame from prepare_dataframe above
+        custom_stopwords:
+    """
+    ingredient_megalist = [
+        ingred
+        for recipe in preprocessed_df["ingredients"].tolist()
+        for ingred in recipe
+    ]
+
+    transformers = Pipeline(
+        [("countvectorizer", CountVectorizer()), ("tfwhydf", TfidfTransformer())],
+        verbose=True,
+    )
+
+    parameters = {
+        "countvectorizer__strip_accents": "unicode",
+        "countvectorizer__lowercase": True,
+        "countvectorizer__preprocessor": custom_nlp_proc.custom_preprocessor,
+        "countvectorizer__tokenizer": custom_nlp_proc.custom_lemmatizer,
+        "countvectorizer__stop_words": flushtrated_list,
+        "countvectorizer__token_pattern": r"(?u)\b[a-zA-Z]{2,}\b",
+        "countvectorizer__ngram_range": (1, 4),
+        "countvectorizer__min_df": 10,
+    }
+
+    tht_pipe = Pipeline(transformers)
+    tht_pipe.set_params(parameters)
+
+    tht_pipe.fit(ingredient_megalist)
+
+    temp = preprocessed_df["ingredients"].apply(" ".join).str.lower()
+    tht_transformed = tht_pipe.transform(temp)
+
+    return tht_transformed, tht_pipe
+
+
+def concat_matrices_to_df(
+    preprocessed_df: pd.DataFrame,
+    tht_transformed_matrix: scipy.sparse.csr_matrix,
+    tht_pipe: Pipeline,
+) -> pd.DataFrame:
     """
     This function takes in a dataframe and concats the matrix generated by either CountVectorizer or TFIDF-Transformer onto the records so that the recipes can be used for classification purposes.
 
-    Args: 
+    Args:
         df: preprocessed dataframe from preprocess_dataframe
         vectorized_ingred_matrix: sparse csr matrix created from doing fit_transform on the recipe_megalist
         cv: sklearn CountVectorizer object
@@ -39,21 +303,72 @@ def concat_matrices_to_df(df: pd.DataFrame, vectorized_ingred_matrix: scipy.spar
     Returns:
         A pandas dataframe with the vectorized_ingred_matrix appended as columns to df
     """
-    repo_tfidf_df = pd.DataFrame(vectorized_ingred_matrix.toarray(), columns=cv.get_feature_names_out(), index=df.index)
-    return pd.concat([df, repo_tfidf_df], axis=1)
+    repo_tfidf_df = pd.DataFrame(
+        tht_transformed_matrix.toarray(),
+        columns=tht_pipe.get_feature_names_out(),
+        index=preprocessed_df.index,
+    )
+    return pd.concat([preprocessed_df, repo_tfidf_df], axis=1)
 
-def prepare_dataframe(data_path: Text = "../../data/recipes-en-201706/epicurious-recipes_m2.json") -> pd.DataFrame:
+
+def dataframe_filter(df_with_cv: pd.DataFrame) -> pd.DataFrame:
+    """
+    This function takes in the recipe dataframe that has been concatenated with ingredient vectors and removes the unneeded columns to use further down the line
+
+    Args:
+        df_with_cv: Pandas DataFrame coming out of concat_matrices_to_df()
+
+    Returns:
+        reduced_df: Pandas DataFrame
     """
 
+    reduced_df = df_with_cv.drop(
+        [
+            "dek",
+            "hed",
+            "aggregateRating",
+            "ingredients",
+            "prepSteps",
+            "reviewsCount",
+            "willMakeAgainPct",
+            "photo_filename",
+            "photo_credit",
+            "author_name",
+            "date_published",
+            "recipe_url",
+        ],
+        axis=1,
+    )
+
+    return reduced_df
+
+
+def classifying_pipeline(reduced_df: pd.DataFrame, random_state: int = 240):
     """
-    source_df = pd.read_json(path_or_buf=data_path)
+    This function takes in the reduced_df, performs train/test split, performs dimension reduction via truncatedSVD and tSNE
 
-    preprocessed_df = dfpp.preprocess_dataframe(df=source_df)
+    Args:
+        reduced_df: pd.DataFrame
 
-    return df
+    Returns
+        transformed model
+    """
+    reduced_dim_labeler = Pipeline(
+        [("tsvd", TruncatedSVD()), ("tsne", TSNE())], verbose=True
+    )
 
-def prepare_nlp(stopwords_path: Text = "../../food_stopwords.csv"):
+    parameters = {
+        "tsvd__n_components": 100,
+        "tsvd__n_iter": 15,
+        "tsvd__random_state": 268,
+        "tsne__n_components": 2,
+        "tsne__learning_rate": "auto",
+        "tsne__perplexity": 500,
+        "tsne__random_state": 144,
+        "tnse__n_jobs": -1,
+    }
 
-# filter and clean dataframe
-# CountVectorizer, TF-IDF
-# TruncatedSVD, tSNE
+    clf_pipe = Pipeline(reduced_dim_labeler)
+    clf_pipe.set_params(parameters)
+
+    return clf_pipe
