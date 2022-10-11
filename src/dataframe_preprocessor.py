@@ -134,4 +134,6 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         inplace=True,
     )
 
+    df.set_index('id', inplace=True)
+
     return df
