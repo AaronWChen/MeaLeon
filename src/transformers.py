@@ -24,12 +24,12 @@ import spacy
 import en_core_web_sm
 from spacy.lang.en.stop_words import STOP_WORDS
 from tqdm import tqdm
-from typing import Any
+from typing import Any, Dict, List, Text, Tuple
 import umap
 
 # Other custom functions in same folder
-import dataframe_preprocessor as dfpp
-import nlp_processor as nlp_proc
+import src.dataframe_preprocessor as dfpp
+import src.nlp_processor as nlp_proc
 
 
 def prepare_dataframe(
@@ -54,7 +54,7 @@ def prepare_dataframe(
 def prepare_nlp(
     stopwords_path: Text = "../../food_stopwords.csv",
     pretrained_parameter: Text = "en_core_web_sm",
-) -> tuple[Language, list[float | _str | LiteralString]]:
+) -> Tuple[Any, List[Text]]:
     """
     This function prepares the items needed to do the CountVectorization. It will perform text processing with spaCy and generate the custom stopwords set
 
@@ -66,7 +66,7 @@ def prepare_nlp(
         NLP_Processor: custom class/object based on spaCy
 
     """
-    nlp = spacy.load(pretrained_parameter)
+    nlp = nlp_proc.NLP_Processor(pretrained_parameter)
 
     total_stopwords = {x for x in pd.read_csv(stopwords_path)}
     cooking_specific_stopwords = {
@@ -245,10 +245,10 @@ def prepare_nlp(
 
 
 def text_handling_transformer_pipeline(
-    preprocessed_df: pd.DataFrame, nlp_processor: Any, custom_stopwords: List
-) -> tuple["pd.DataFrame", "Pipeline"]:
+    preprocessed_df: pd.DataFrame, custom_nlp: Any, custom_stopwords: List[Text]
+) -> Tuple["pd.DataFrame", "Pipeline"]:
     """
-    This function takes the preprocessed dataframe, custome NLP Processor, and custom stopwords to perform sklearn pipeline to result in transformed dataframe
+    This function takes the preprocessed dataframe, custom NLP Processor, and custom stopwords to perform sklearn pipeline to result in transformed dataframe
 
     Args:
         preprocessed_df: pandas DataFrame from prepare_dataframe above
@@ -260,36 +260,48 @@ def text_handling_transformer_pipeline(
         for ingred in recipe
     ]
 
+    preprocessed_text = preprocessed_df["ingredients"].apply(" ".join).str.lower()
+
     transformers = Pipeline(
-        [("countvectorizer", CountVectorizer()), ("tfwhydf", TfidfTransformer())],
+        steps=[("countvectorizer", CountVectorizer()), ("tfwhydf", TfidfTransformer())],
         verbose=True,
     )
 
     parameters = {
-        "countvectorizer__strip_accents": "unicode",
-        "countvectorizer__lowercase": True,
-        "countvectorizer__preprocessor": custom_nlp_proc.custom_preprocessor,
-        "countvectorizer__tokenizer": custom_nlp_proc.custom_lemmatizer,
-        "countvectorizer__stop_words": flushtrated_list,
-        "countvectorizer__token_pattern": r"(?u)\b[a-zA-Z]{2,}\b",
-        "countvectorizer__ngram_range": (1, 4),
-        "countvectorizer__min_df": 10,
+        "steps__countvectorizer": {
+            "strip_accents": "unicode",
+            "lowercase": True,
+            "preprocessor": custom_nlp.custom_preprocessor,
+            "tokenizer": custom_nlp.custom_lemmatizer,
+            "stop_words": custom_stopwords,
+            "token_pattern": r"(?u)\b[a-zA-Z]{2,}\b",
+            "ngram_range": (1, 4),
+            "min_df": 10
+        }
+        # "steps__countvectorizer__strip_accents": "unicode",
+        # "steps__countvectorizer__lowercase": True,
+        # "steps__countvectorizer__preprocessor": custom_nlp.custom_preprocessor,
+        # "steps__countvectorizer__tokenizer": custom_nlp.custom_lemmatizer,
+        # "steps__countvectorizer__stop_words": custom_stopwords,
+        # "steps__countvectorizer__token_pattern": r"(?u)\b[a-zA-Z]{2,}\b",
+        # "steps__countvectorizer__ngram_range": (1, 4),
+        # "steps__countvectorizer__min_df": 10,
     }
 
     tht_pipe = Pipeline(transformers)
-    tht_pipe.set_params(parameters)
+    tht_pipe.set_params(**parameters)
 
-    tht_pipe.fit(ingredient_megalist)
+    tht_transformed = tht_pipe.fit_transform(ingredient_megalist)
 
-    temp = preprocessed_df["ingredients"].apply(" ".join).str.lower()
-    tht_transformed = tht_pipe.transform(temp)
+    # temp = preprocessed_df["ingredients"].apply(" ".join).str.lower()
+    # tht_transformed = tht_pipe.transform(temp)
 
     return tht_transformed, tht_pipe
 
 
 def concat_matrices_to_df(
     preprocessed_df: pd.DataFrame,
-    tht_transformed_matrix: scipy.sparse.csr_matrix,
+    tht_transformed_matrix: Any, #scipy.sparse.csr_matrix is actual return, but not wanting to import scipy just for type hinting
     tht_pipe: Pipeline,
 ) -> pd.DataFrame:
     """
