@@ -11,58 +11,6 @@ from sklearn.cluster import KMeans
 from typing import Any
 
 
-def find_important_ingredients(
-    recipes_post_cv_df: pd.DataFrame, tsne_transformed_df: pd.DataFrame, n_most: int = 5
-) -> pd.DataFrame:
-    """
-    This function takes in the pandas DataFrame containing the processed recipes concatenated with their CountVectorizer/TF-IDF transformed sparse ingredient matrices and returns a new pandas DataFrame with recipe ID as an index and top n_most ingredients as a column.
-
-    Args:
-        recipes_post_cv_df: pd.DataFrame, concatenated recipe df from concat_matrices_to_df
-        tnse_transformed_df: pd.DataFrame, three column pd.DataFrame with X, Y, and cuisine label
-        n_most: int, number of ingredients to include
-
-    Returns:
-        pd.DataFrame
-    """
-    sparse = recipes_post_cv_df.drop(
-        [
-            "dek",
-            "hed",
-            "aggregateRating",
-            "ingredients",
-            "prepSteps",
-            "reviewsCount",
-            "willMakeAgainPct",
-            "cuisine_name",
-            "photo_filename",
-            "photo_credit",
-            "author_name",
-            "date_published",
-            "recipe_url",
-        ],
-        axis=1,
-    )
-
-    important_ingreds_indices = sparse.apply(
-        lambda x: x.argsort()[-5:].values.tolist(), axis=1
-    )
-
-    important_ingredients = pd.DataFrame(
-        data={
-            "important_ingredients": [
-                sparse.loc[idx].iloc[important_ingreds_indices.loc[idx]].index.tolist()
-                for idx in sparse.index
-            ]
-        },
-        index=important_ingreds_indices.index,
-    )
-
-    tsne_transformed_df.join(important_ingredients, how="inner")
-
-    return tsne_transformed_df
-
-
 def create_bokeh_plot(
     tsne_transformed_df: pd.DataFrame,
     n_clusters: int = 12,
