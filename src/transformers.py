@@ -445,17 +445,19 @@ def classifying_pipeline(reduced_df: pd.DataFrame, random_state: int = 240):
         X, y, random_state=240, stratify=y
     )
 
-    clf_pipe = Pipeline([("tsvd", TruncatedSVD()), ("tsne", TSNE())], verbose=True)
+    clf_pipe = Pipeline(
+        steps=[("tsvd", TruncatedSVD()), ("tsne", TSNE())], verbose=True
+    )
 
     parameters = {
-        "tsvd__n_components": 100,
-        "tsvd__n_iter": 15,
-        "tsvd__random_state": 268,
-        "tsne__n_components": 2,
-        "tsne__learning_rate": "auto",
-        "tsne__perplexity": 500,
-        "tsne__random_state": 144,
-        "tnse__n_jobs": -1,
+        "steps__tsvd__n_components": 100,
+        "steps__tsvd__n_iter": 15,
+        "steps__tsvd__random_state": 268,
+        "steps__tsne__n_components": 2,
+        "steps__tsne__learning_rate": "auto",
+        "steps__tsne__perplexity": 500,
+        "steps__tsne__random_state": 144,
+        "steps__tnse__n_jobs": -1,
     }
 
     # clf_pipe = Pipeline(reduced_dim_labeler)
