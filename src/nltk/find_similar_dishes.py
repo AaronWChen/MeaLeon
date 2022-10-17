@@ -11,25 +11,25 @@ import csv
 #import pymongo
 from datetime import datetime
 import joblib
-import re
+# import re
 import pandas as pd
 import numpy as np
-from pandas.io.json import json_normalize
-import nltk
-<<<<<<< HEAD
-nltk.download('wordnet')
-nltk.download('stopwords')
-=======
+# from pandas.io.json import json_normalize
+# import nltk
+# <<<<<<< HEAD
+# nltk.download('wordnet')
 # nltk.download('stopwords')
->>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
-from nltk.corpus import stopwords
-from nltk import word_tokenize, FreqDist
-from nltk.stem.wordnet import WordNetLemmatizer
-import string
-import sklearn
-from sklearn.model_selection import train_test_split
-from sklearn.metrics.pairwise import cosine_similarity, pairwise_distances
-from sklearn.feature_extraction.text import TfidfVectorizer
+# =======
+# # nltk.download('stopwords')
+# >>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
+# from nltk.corpus import stopwords
+# from nltk import word_tokenize, FreqDist
+# from nltk.stem.wordnet import WordNetLemmatizer
+# import string
+# import sklearn
+# from sklearn.model_selection import train_test_split
+from sklearn.metrics.pairwise import cosine_similarity #, pairwise_distances
+# from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Define all functions
 
