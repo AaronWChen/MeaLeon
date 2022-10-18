@@ -29,7 +29,7 @@ def create_bokeh_plot(
         Bokeh figure
     """
 
-    random_200 = to_plot_tsne.sample(sample_size, random_state=random_state)
+    random_200 = tsne_transformed_df.sample(sample_size, random_state=random_state)
 
     # Step size of the mesh. Decrease to increase the quality of the VQ.
     h = 0.02  # point in the mesh [x_min, x_max]x[y_min, y_max].

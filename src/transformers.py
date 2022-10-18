@@ -430,10 +430,12 @@ def classifying_pipeline(reduced_df: pd.DataFrame, random_state: int = 240):
 
     Returns
         Tuple[
-            tsne_transformed: pd.DataFrame of pipeline transformed training data,
+            tsne_transformed: np.Array of pipeline transformed training data,
+            X_train: pd.DataFrame of training data,
             y_train: pd.Series of training labels,
-            tsne_transformed_test: pd.DataFrame of pipeline transformed test data,
-            y_train: pd.Series of test labels,
+            tsne_transformed_test: np.Array of pipeline transformed test data,
+            X_test: pd.DataFrame of test data
+            y_test: pd.Series of test labels,
             clf_pipe: Pipeline of transformers
             ]
     """
@@ -445,43 +447,71 @@ def classifying_pipeline(reduced_df: pd.DataFrame, random_state: int = 240):
         X, y, random_state=240, stratify=y
     )
 
-    clf_pipe = Pipeline(
-        steps=[("tsvd", TruncatedSVD()), ("tsne", TSNE())], verbose=True
-    )
-
-    parameters = {
-        "steps__tsvd__n_components": 100,
-        "steps__tsvd__n_iter": 15,
-        "steps__tsvd__random_state": 268,
-        "steps__tsne__n_components": 2,
-        "steps__tsne__learning_rate": "auto",
-        "steps__tsne__perplexity": 500,
-        "steps__tsne__random_state": 144,
-        "steps__tnse__n_jobs": -1,
+    tsvd_params = {
+        "n_components": 100,
+        "n_iter": 15,
+        "random_state": 268,
     }
 
+    tsne_params = {
+        "n_components": 2,
+        "learning_rate": "auto",
+        "perplexity": 500,
+        "random_state": 144,
+        "n_jobs": -1,
+    }
+
+    clf_pipe = Pipeline(
+        steps=[("tsvd", TruncatedSVD(**tsvd_params)), ("tsne", TSNE(**tsne_params))],
+        verbose=True,
+    )
+
+    # the below parameters did not work for set_params
+    # parameters = {
+    #     "steps__tsvd__n_components": 100,
+    #     "steps__tsvd__n_iter": 15,
+    #     "steps__tsvd__random_state": 268,
+    #     "steps__tsne__n_components": 2,
+    #     "steps__tsne__learning_rate": "auto",
+    #     "steps__tsne__perplexity": 500,
+    #     "steps__tsne__random_state": 144,
+    #     "steps__tnse__n_jobs": -1,
+    # }
+
     # clf_pipe = Pipeline(reduced_dim_labeler)
-    clf_pipe.set_params(**parameters)
+    # clf_pipe.set_params(**parameters)
 
     tsne_transformed = clf_pipe.fit_transform(X_train)
 
     tsne_transformed_test = clf_pipe.transform(X_test)
 
-    return tsne_transformed, y_train, tsne_transformed_test, y_test, clf_pipe
+    return (
+        tsne_transformed,
+        X_train,
+        y_train,
+        tsne_transformed_test,
+        X_test,
+        y_test,
+        clf_pipe,
+    )
 
 
 def attach_important_ingreds(
-    tsne_transformed_df: pd.DataFrame, important_ingredients_df: pd.DataFrame
+    tsne_transformed_np: np.ndarray,
+    X: pd.DataFrame,
+    important_ingredients_df: pd.DataFrame,
 ) -> pd.DataFrame:
     """
     This function takes in the tSNE pipeline pipeline transformed DataFrame and joins it with the important ingredient dataframe to display the n-most important ingredients in the bokeh plot.
 
     Args:
-        tsne_transformed_df: pd.DataFrame from classifying_pipeline above
+        tsne_transformed_np: np.ndarray from classifying_pipeline above (either train or test)
+        X: pd.DataFrame from classifying_pipeline above (either train or test)
         important_ingredients_df: pd.DataFrame from find_imporant_ingredients above
 
     Returns:
         pd.DataFrame combining both
     """
+    tsne_transformed_df = pd.DataFrame(data=tsne_transformed_np, index=X.index)
     tsne_transformed_df.join(important_ingredients_df, how="inner")
     return tsne_transformed_df
