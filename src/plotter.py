@@ -35,8 +35,8 @@ def create_bokeh_plot(
     h = 0.02  # point in the mesh [x_min, x_max]x[y_min, y_max].
 
     # Plot the decision boundary. For that, we will assign a color to each
-    x_min, x_max = random_200["x"].min() - 1, random_200["x"].max() + 1
-    y_min, y_max = random_200["y"].min() - 1, random_200["y"].max() + 1
+    x_min, x_max = random_200[0].min() - 1, random_200[0].max() + 1
+    y_min, y_max = random_200[1].min() - 1, random_200[1].max() + 1
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
 
     kmeans = KMeans(n_clusters=n_clusters, random_state=kmeans_random_state).fit(
@@ -51,7 +51,7 @@ def create_bokeh_plot(
     centroids = kmeans.cluster_centers_
 
     kebab = ColumnDataSource(random_200)
-    centroids_cds = ColumnDataSource(pd.DataFrame(data=centroids, columns=["x", "y"]))
+    centroids_cds = ColumnDataSource(pd.DataFrame(data=centroids, columns=[0, 1]))
 
     HOVER_TOOLTIPS = [
         ("Cuisine", "@cuisine_name"),
@@ -59,13 +59,13 @@ def create_bokeh_plot(
     ]
 
     p = figure(title="KMeans, tSNE, Bokeh", tooltips=HOVER_TOOLTIPS)
-    r = p.dot(x="x", y="y", size=15, source=kebab, color="black")
+    r = p.dot(x=0, y=1, size=15, source=kebab, color="black")
 
     p.hover.renderers = [r]
 
     p.square_pin(
-        centroids_cds.data["x"],
-        centroids_cds.data["y"],
+        centroids_cds.data[0],
+        centroids_cds.data[1],
         size=20,
         color="white",
         fill_color=None,
