@@ -13,7 +13,7 @@ from typing import Any
 
 def create_bokeh_plot(
     tsne_transformed_df: pd.DataFrame,
-    n_clusters: int = 12,
+    n_clusters: int = 6,  # determined from elbow method
     kmeans_random_state: int = 30,
     sample_size: int = 200,
     random_state: int = 313,
@@ -31,6 +31,10 @@ def create_bokeh_plot(
 
     random_200 = tsne_transformed_df.sample(sample_size, random_state=random_state)
 
+    to_kmeans = tsne_transformed_df.drop(
+        ["cuisine_name", "important_ingredients"], axis=1
+    )
+
     # Step size of the mesh. Decrease to increase the quality of the VQ.
     h = 0.02  # point in the mesh [x_min, x_max]x[y_min, y_max].
 
@@ -40,7 +44,7 @@ def create_bokeh_plot(
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
 
     kmeans = KMeans(n_clusters=n_clusters, random_state=kmeans_random_state).fit(
-        random_200  # .drop(["cuisine_name", "cuisine_id_num"], axis=1)
+        to_kmeans
     )
 
     # Obtain labels for each point in mesh. Use last trained model.
@@ -59,7 +63,7 @@ def create_bokeh_plot(
     ]
 
     p = figure(title="KMeans, tSNE, Bokeh", tooltips=HOVER_TOOLTIPS)
-    r = p.dot(x="x", y="y", size=15, source=kebab, color="black")
+    r = p.dot(x="X", y="Y", size=15, source=kebab, color="black")
 
     p.hover.renderers = [r]
 
