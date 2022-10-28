@@ -499,6 +499,7 @@ def classifying_pipeline(reduced_df: pd.DataFrame, random_state: int = 240):
 def attach_important_ingreds(
     tsne_transformed_np: np.ndarray,
     X: pd.DataFrame,
+    y: pd.DataFrame,
     important_ingredients_df: pd.DataFrame,
 ) -> pd.DataFrame:
     """
@@ -512,6 +513,8 @@ def attach_important_ingreds(
     Returns:
         pd.DataFrame combining both
     """
-    tsne_transformed_df = pd.DataFrame(data=tsne_transformed_np, index=X.index)
+    tsne_transformed_df = pd.DataFrame(data=tsne_transformed_np, index=X.index, columns=['X', 'y'])
+    tsne_transformed_df["cuisine_name"] = y
+
     tsne_transformed_df.join(important_ingredients_df, how="inner")
     return tsne_transformed_df
