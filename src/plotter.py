@@ -11,58 +11,6 @@ from sklearn.cluster import KMeans
 from typing import Any
 
 
-def find_important_ingredients(
-    recipes_post_cv_df: pd.DataFrame, tsne_transformed_df: pd.DataFrame, n_most: int = 5
-) -> pd.DataFrame:
-    """
-    This function takes in the pandas DataFrame containing the processed recipes concatenated with their CountVectorizer/TF-IDF transformed sparse ingredient matrices and returns a new pandas DataFrame with recipe ID as an index and top n_most ingredients as a column.
-
-    Args:
-        recipes_post_cv_df: pd.DataFrame, concatenated recipe df from concat_matrices_to_df
-        tnse_transformed_df: pd.DataFrame, three column pd.DataFrame with X, Y, and cuisine label
-        n_most: int, number of ingredients to include
-
-    Returns:
-        pd.DataFrame
-    """
-    sparse = recipes_post_cv_df.drop(
-        [
-            "dek",
-            "hed",
-            "aggregateRating",
-            "ingredients",
-            "prepSteps",
-            "reviewsCount",
-            "willMakeAgainPct",
-            "cuisine_name",
-            "photo_filename",
-            "photo_credit",
-            "author_name",
-            "date_published",
-            "recipe_url",
-        ],
-        axis=1,
-    )
-
-    important_ingreds_indices = sparse.apply(
-        lambda x: x.argsort()[-5:].values.tolist(), axis=1
-    )
-
-    important_ingredients = pd.DataFrame(
-        data={
-            "important_ingredients": [
-                sparse.loc[idx].iloc[important_ingreds_indices.loc[idx]].index.tolist()
-                for idx in sparse.index
-            ]
-        },
-        index=important_ingreds_indices.index,
-    )
-
-    tsne_transformed_df.join(important_ingredients, how="inner")
-
-    return tsne_transformed_df
-
-
 def create_bokeh_plot(
     tsne_transformed_df: pd.DataFrame,
     n_clusters: int = 12,
@@ -81,18 +29,18 @@ def create_bokeh_plot(
         Bokeh figure
     """
 
-    random_200 = to_plot_tsne.sample(sample_size, random_state=random_state)
+    random_200 = tsne_transformed_df.sample(sample_size, random_state=random_state)
 
     # Step size of the mesh. Decrease to increase the quality of the VQ.
     h = 0.02  # point in the mesh [x_min, x_max]x[y_min, y_max].
 
     # Plot the decision boundary. For that, we will assign a color to each
-    x_min, x_max = random_200["x"].min() - 1, random_200["x"].max() + 1
-    y_min, y_max = random_200["y"].min() - 1, random_200["y"].max() + 1
+    x_min, x_max = random_200["X"].min() - 1, random_200["X"].max() + 1
+    y_min, y_max = random_200["Y"].min() - 1, random_200["Y"].max() + 1
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
 
     kmeans = KMeans(n_clusters=n_clusters, random_state=kmeans_random_state).fit(
-        random_200.drop(["cuisine_name", "cuisine_id_num"], axis=1)
+        random_200  # .drop(["cuisine_name", "cuisine_id_num"], axis=1)
     )
 
     # Obtain labels for each point in mesh. Use last trained model.

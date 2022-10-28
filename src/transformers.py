@@ -24,12 +24,12 @@ import spacy
 import en_core_web_sm
 from spacy.lang.en.stop_words import STOP_WORDS
 from tqdm import tqdm
-from typing import Any
+from typing import Any, Dict, List, Text, Tuple
 import umap
 
 # Other custom functions in same folder
-import dataframe_preprocessor as dfpp
-import nlp_processor as nlp_proc
+import src.dataframe_preprocessor as dfpp
+import src.nlp_processor as nlp_proc
 
 
 def prepare_dataframe(
@@ -54,7 +54,7 @@ def prepare_dataframe(
 def prepare_nlp(
     stopwords_path: Text = "../../food_stopwords.csv",
     pretrained_parameter: Text = "en_core_web_sm",
-) -> tuple[Language, list[float | _str | LiteralString]]:
+) -> Tuple[Any, List[Text]]:
     """
     This function prepares the items needed to do the CountVectorization. It will perform text processing with spaCy and generate the custom stopwords set
 
@@ -66,7 +66,7 @@ def prepare_nlp(
         NLP_Processor: custom class/object based on spaCy
 
     """
-    nlp = spacy.load(pretrained_parameter)
+    nlp = nlp_proc.NLP_Processor(pretrained_parameter)
 
     total_stopwords = {x for x in pd.read_csv(stopwords_path)}
     cooking_specific_stopwords = {
@@ -245,10 +245,10 @@ def prepare_nlp(
 
 
 def text_handling_transformer_pipeline(
-    preprocessed_df: pd.DataFrame, nlp_processor: Any, custom_stopwords: List
-) -> tuple["pd.DataFrame", "Pipeline"]:
+    preprocessed_df: pd.DataFrame, custom_nlp: Any, custom_stopwords: List[Text]
+) -> Tuple["pd.DataFrame", "Pipeline"]:
     """
-    This function takes the preprocessed dataframe, custome NLP Processor, and custom stopwords to perform sklearn pipeline to result in transformed dataframe
+    This function takes the preprocessed dataframe, custom NLP Processor, and custom stopwords to perform sklearn pipeline to result in transformed dataframe
 
     Args:
         preprocessed_df: pandas DataFrame from prepare_dataframe above
@@ -260,26 +260,55 @@ def text_handling_transformer_pipeline(
         for ingred in recipe
     ]
 
-    transformers = Pipeline(
-        [("countvectorizer", CountVectorizer()), ("tfwhydf", TfidfTransformer())],
-        verbose=True,
-    )
+    # transformers = Pipeline(
+    #     steps=[("countvectorizer", CountVectorizer()), ("tfwhydf", TfidfTransformer())],
+    #     verbose=True,
+    # )
 
-    parameters = {
-        "countvectorizer__strip_accents": "unicode",
-        "countvectorizer__lowercase": True,
-        "countvectorizer__preprocessor": custom_nlp_proc.custom_preprocessor,
-        "countvectorizer__tokenizer": custom_nlp_proc.custom_lemmatizer,
-        "countvectorizer__stop_words": flushtrated_list,
-        "countvectorizer__token_pattern": r"(?u)\b[a-zA-Z]{2,}\b",
-        "countvectorizer__ngram_range": (1, 4),
-        "countvectorizer__min_df": 10,
+    # parameters = {
+    #     "steps__countvectorizer": {
+    #         "strip_accents": "unicode",
+    #         "lowercase": True,
+    #         "preprocessor": custom_nlp.custom_preprocessor,
+    #         "tokenizer": custom_nlp.custom_lemmatizer,
+    #         "stop_words": custom_stopwords,
+    #         "token_pattern": r"(?u)\b[a-zA-Z]{2,}\b",
+    #         "ngram_range": (1, 4),
+    #         "min_df": 10
+    #     }
+
+    cv_params = {
+        "strip_accents": "unicode",
+        "lowercase": True,
+        "preprocessor": custom_nlp.custom_preprocessor,
+        "tokenizer": custom_nlp.custom_lemmatizer,
+        "stop_words": custom_stopwords,
+        "token_pattern": r"(?u)\b[a-zA-Z]{2,}\b",
+        "ngram_range": (1, 4),
+        "min_df": 10,
     }
 
-    tht_pipe = Pipeline(transformers)
-    tht_pipe.set_params(parameters)
+    tht_pipe = Pipeline(
+        steps=[
+            ("countvectorizer", CountVectorizer(**cv_params)),
+            ("tfwhydf", TfidfTransformer()),
+        ],
+        verbose=True,
+    )
+    # "steps__countvectorizer__strip_accents": "unicode",
+    # "steps__countvectorizer__lowercase": True,
+    # "steps__countvectorizer__preprocessor": custom_nlp.custom_preprocessor,
+    # "steps__countvectorizer__tokenizer": custom_nlp.custom_lemmatizer,
+    # "steps__countvectorizer__stop_words": custom_stopwords,
+    # "steps__countvectorizer__token_pattern": r"(?u)\b[a-zA-Z]{2,}\b",
+    # "steps__countvectorizer__ngram_range": (1, 4),
+    # "steps__countvectorizer__min_df": 10,
+    # }
 
-    tht_pipe.fit(ingredient_megalist)
+    # tht_pipe = Pipeline(transformers)
+    # tht_pipe.set_params(**parameters)
+
+    tht_transformed = tht_pipe.fit(ingredient_megalist)
 
     temp = preprocessed_df["ingredients"].apply(" ".join).str.lower()
     tht_transformed = tht_pipe.transform(temp)
@@ -289,7 +318,7 @@ def text_handling_transformer_pipeline(
 
 def concat_matrices_to_df(
     preprocessed_df: pd.DataFrame,
-    tht_transformed_matrix: scipy.sparse.csr_matrix,
+    tht_transformed_matrix: Any,  # scipy.sparse.csr_matrix is actual return, but not wanting to import scipy just for type hinting
     tht_pipe: Pipeline,
 ) -> pd.DataFrame:
     """
@@ -311,7 +340,7 @@ def concat_matrices_to_df(
     return pd.concat([preprocessed_df, repo_tfidf_df], axis=1)
 
 
-def dataframe_filter(df_with_cv: pd.DataFrame) -> pd.DataFrame:
+def dataframe_filter(df_with_cv: pd.DataFrame, random_state: int = 240) -> pd.DataFrame:
     """
     This function takes in the recipe dataframe that has been concatenated with ingredient vectors and removes the unneeded columns to use further down the line
 
@@ -343,6 +372,55 @@ def dataframe_filter(df_with_cv: pd.DataFrame) -> pd.DataFrame:
     return reduced_df
 
 
+def find_important_ingredients(
+    recipes_post_cv_df: pd.DataFrame, n_most: int = 5
+) -> pd.DataFrame:
+    """
+    This function takes in the pandas DataFrame containing the processed recipes concatenated with their CountVectorizer/TF-IDF transformed sparse ingredient matrices and returns a new pandas DataFrame with recipe ID as an index and top n_most ingredients as a column.
+
+    Args:
+        recipes_post_cv_df: pd.DataFrame, concatenated recipe df from concat_matrices_to_df
+        n_most: int, number of ingredients to include
+
+    Returns:
+        pd.DataFrame
+    """
+    sparse = recipes_post_cv_df.drop(
+        [
+            "dek",
+            "hed",
+            "aggregateRating",
+            "ingredients",
+            "prepSteps",
+            "reviewsCount",
+            "willMakeAgainPct",
+            "cuisine_name",
+            "photo_filename",
+            "photo_credit",
+            "author_name",
+            "date_published",
+            "recipe_url",
+        ],
+        axis=1,
+    )
+
+    important_ingreds_indices = sparse.apply(
+        lambda x: x.argsort()[-5:].values.tolist(), axis=1
+    )
+
+    important_ingredients_df = pd.DataFrame(
+        data={
+            "important_ingredients": [
+                sparse.loc[idx].iloc[important_ingreds_indices.loc[idx]].index.tolist()
+                for idx in sparse.index
+            ]
+        },
+        index=important_ingreds_indices.index,
+    )
+
+    return important_ingredients_df
+
+
 def classifying_pipeline(reduced_df: pd.DataFrame, random_state: int = 240):
     """
     This function takes in the reduced_df, performs train/test split, performs dimension reduction via truncatedSVD and tSNE
@@ -351,24 +429,92 @@ def classifying_pipeline(reduced_df: pd.DataFrame, random_state: int = 240):
         reduced_df: pd.DataFrame
 
     Returns
-        transformed model
+        Tuple[
+            tsne_transformed: np.Array of pipeline transformed training data,
+            X_train: pd.DataFrame of training data,
+            y_train: pd.Series of training labels,
+            tsne_transformed_test: np.Array of pipeline transformed test data,
+            X_test: pd.DataFrame of test data
+            y_test: pd.Series of test labels,
+            clf_pipe: Pipeline of transformers
+            ]
     """
-    reduced_dim_labeler = Pipeline(
-        [("tsvd", TruncatedSVD()), ("tsne", TSNE())], verbose=True
+
+    y = reduced_df["cuisine_name"]
+    X = reduced_df.drop(["cuisine_name"], axis=1)
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, random_state=240, stratify=y
     )
 
-    parameters = {
-        "tsvd__n_components": 100,
-        "tsvd__n_iter": 15,
-        "tsvd__random_state": 268,
-        "tsne__n_components": 2,
-        "tsne__learning_rate": "auto",
-        "tsne__perplexity": 500,
-        "tsne__random_state": 144,
-        "tnse__n_jobs": -1,
+    tsvd_params = {
+        "n_components": 100,
+        "n_iter": 15,
+        "random_state": 268,
     }
 
-    clf_pipe = Pipeline(reduced_dim_labeler)
-    clf_pipe.set_params(parameters)
+    tsne_params = {
+        "n_components": 2,
+        "learning_rate": "auto",
+        "perplexity": 500,
+        "random_state": 144,
+        "n_jobs": -1,
+    }
 
-    return clf_pipe
+    clf_pipe = Pipeline(
+        steps=[("tsvd", TruncatedSVD(**tsvd_params)), ("tsne", TSNE(**tsne_params))],
+        verbose=True,
+    )
+
+    # the below parameters did not work for set_params
+    # parameters = {
+    #     "steps__tsvd__n_components": 100,
+    #     "steps__tsvd__n_iter": 15,
+    #     "steps__tsvd__random_state": 268,
+    #     "steps__tsne__n_components": 2,
+    #     "steps__tsne__learning_rate": "auto",
+    #     "steps__tsne__perplexity": 500,
+    #     "steps__tsne__random_state": 144,
+    #     "steps__tnse__n_jobs": -1,
+    # }
+
+    # clf_pipe = Pipeline(reduced_dim_labeler)
+    # clf_pipe.set_params(**parameters)
+
+    tsne_transformed = clf_pipe.fit_transform(X_train)
+
+    tsne_transformed_test = clf_pipe.transform(X_test)
+
+    return (
+        tsne_transformed,
+        X_train,
+        y_train,
+        tsne_transformed_test,
+        X_test,
+        y_test,
+        clf_pipe,
+    )
+
+
+def attach_important_ingreds(
+    tsne_transformed_np: np.ndarray,
+    X: pd.DataFrame,
+    y: pd.DataFrame,
+    important_ingredients_df: pd.DataFrame,
+) -> pd.DataFrame:
+    """
+    This function takes in the tSNE pipeline pipeline transformed DataFrame and joins it with the important ingredient dataframe to display the n-most important ingredients in the bokeh plot.
+
+    Args:
+        tsne_transformed_np: np.ndarray from classifying_pipeline above (either train or test)
+        X: pd.DataFrame from classifying_pipeline above (either train or test)
+        important_ingredients_df: pd.DataFrame from find_imporant_ingredients above
+
+    Returns:
+        pd.DataFrame combining both
+    """
+    tsne_transformed_df = pd.DataFrame(data=tsne_transformed_np, index=X.index, columns=['X', 'y'])
+    tsne_transformed_df["cuisine_name"] = y
+
+    tsne_transformed_df.join(important_ingredients_df, how="inner")
+    return tsne_transformed_df
