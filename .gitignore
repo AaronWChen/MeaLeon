@@ -147,4 +147,5 @@ data/
 
 *Zone.Identifier
 
-joblib/
+# remove things inside joblib except README
+joblib/*.joblib
