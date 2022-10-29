@@ -65,9 +65,13 @@ def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name, tfidf):
     # a word sub matrix that removes all recipes with the same cuisine as the
     # inputted recipe.
 
-    east_asian = ["Asian", "Chinese", "Japanese"]
+    # east_asian = ["Asian", "Chinese", "Japanese"]
 
-    southeast_asian = ["Thai", "Vietnamese"]
+    # southeast_asian = ["Thai", "Vietnamese"]
+
+    # it would be interesting to see how these cuisines can avoid each other without the hardcoded labels and families
+
+    asian = ["Asian", "Chinese", "Japanese", "Thai", "Vietnamese"]
 
     euro_islands = ["English", "Irish"]
 
@@ -101,10 +105,8 @@ def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name, tfidf):
         "Vietnamese",
     ]
 
-    if cuisine_name in east_asian:
-        choices = [cuis for cuis in all_cuisines if cuis not in east_asian]
-    elif cuisine_name in southeast_asian:
-        choices = [cuis for cuis in all_cuisines if cuis not in southeast_asian]
+    if cuisine_name in asian:
+        choices = [cuis for cuis in all_cuisines if cuis not in asian]
     elif cuisine_name in euro_islands:
         choices = [cuis for cuis in all_cuisines if cuis not in euro_islands]
     elif cuisine_name in euro_continental:
