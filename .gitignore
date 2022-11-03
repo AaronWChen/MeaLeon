@@ -153,3 +153,22 @@ joblib/2019.11.15/
 joblib/2020.01.14/
 joblib/2020.01.30/
 joblib/2022.08.23/
+
+### JetBrains PyCharm support
+
+# User-specific stuff:
+.idea/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries
+
+# Sensitive or high-churn files:
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.xml
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+
+
