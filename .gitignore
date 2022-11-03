@@ -149,6 +149,10 @@ data/
 
 # remove things inside joblib except README
 joblib/*.joblib
+joblib/2019.11.15/
+joblib/2020.01.14/
+joblib/2020.01.30/
+joblib/2022.08.23/
 
 ### JetBrains PyCharm support
 
@@ -166,3 +170,5 @@ joblib/*.joblib
 .idea/**/sqlDataSources.xml
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
+
+
