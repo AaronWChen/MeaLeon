@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mealeon"
-version = "0.1.4"
+version = "0.1.6"
 description = "MeaLeon suggests recipes for a user to cook! It is a full stack data science project using machine learning, natural language processing, a web form, and AWS. This is the Poetry file to make it easier to deploy and work on the project."
 authors = ["Aaron W. Chen <awc33@cornell.edu>"]
 license = "GPL-3.0-or-later"
@@ -31,6 +31,9 @@ umap-learn = "^0.5.3"
 python-utils = "^3.3.3"
 adjustText = "^0.7.3"
 bokeh = "^2.4.3"
+gunicorn = "^20.1.0"
+waitress = "^2.1.2"
+nltk = "^3.7"
 
 
 [tool.poetry.dev-dependencies]

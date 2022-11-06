@@ -1,6 +1,6 @@
 from flask import Flask, send_from_directory, render_template, request, abort
 from waitress import serve
-from models.ohe_dish_predictor import find_similar_dishes
+from src.nltk.ohe_dish_predictor import find_similar_dishes
 import json
 
 app = Flask(__name__, static_url_path="/static")
