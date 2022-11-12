@@ -36,6 +36,7 @@ waitress = "^2.1.2"
 nltk = "^3.7"
 optuna = "^3.0.3"
 dbcv = {git = "git@github.com:christopherjenness/DBCV.git"}
+hdbscan = "^0.8.29"
 
 
 [tool.poetry.dev-dependencies]
