@@ -16,12 +16,8 @@ import pandas as pd
 import numpy as np
 from pandas.io.json import json_normalize
 import nltk
-<<<<<<< HEAD
 nltk.download('wordnet')
 nltk.download('stopwords')
-=======
-# nltk.download('stopwords')
->>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
 from nltk.corpus import stopwords
 from nltk import word_tokenize, FreqDist
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -37,24 +33,14 @@ def import_stored_files():
   # Load in the stored Epicurious database, TFIDF Vectorizer object to transform,
   # the input, and the TFIDF word matrix from joblib and created by 
   # prepare_database.py
-<<<<<<< HEAD
   with open("joblib/tfidf_recipe_dataframe.joblib", "rb") as fo:
     prepped = joblib.load("../joblib/tfidf_recipe_dataframe.joblib")
-=======
-  with open("joblib/recipe_dataframe.joblib", "rb") as fo:
-    prepped = joblib.load("joblib/recipe_dataframe.joblib")
->>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
 
   with open("joblib/recipe_tfidf.joblib", "rb") as fo:
     ingred_tfidf = joblib.load("joblib/recipe_tfidf.joblib")
 
-<<<<<<< HEAD
   with open("joblib/recipe_word_matrix_tfidf.joblib", "rb") as fo:
     ingred_word_matrix = joblib.load("joblib/recipe_word_matrix_tfidf.joblib")
-=======
-  with open("joblib/recipe_word_matrix.joblib", "rb") as fo:
-    ingred_word_matrix = joblib.load("joblib/recipe_word_matrix.joblib")
->>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
 
   return prepped, ingred_tfidf, ingred_word_matrix
 
@@ -155,7 +141,6 @@ def __main__(dish_name, cuisine_name):
 
     # Store the API result into a JSON and the cuisine type and dish name into a 
     # csv
-<<<<<<< HEAD
     # with open(f"../write_data/{dt_string}_{search_q}_edamam_api_return.json", "w") as f:
     #   json.dump(resp_dict_hits, f)
 
@@ -163,15 +148,6 @@ def __main__(dish_name, cuisine_name):
     # with open("../write_data/user_requests.csv", "a", newline='') as f:
     #   writer = csv.writer(f)
     #   writer.writerow(fields)
-=======
-    with open(f"../write_data/{dt_string}_{search_q}_edamam_api_return.json", "w") as f:
-      json.dump(resp_dict_hits, f)
-
-    fields = [dt_string, search_q, cuisine_q]
-    with open("../write_data/user_requests.csv", "a", newline='') as f:
-      writer = csv.writer(f)
-      writer.writerow(fields)
->>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
 
     urls = []
     labels = []
@@ -214,11 +190,7 @@ def __main__(dish_name, cuisine_name):
                                                                 X_df=prepped)
 
     print(query_similar)
-<<<<<<< HEAD
     # query_similar.to_html("../write_data/results.html")
-=======
-    query_similar.to_html("../write_data/results.html")
->>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
     #print(query_similar_values)
 
   else:
