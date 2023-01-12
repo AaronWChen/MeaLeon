@@ -1,130 +1,133 @@
 <html>
-  <head>
-    <title>MeaLeon</title>
-    <meta property="og:image"     content="https://mealeonstatic.s3-us-west-2.amazonaws.com/static/mealeon.png">
-    <meta property="og:type"      content="website" />
-    <meta property="og:title"     content="MeaLeon: A Machine Learning Powered Recipe Recommender" />
-    <meta property="og:url"       content="https://mealeon.herokuapp.com" />
-    <meta property="description"  content="This is MeaLeon, a machine learning powered recipe recommender. It requests a recipe you like with the cuisine it's from then returns 5 with similar ingredients from other cuisines!" />
 
-    <link rel="stylesheet" media="screen" href="/static/bootstrap.min.css">
-    <script src="https://developer.edamam.com/attribution/badge.js"></script>
-    <style>
-      * {
-            box-sizing: border-box;
-        }
+<head>
+  <title>MeaLeon</title>
+  <meta property="og:image" content="https://mealeonstatic.s3-us-west-2.amazonaws.com/static/mealeon.png">
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="MeaLeon: A Machine Learning Powered Recipe Recommender" />
+  <meta property="og:url" content="https://mealeon.herokuapp.com" />
+  <meta property="description"
+    content="This is MeaLeon, a machine learning powered recipe recommender. It requests a recipe you like with the cuisine it's from then returns 5 with similar ingredients from other cuisines!" />
 
-        /* Create two unequal columns that floats next to each other */
-        .column {
-            float: left;
-            padding: 10px;
-        }
+  <link rel="stylesheet" media="screen" href="/static/bootstrap.min.css">
+  <script src="https://developer.edamam.com/attribution/badge.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        .left {
-            width: 50%;
-        }
+    /* Create two unequal columns that floats next to each other */
+    .column {
+      float: left;
+      padding: 10px;
+    }
 
-        .right {
-            width: 50%;
-        }
+    .left {
+      width: 50%;
+    }
 
-        /* Clear floats after the columns */
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
+    .right {
+      width: 50%;
+    }
 
-        img { 
-            max-width: 50%;
-            height: auto;
-        }
+    /* Clear floats after the columns */
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
 
-        .center {
-          text-align: center
-        }
+    img {
+      max-width: 50%;
+      height: auto;
+    }
 
-        body {
-          background-color: rgba(0,0,0,0.3);
-        }
+    .center {
+      text-align: center
+    }
 
-        .jumbotron {
-          background-color: rgba(0,0,0,0);
-         }
+    body {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
 
-        .container {
-          background-color: rgba(0,0,0,0);
-        }
-    </style>
-  </head>
-  <body>
-    <div class="view" style="background-image: url('https://www.foodserviceequipmentjournal.com/wp-content/uploads/2019/09/Boxed-Off-mise-en-place.jpg'); background-repeat: no-repeat; background-size: cover; background-position: center center;">
+    .jumbotron {
+      background-color: rgba(0, 0, 0, 0);
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="view"
+    style="background-image: url('mealeon.buenosds.dev/static/Healthy-plant-rich-diets-associated-with-lower-COVID-19-risk.jpg'); background-repeat: no-repeat; background-size: cover; background-position: center center;">
     <div class="container text-white center">
       <div class="jumbotron" style="background-color: rgba(0,0,0,0.4);">
         <h1 class="display-3 center">MeaLeon</h1>
         <br>
         <h2 class="center">The Similar Recipe Suggester</h2>
         <br>
-      <div class="row" style="background-color: rgba(0,0,0,0);">
-        <div class="col center text-white"> 
-          <h4>18k Recipes</h4>
+        <div class="row" style="background-color: rgba(0,0,0,0);">
+          <div class="col center text-white">
+            <h4>18k Recipes</h4>
+          </div>
+          <div class="col center text-white">
+            <h4>2k Ingredients</h4>
+          </div>
+          <div class="col center text-white">
+            <h4>24 Cuisines</h4>
+          </div>
         </div>
-        <div class="col center text-white"> 
-          <h4>2k Ingredients</h4>
+        <br>
+        <div class="row">
+          <p>
+            What do you like to eat? Type it in the text box, choose the
+            cuisine it's from with the drop down menu, and get back something
+            with similar ingredients but from a different part of the world!
+          </p>
         </div>
-        <div class="col center text-white"> 
-          <h4>24 Cuisines</h4>
-        </div>
-      </div>
-      <br>
-      <div class="row">
-        <p>
-          What do you like to eat? Type it in the text box, choose the 
-          cuisine it's from with the drop down menu, and get back something 
-          with similar ingredients but from a different part of the world!
-        </p>
-      </div>
         <p>
         <div class="row" style="background-color: rgba(0,0,0,0);">
           <div class="column left">
-              <img src="static/mealeon_no_bg.png"
-              alt = "This is a cartoon of a chameleon, the mascot of MeaLeon">
+            <img src="static/mealeon_no_bg.png" alt="This is a cartoon of a chameleon, the mascot of MeaLeon">
           </div>
 
           <div class="column right">
             <form action="/get_results" method="post">
               <p>Dish Name</p>
-                <input type="text" onfocus="this.value=''" name="dish_name" value="In the Mood for Food?">
+              <input type="text" onfocus="this.value=''" name="dish_name" value="In the Mood for Food?">
 
               <br>
               <br>
 
               <p>Cuisine Style</p>
-                <select name="cuisine_name">
-                  <option value="African">African</option>
-                  <option value="American">American</option>
-                  <option value="Asian">Asian</option>
-                  <option value="Cajun/Creole">Cajun/Creole</option>
-                  <option value="Chinese">Chinese</option>
-                  <option value="Eastern European">Eastern European</option>
-                  <option value="English">English</option>
-                  <option value="French">French</option>
-                  <option value="German">German</option>
-                  <option value="Indian">Indian</option>
-                  <option value="Irish">Irish</option>
-                  <option value="Italian">Italian</option>
-                  <option value="Japanese">Japanese</option>
-                  <option value="Kosher">Kosher</option>
-                  <option value="Latin American">Latin American</option>
-                  <option value="Mediterranean">Mediterranean</option>
-                  <option value="Mexican">Mexican</option>
-                  <option value="Middle Eastern">Middle Eastern</option>
-                  <option value="Moroccan">Moroccan</option>
-                  <option value="Scandinavian">Scandinavian</option>
-                  <option value="Southwestern">Southwestern</option>
-                  <option value="Thai">Thai</option>
-                  <option value="Vietnamese">Vietnamese</option>
-                </select>
+              <select name="cuisine_name">
+                <option value="African">African</option>
+                <option value="American">American</option>
+                <option value="Asian">Asian</option>
+                <option value="Cajun/Creole">Cajun/Creole</option>
+                <option value="Chinese">Chinese</option>
+                <option value="Eastern European">Eastern European</option>
+                <option value="English">English</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Indian">Indian</option>
+                <option value="Irish">Irish</option>
+                <option value="Italian">Italian</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Kosher">Kosher</option>
+                <option value="Latin American">Latin American</option>
+                <option value="Mediterranean">Mediterranean</option>
+                <option value="Mexican">Mexican</option>
+                <option value="Middle Eastern">Middle Eastern</option>
+                <option value="Moroccan">Moroccan</option>
+                <option value="Scandinavian">Scandinavian</option>
+                <option value="Southwestern">Southwestern</option>
+                <option value="Thai">Thai</option>
+                <option value="Vietnamese">Vietnamese</option>
+              </select>
 
               <br>
 
@@ -137,26 +140,34 @@
         </p>
       </div>
     </div>
-  </body>
-  <footer>
-    <div class="row" style="background-color: rgba(0,0,0,0.4);">
-      <div class="col center text-white">
-        <h4>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank" style="color: white"><u>MeaLeon</u></a></h4>
-        <h6>Header background from <a href="https://www.foodserviceequipmentjournal.com/wp-content/uploads/2019/09/Boxed-Off-mise-en-place.jpg"target="_blank" style="color: white"><u>here</u></a></h6>
-        </div>
-      <div class="col center text-white">
-        <h4>Created by: <a href= "https://aaronwchen.github.io/" target="_blank" style="color: white"><u>Aaron W. Chen</u></a></h4>
-        <h6>Chameleon from <a href="https://www.amazon.com/Adorable-Smiling-African-Chameleon-Cartoon/dp/B079R7TLJK"target="_blank" style="color: white"><u>here</u></a></h6>
-      </div>
-      <div class="col center text-white">
-        <h4>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank" style="color: white"><u>awashingtonchen</u></a></h4>
-        <h6>Body background from <a href="https://www.amazon.com/Adorable-Smiling-African-Chameleon-Cartoon/dp/B079R7TLJK"target="_blank" style="color: white"><u>here</u></a></h6>            
-      </div>
+</body>
+<footer>
+  <div class="row" style="background-color: rgba(0,0,0,0.4);">
+    <div class="col center text-white">
+      <h4>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank"
+          style="color: white"><u>MeaLeon</u></a></h4>
+      <h6>Header background from <a
+          href="https://www.foodnavigator.com/Article/2021/07/27/Healthy-plant-rich-diets-associated-with-lower-COVID-19-risk"
+          target="_blank" style="color: white"><u>here</u></a></h6>
     </div>
-    <br>
-      <div class="row">
-        <div class="col center" id="edamam-badge" data-color="white"></div>
-      </div>
-    
-  </footer>
+    <div class="col center text-white">
+      <h4>Created by: <a href="https://aaronwchen.github.io/" target="_blank" style="color: white"><u>Aaron W.
+            Chen</u></a></h4>
+      <h6>Chameleon from <a href="https://www.amazon.com/Adorable-Smiling-African-Chameleon-Cartoon/dp/B079R7TLJK"
+          target="_blank" style="color: white"><u>here</u></a></h6>
+    </div>
+    <div class="col center text-white">
+      <h4>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank"
+          style="color: white"><u>awashingtonchen</u></a></h4>
+      <h6>Body background from <a href="https://www.amazon.com/Adorable-Smiling-African-Chameleon-Cartoon/dp/B079R7TLJK"
+          target="_blank" style="color: white"><u>here</u></a></h6>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col center" id="edamam-badge" data-color="white"></div>
+  </div>
+
+</footer>
+
 </html>

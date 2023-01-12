@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <!-- the dataframe? -->
     <title>MeaLeon Results</title>
@@ -32,7 +33,7 @@
             clear: both;
         }
 
-        img { 
+        img {
             max-width: 100%;
             height: auto;
         }
@@ -54,7 +55,6 @@
             opacity: 1;
             transition: opacity 500ms ease;
         }
-        
     </style>
 </head>
 
@@ -65,7 +65,7 @@
         <div class="row">
             <div class="column left" style="background-color:#72E899;">
                 <img src="{{ url_for('static', filename='mealeon_no_bg.png') }}"
-                    alt = "This is a cartoon of a chameleon, the mascot of MeaLeon"> 
+                    alt="This is a cartoon of a chameleon, the mascot of MeaLeon">
             </div>
 
             <div class="column right" style="background-color: #72E899;">
@@ -78,21 +78,22 @@
         <br>
 
         <div class="row">
-            <div class="col center"><h3>Here are the top five most similar recipes!</h3></div>
+            <div class="col center">
+                <h3>Here are the top five most similar recipes!</h3>
+            </div>
         </div>
-    
+
         <br>
-    
+
         <div class="row justify-content-center">
-        
-        {% for result in results: %}
+
+            {% for result in results: %}
             <div class="card text center" style="max-width: 20rem;">
                 <a href="{{ result['fixed_url'] }}" style="color: white;" target="_blank">
                     <div class="card-body">
                         <div style="background-color: black;">
-                            <img style="opacity: 0.65;" 
-                                class="result" 
-                                src="http://mealeonstatic.s3-website-us-west-2.amazonaws.com/static/{{ result['photo'] }}" 
+                            <img style="opacity: 0.65;" class="result"
+                                src="https://mealeon-static.sfo3.digitaloceanspaces.com/static/{{ result['photo'] }}"
                                 alt="This is an image from Epicurious for {{ result['title'] }}">
                         </div>
 
@@ -104,14 +105,14 @@
                             </div>
                         </div>
 
-                        
+
                     </div>
                 </a>
-                
-            </div>
-        {% endfor %}
 
-            <div class="card text-white center" style= "max-width: 20rem;">
+            </div>
+            {% endfor %}
+
+            <div class="card text-white center" style="max-width: 20rem;">
                 <a href="/" style="color: white;">
                     <div class="card-body">
                         <div style="background-color: black;">
@@ -130,11 +131,18 @@
 <br>
 <footer>
     <div class="row">
-        <div class="col center"><h5>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank">MeaLeon</a></h3></div>
-        <div class="col center"><h5>Created by: <a href= "https://aaronwchen.github.io/" target="_blank">Aaron W. Chen</a></h3></div>
-        <div class="col center"><h5>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank">awashingtonchen</a></h3></div>
+        <div class="col center">
+            <h5>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank">MeaLeon</a></h3>
+        </div>
+        <div class="col center">
+            <h5>Created by: <a href="https://aaronwchen.github.io/" target="_blank">Aaron W. Chen</a></h3>
+        </div>
+        <div class="col center">
+            <h5>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank">awashingtonchen</a></h3>
+        </div>
     </div>
     <br>
-    <div class= "center" id="edamam-badge" data-color="white"></div>
+    <div class="center" id="edamam-badge" data-color="white"></div>
 </footer>
+
 </html>
