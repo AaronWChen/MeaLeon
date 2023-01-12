@@ -15,6 +15,7 @@ import pandas as pd
 import numpy as np
 from pandas.io.json import json_normalize
 import nltk
+nltk.download('omw-1.4')
 nltk.download('wordnet')
 nltk.download('stopwords')
 from nltk.corpus import stopwords
@@ -68,7 +69,7 @@ def filter_out_cuisine(ingred_word_matrix,
 
   east_asian = ['Asian', 'Chinese', 'Japanese']
 
-  southeast_asian = ['Asian', 'Thai', 'Vietnamese']
+  southeast_asian = ['Thai', 'Vietnamese']
 
   euro_islands = ['English', 'Irish']
 

@@ -16,6 +16,7 @@ import pandas as pd
 import numpy as np
 from pandas.io.json import json_normalize
 import nltk
+nltk.download('omw-1.4')
 nltk.download('wordnet')
 nltk.download('stopwords')
 from nltk.corpus import stopwords
