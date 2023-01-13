@@ -47,12 +47,12 @@ def import_stored_files():
 def transform_ohe(ingred_ohe, recipe):
   # This function takes in a OHE/CountVectorizer object and a recipe, then 
   # creates/transforms the given recipe into a CountVectorizer form
-  pd.set_option('display.max_colwidth', 500)
-  print('Raw ingredients')
-  print(recipe['ingredients'])
+  # pd.set_option('display.max_colwidth', 500)
+  
   ingreds = recipe['ingredients'].apply(" ".join).str.lower()
-  print(ingreds)
+  
   response = ingred_ohe.transform(ingreds)
+  
   transformed_recipe = pd.DataFrame(response.toarray(),
                                     columns=ingred_ohe.get_feature_names(),
                                     index=recipe.index)
@@ -71,7 +71,7 @@ def filter_out_cuisine(ingred_word_matrix,
 
   east_asian = ['Asian', 'Chinese', 'Japanese']
 
-  southeast_asian = ['Thai', 'Vietnamese']
+  southeast_asian = ['Asian', 'Thai', 'Vietnamese']
 
   euro_islands = ['English', 'Irish']
 
