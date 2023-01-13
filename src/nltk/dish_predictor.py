@@ -69,7 +69,7 @@ def filter_out_cuisine(ingred_word_matrix,
 
   east_asian = ['Asian', 'Chinese', 'Japanese']
 
-  southeast_asian = ['Thai', 'Vietnamese']
+  southeast_asian = ['Asian', 'Thai', 'Vietnamese']
 
   euro_islands = ['English', 'Irish']
 
