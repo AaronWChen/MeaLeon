@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "MeaLeon"
+  site-url: "https://AaronWChen.github.io/MeaLeon"
+  description: "Have a favorite dish but want to try something with similar ingredients but from another cuisine? MeaLeon uses natural language processing to compare the ingredients of a dish you like and finds 5 dishes from Epicurious, along with links to those recipe pages! Dataset here https://www.kaggle.com/datasets/awchen/ogmealeondata"
+  repo-branch: main
+  repo-url: "https://github.com/AaronWChen/MeaLeon"
