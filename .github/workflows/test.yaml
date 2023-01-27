@@ -1,6 +1,6 @@
 name: CI
-on:
-  workflow_dispatch: [workflow_dispatch, pull_request, push] #allows repo admins to trigger this workflow from the Actions tab
+on: [workflow_dispatch, pull_request, push]
+  workflow_dispatch:  #allows repo admins to trigger this workflow from the Actions tab
   pull_request:
   push:
     branches:
