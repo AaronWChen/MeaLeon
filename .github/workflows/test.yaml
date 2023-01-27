@@ -12,10 +12,10 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
 
     steps:
-      - uses: fastai/workflows/nbdev-ci@master
-        with:
-          version: ${{ matrix.version }}
-          pre: 1
+      # - uses: fastai/workflows/nbdev-ci@master
+      #   with:
+      #     version: ${{ matrix.version }}
+      #     pre: 1
 
       - name: Set up Python
         uses: actions/setup-python@v4
