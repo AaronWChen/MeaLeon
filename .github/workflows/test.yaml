@@ -41,11 +41,11 @@ jobs:
 
       - name: Configure Poetry
         run: |
-          poetry config virtualenvs.in-project false
-          poetry config virtualenvs.path ~/.virtualenvs
+          python -m poetry config virtualenvs.in-project false
+          python -m poetry config virtualenvs.path ~/.virtualenvs
 
       - name: Install libraries
-        run: poetry install
+        run: python -m poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: check for data cache hit
