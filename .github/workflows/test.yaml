@@ -25,23 +25,28 @@ jobs:
       - name: checkout contents of PR
         uses: actions/checkout@v3
 
-      - name: Install Poetry
-        run: |
-          python -m pip install poetry==1.1.13
-
-      - name: Configure Poetry
-        run: |
-          python -m poetry config virtualenvs.in-project true
+      - name: Install Poetry via Public GitHub Action
+        uses: abatilo/actions-poetry@v2.0.0
+          with: 
+            poetry-version: 1.1.13
 
       - name: Cache the virtualenv
         uses: actions/cache@v2
+        id: cache
         with:
-          path: ./.venv
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
+          path: ~/.virtualenvs
+          key: poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.in-project false
+          poetry config virtualenvs.path ~/.virtualenvs
 
       - name: Install libraries
-        run: |
-          python -m poetry install
+        run: poetry install
+        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: check for cache hit
         uses: actions/cache@v3
@@ -60,7 +65,7 @@ jobs:
           find $HOME/.fastai/archive/ -name "*.tgz" -exec tar -xzvf {} -C $HOME/.fastai/data \;
       
       - name: Test notebooks batch ${{matrix.nb_dec}}${{matrix.nb_unit}}
-        run: nbdev_test --flags '' --n_workers 3 --pause 1.0 --file_re "${{matrix.nb_dec}}${{matrix.nb_unit}}.*"
+        run: poetry run nbdev_test --flags '' --n_workers 3 --pause 1.0 --file_re "${{matrix.nb_dec}}${{matrix.nb_unit}}.*"
 
       - name: test docs build
         if: ${{ (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch') && matrix.version == '3.9' && matrix.os == 'ubuntu' }}
