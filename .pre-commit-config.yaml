@@ -1,0 +1,24 @@
+repos:
+  # nbQA performs style formatting in notebooks
+- repo: https://github.com/nbQA-dev/nbQA
+  rev: 1.5.3
+  hooks:
+    - id: nbqa-mypy
+      args: ["--ignore-missing-imports", "--check-untyped-defs"]
+      additional_dependencies: ["mypy", "types-toml", "types-requests"]
+    - id: nbqa-black
+
+
+  # nbhooks removes metadata and keeps notebooks cleaner to make git revisions easier to handle
+- repo: https://gitlab.com/iamlikeme/nbhooks
+  rev: 1.0.0  # Set to the most recent version
+  hooks:
+  - id: nb-ensure-clean
+    args: [--meta, ExecuteTime]  # Optional blacklist of metadata keys (you can use regex)
+
+
+  # nbdev_export exports notebooks to Python modules
+- repo: https://github.com/fastai/nbdev
+  rev: 2.2.10
+  hooks:
+  - id: nbdev_export
