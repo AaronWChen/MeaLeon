@@ -44,7 +44,7 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Download pretrained spacy libraries
-        run: python -m spacy download en_core_web_sm
+        run: poetry run spacy download en_core_web_sm
 
       - name: check for data cache hit
         uses: actions/cache@v3
