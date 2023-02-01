@@ -12,11 +12,6 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
 
     steps:
-      # - uses: fastai/workflows/nbdev-ci@master
-      #   with:
-      #     version: ${{ matrix.version }}
-      #     pre: 1
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -47,6 +42,9 @@ jobs:
       - name: Install libraries
         run: python -m poetry install
         if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Download pretrained spacy libraries
+        run: python -m spacy download en_core_web_sm
 
       - name: check for data cache hit
         uses: actions/cache@v3
