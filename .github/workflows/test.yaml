@@ -8,7 +8,7 @@ jobs:
       fail-fast: true
       matrix:
         os:  [ubuntu, macos]
-        version: ["3.7", "3.8", "3.9", "3.10"]
+        py_version: ["3.7", "3.8", "3.9", "3.10"]
     runs-on: ${{ matrix.os }}-latest
 
     steps:
@@ -20,7 +20,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.py }}
+          python-version: ${{ matrix.py_version }}
 
       - name: checkout contents of PR
         uses: actions/checkout@v3
@@ -31,7 +31,7 @@ jobs:
           poetry-version: 1.1.13
 
       - name: Cache the virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: venv_cache
         with:
           path: ~/.virtualenvs
