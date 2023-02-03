@@ -1,0 +1,37 @@
+repos:
+  # nbQA performs style formatting in notebooks
+- repo: https://github.com/nbQA-dev/nbQA
+  rev: 1.5.3
+  hooks:
+    - id: nbqa-mypy
+      args: ["--ignore-missing-imports", "--check-untyped-defs"]
+      additional_dependencies: ["mypy", "types-toml", "types-requests"]
+
+  # use black-juptyer to format notebooks
+- repo: https://github.com/psf/black/
+  rev: 23.1.0
+  hooks:
+  - id: black-jupyter
+
+
+  # nbhooks removes metadata and keeps notebooks cleaner to make git revisions easier to handle
+- repo: https://github.com/datarootsio/databooks
+  rev: 1.0.0  # Set to the most recent version
+  hooks:
+  - id: databooks
+    name: databooks
+    description:
+      "Remove notebook metadata using `databooks`."
+    entry: databooks meta
+    language: python
+    minimum_pre_commit_version: 2.9.2
+    types: [ jupyter ]
+    args: [-w]
+
+
+
+  # nbdev_export exports notebooks to Python modules
+- repo: https://github.com/fastai/nbdev
+  rev: 2.2.10
+  hooks:
+  - id: nbdev_export

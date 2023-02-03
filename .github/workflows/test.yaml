@@ -1,0 +1,82 @@
+name: CI
+on: 
+  [workflow_dispatch, pull_request, push]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: true
+      matrix:
+        os:  [ubuntu, macos]
+        py_version: ["3.7", "3.8", "3.9", "3.10"]
+    runs-on: ${{ matrix.os }}-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.py_version }}
+
+      - name: checkout contents of PR
+        uses: actions/checkout@v3
+
+      - name: Install Poetry via Public GitHub Action
+        uses: abatilo/actions-poetry@v2.0.0
+        with: 
+          poetry-version: 1.1.13
+
+      - name: Cache the virtualenv
+        uses: actions/cache@v3
+        id: venv_cache
+        with:
+          path: ~/.virtualenvs
+          key: poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Configure Poetry
+        run: |
+          python -m poetry config virtualenvs.in-project false
+          python -m poetry config virtualenvs.path ~/.virtualenvs
+
+      - name: Install libraries
+        run: python -m poetry install
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Download pretrained spacy libraries
+        run: poetry run spacy download en_core_web_sm
+
+      - name: check for data cache hit
+        uses: actions/cache@v3
+        if: env.caching == 'true'
+        id: data_cache
+        with:
+          path: ~/.fastai/data
+          key: 'fastai-test-data-v3'
+
+      - name: download data
+        if: env.download == 'true' && steps.cache.outputs.cache-hit != 'true'
+        run: |
+          wget https://raw.githubusercontent.com/fastai/docker-containers/master/fastai/tmp_scripts/download_testdata.py
+          ipython download_testdata.py
+          mkdir -p $HOME/.fastai/data
+          find $HOME/.fastai/archive/ -name "*.tgz" -exec tar -xzvf {} -C $HOME/.fastai/data \;
+      
+      - name: Test notebooks batch ${{matrix.nb_dec}}${{matrix.nb_unit}}
+        run: python -m poetry run nbdev_test --flags '' --n_workers 3 --pause 1.0 --file_re "${{matrix.nb_dec}}${{matrix.nb_unit}}.*"
+
+      - name: test docs build
+        if: ${{ (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch') && matrix.version == '3.9' && matrix.os == 'ubuntu' }}
+        run: |
+          set -ux
+          wget -q $(curl https://latest.fast.ai/pre/quarto-dev/quarto-cli/linux-amd64.deb)
+          sudo dpkg -i quarto*.deb
+          nbdev_docs
+          if [ -f "_docs/index.html" ]; then
+            echo "docs built successfully."
+          else
+            echo "index page not found in rendered docs."
+            ls -la
+            ls -la _docs
+            exit 1
+          fi
