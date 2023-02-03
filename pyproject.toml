@@ -1,9 +1,12 @@
 [tool.poetry]
-name = "mealeon"
-version = "0.1.7"
+name = "MeaLeon"
+version = "0.1.9"
 description = "MeaLeon suggests recipes for a user to cook! It is a full stack data science project using machine learning, natural language processing, a web form, and AWS. This is the Poetry file to make it easier to deploy and work on the project."
 authors = ["Aaron W. Chen <awc33@cornell.edu>"]
 license = "GPL-3.0-or-later"
+packages = [
+    { include = "MeaLeon" }
+]
 
 [tool.poetry.dependencies]
 python = "~3.10"
@@ -37,13 +40,15 @@ nltk = "^3.7"
 optuna = "^3.0.3"
 hdbscan = "^0.8.29"
 
-
 [tool.poetry.dev-dependencies]
 black = "^21.12b0"
 pylint = "^2.13.4"
 pytest = "^6.2.5"
 click = "8.0.4"
-
+nbdev = "^2.3.9"
+poetry2setup = "^1.1.0"
+pre-commit = "^3.0.1"
+nbqa = "^1.6.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
