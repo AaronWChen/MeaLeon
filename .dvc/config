@@ -1,3 +1,5 @@
+[core]
+    remote = origin
 ['remote "origin"']
     url = https://dagshub.com/AaronWChen/MeaLeon.dvc
 ['remote "origin-s3"']
