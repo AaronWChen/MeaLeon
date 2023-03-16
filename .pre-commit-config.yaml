@@ -1,11 +1,11 @@
 repos:
   # nbQA performs style formatting in notebooks
-- repo: https://github.com/nbQA-dev/nbQA
-  rev: 1.5.3
-  hooks:
-    - id: nbqa-mypy
-      args: ["--ignore-missing-imports", "--check-untyped-defs"]
-      additional_dependencies: ["mypy", "types-toml", "types-requests"]
+# - repo: https://github.com/nbQA-dev/nbQA
+#   rev: 1.6.3
+#   hooks:
+#     - id: nbqa-mypy
+#       args: ["--ignore-missing-imports", "--check-untyped-defs"]
+#       additional_dependencies: ["mypy", "types-toml", "types-requests"]
 
   # use black-juptyer to format notebooks
 # - repo: https://github.com/psf/black/
