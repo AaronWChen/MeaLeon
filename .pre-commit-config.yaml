@@ -30,6 +30,7 @@ repos:
 
 
 
+  # nbdev_clean is supposed to use black to format the notebooks
   # nbdev_export exports notebooks to Python modules
 - repo: https://github.com/fastai/nbdev
   rev: 2.2.10
