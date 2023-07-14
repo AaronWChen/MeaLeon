@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "MeaLeon"
-version = "0.1.13"
+version = "0.1.14"
 description = "MeaLeon suggests recipes for a user to cook! It is a full stack data science project using machine learning, natural language processing, a web form, and AWS. This is the Poetry file to make it easier to deploy and work on the project."
 authors = ["Aaron W. Chen <awc33@cornell.edu>"]
 license = "GPL-3.0-or-later"
