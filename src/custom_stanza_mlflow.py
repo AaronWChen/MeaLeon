@@ -13,6 +13,9 @@ class StanzaWrapper(mlflow.pyfunc.PythonModel):
     custom PythonModel
     """
 
+    def __init__(self, stanza_lang_str='en'):
+        self.stanza_lang_str = stanza_lang_str
+
     def load_context(self, context):
         """
         This method is called when loading an MLflow model with
@@ -25,6 +28,7 @@ class StanzaWrapper(mlflow.pyfunc.PythonModel):
 
         self.model = pickle.load(open(context.artifacts["sklearn_transformer"], "rb"))
         self.database = pickle.load(open(context.artifacts["data"], "rb"))
+
 
     def predict(self, ingredients_list: list):
         """
@@ -52,8 +56,9 @@ class StanzaWrapper(mlflow.pyfunc.PythonModel):
         )
         return similar_recipes_df
     
-    # custom ngram analyzer function, matching only ngrams that belong to the same line
-    def stanza_analyzer(stanza_pipeline, minNgramLength, maxNgramLength):
+# custom ngram analyzer function, matching only ngrams that belong to the same line
+    @classmethod
+    def stanza_analyzer(self, stanza_pipeline, minNgramLength, maxNgramLength):
         def ngrams_per_line(ingredients_list):
 
             lowered = " brk ".join(map(str, [ingred for ingred in ingredients_list if ingred is not None])).lower()
@@ -68,7 +73,6 @@ class StanzaWrapper(mlflow.pyfunc.PythonModel):
                                 for sent in preproc.sentences 
                                 for word in sent.words if (
                                     word.upos not in ["NUM", "DET", "ADV", "CCONJ", "ADP", "SCONJ"]
-                                    #    and word not in STOP_WORDS
                                     and word is not None
                                 )]
                             )
@@ -84,14 +88,15 @@ class StanzaWrapper(mlflow.pyfunc.PythonModel):
                 for ngramLength in range(minNgramLength, maxNgramLength+1):
 
                     # find and return all ngrams
-                    # for ngram in zip(*[terms[i:] for i in range(3)]): <-- solution without a generator (works the same but has higher memory usage)
-                    for ngram in zip(*[islice(seq, i, len(terms)) for i, seq in enumerate(tee(terms, ngramLength))]): # <-- solution using a generator
+                    # for ngram in zip(*[terms[i:] for i in range(3)]): 
+                        # <-- solution without a generator (works the same but has higher memory usage)
+                    for ngram in zip(*[islice(seq, i, len(terms)) for i, seq in enumerate(tee(terms, ngramLength))]):   # <-- solution using a generator
                         
                         ngram = ' '.join(map(str, ngram))
                         yield ngram
-                        
         return ngrams_per_line
-
+        
+    
     # def fit_transform(self, nlp_sklearn_params: list):
     #         """ 
     #         This method duplicates/wraps scikit-learn behavior for Pipelines to handle text
@@ -131,3 +136,4 @@ class StanzaWrapper(mlflow.pyfunc.PythonModel):
         suggest_df = X_df.loc[recipe_ids]
         suggest_df = pd.concat([suggest_df, proximity])
         return suggest_df
+
