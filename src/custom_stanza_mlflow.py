@@ -36,7 +36,7 @@ class StanzaWrapper(mlflow.pyfunc.PythonModel):
         It needs to function essentially as a wrapper
 
         Args:
-            the ingredients of a single, query recipe in a list
+            ingredients_list: the ingredients of a single, query recipe in a list
 
         Returns:
             similar_recipes_df: DataFrame of the top 5 most similar recipes from
@@ -56,9 +56,24 @@ class StanzaWrapper(mlflow.pyfunc.PythonModel):
         )
         return similar_recipes_df
     
-# custom ngram analyzer function, matching only ngrams that belong to the same line
     @classmethod
     def stanza_analyzer(self, stanza_pipeline, minNgramLength, maxNgramLength):
+        """ 
+        Custom ngram analyzer function, matching only ngrams that belong to the same line
+        
+        The source for this was StackOverflow because I couldn't figure out how to let sklearn pipelines use arguments for custom analyzers
+
+        Use this as the analyzer for an sklearn pipeline, and it should work
+
+        Args:
+            stanza_pipeline: Stanza pipeline
+            minNgramLength: integer for the minimum ngram (usually 1)
+            maxNgramLength: integer for maximum length ngram (usually should not exceed 4)
+        
+        Returns:
+            A function that will be used in sklearn pipeline. Said function yields a generator
+        
+        """
         def ngrams_per_line(ingredients_list):
 
             lowered = " brk ".join(map(str, [ingred for ingred in ingredients_list if ingred is not None])).lower()
@@ -82,7 +97,8 @@ class StanzaWrapper(mlflow.pyfunc.PythonModel):
             for ln in lemmad.split(' brk '):
                 
                 # tokenize the input string (customize the regex as desired)
-                terms = re.split("(?u)\b[a-zA-Z]{2,}\b", ln)
+                at_least_two_english_characters_whole_words = "(?u)\b[a-zA-Z]{2,}\b"
+                terms = re.split(at_least_two_english_characters_whole_words, ln)
 
                 # loop ngram creation for every number between min and max ngram length
                 for ngramLength in range(minNgramLength, maxNgramLength+1):
