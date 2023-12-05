@@ -43,9 +43,9 @@ jobs:
         run: python -m poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - name: Log in to DagsHub
-        run: |
-          poetry run dagshub login --token ${{ secrets.DAGSHUB_TOKEN }}
+      # - name: Log in to DagsHub
+      #   run: |
+      #     poetry run dagshub login --token ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Download pretrained spacy libraries
         run: poetry run spacy download en_core_web_sm
@@ -69,8 +69,7 @@ jobs:
       - name: Pull data from DVC
         run: |
           poetry run dvc remote modify origin --local auth basic
-          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
-          poetry run dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
+          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_TOKEN }}
           poetry run dvc pull
 
       - name: Test notebooks batch ${{matrix.nb_dec}}${{matrix.nb_unit}}
