@@ -5,6 +5,4 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://AaronWChen.github.io',
                 'git_url': 'https://github.com/AaronWChen/MeaLeon',
                 'lib_path': 'MeaLeon'},
-  'syms': { 'MeaLeon.core': {'MeaLeon.core.foo': ('core.html#foo', 'MeaLeon/core.py')},
-            'MeaLeon.preprocessor': { 'MeaLeon.preprocessor.preprocess_dataframe': ( 'eda_count_vectorization.html#preprocess_dataframe',
-                                                                                     'MeaLeon/preprocessor.py')}}}
+  'syms': {'MeaLeon.core': {'MeaLeon.core.foo': ('core.html#foo', 'MeaLeon/core.py')}}}
