@@ -43,9 +43,9 @@ jobs:
         run: python -m poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
-      # - name: Log in to DagsHub
-      #   run: |
-      #     poetry run dagshub login --token ${{ secrets.DAGSHUB_TOKEN }}
+      - name: Log in to DagsHub
+        run: |
+          poetry run dagshub login --token ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Download pretrained spacy libraries
         run: poetry run spacy download en_core_web_sm
