@@ -36,6 +36,9 @@ class CustomSKLearnWrapper(mlflow.pyfunc.PythonModel):
         import dill as pickle
 
         self.model = pickle.load(open(context.artifacts["sklearn_model"], "rb"))
+        self.sklearn_transformer = pickle.load(
+            open(context.artifacts["sklearn_transformer"], "rb")
+        )
 
     def predict(self, context, model_input, params):
         """
@@ -66,7 +69,7 @@ class CustomSKLearnWrapper(mlflow.pyfunc.PythonModel):
             the sklearn/Stanza text processing
         """
 
-        response = self.model.transform(model_input)
+        response = self.sklearn_transformer.transform(model_input)
 
         transformed_recipe = pd.DataFrame(
             response.toarray(),
