@@ -140,7 +140,7 @@ class CustomSKLearnAnalyzer:
 
         transformed_recipe = CustomSKLearnAnalyzer().transform(
             sklearn_transformer=sklearn_transformer,
-            input_data=input_data["ingredients"],
+            input_data=input_data,
         )
 
         return sklearn_transformer, transformed_recipe
@@ -193,7 +193,7 @@ class CustomSKLearnAnalyzer:
                 pd.DataFrame that combines the vectorized text with the original dataframe
         """
 
-        response = sklearn_transformer.transform(tqdm(input_data))
+        response = sklearn_transformer.transform(input_data)
 
         transformed_recipe = pd.DataFrame(
             response.toarray(),
@@ -284,9 +284,12 @@ class CustomSKLearnAnalyzer:
                 "Invalid sklearn text processing type, please choose between 'OneHotEncode', 'CountVectorizer', 'TFIDF'"
             )
             return None
+        
+        sklearn_transformer.fit(input_data)
 
         return sklearn_transformer
-
+    
+    @classmethod
     def stanza_analyzer(self, stanza_pipeline, minNgramLength, maxNgramLength):
         """
         Custom ngram analyzer function, matching only ngrams that belong to the same line

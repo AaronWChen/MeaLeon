@@ -35,10 +35,12 @@ class CustomSKLearnWrapper(mlflow.pyfunc.PythonModel):
         """
         import dill as pickle
 
-        self.model = pickle.load(open(context.artifacts["sklearn_model"], "rb"))
-        self.sklearn_transformer = pickle.load(
-            open(context.artifacts["sklearn_transformer"], "rb")
-        )
+        with open(context.artifacts["sklearn_model"], "rb") as f:
+            self.model = pickle.load(f)
+        
+        with open(context.artifacts["sklearn_transformer"], "rb") as f:
+            self.sklearn_transformer = pickle.load(f)
+
 
     def predict(self, context, model_input, params):
         """
@@ -73,7 +75,7 @@ class CustomSKLearnWrapper(mlflow.pyfunc.PythonModel):
 
         transformed_recipe = pd.DataFrame(
             response.toarray(),
-            columns=self.model.get_feature_names(),
+            columns=self.sklearn_transformer.get_feature_names_out(),
             index=model_input.index,
         )
 
