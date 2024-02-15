@@ -37,10 +37,9 @@ class CustomSKLearnWrapper(mlflow.pyfunc.PythonModel):
 
         with open(context.artifacts["sklearn_model"], "rb") as f:
             self.model = pickle.load(f)
-        
+
         with open(context.artifacts["sklearn_transformer"], "rb") as f:
             self.sklearn_transformer = pickle.load(f)
-
 
     def predict(self, context, model_input, params):
         """
@@ -71,7 +70,12 @@ class CustomSKLearnWrapper(mlflow.pyfunc.PythonModel):
             the sklearn/Stanza text processing
         """
 
-        response = self.sklearn_transformer.transform(model_input)
+        print(model_input)
+        print(model_input.shape)
+        print(model_input.sample(3, random_state=200))
+
+        # response = self.sklearn_transformer.transform(model_input)
+        response = self.sklearn_transformer.transform(model_input.values)
 
         transformed_recipe = pd.DataFrame(
             response.toarray(),
