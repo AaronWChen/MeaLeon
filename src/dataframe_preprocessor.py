@@ -2,7 +2,18 @@
 """
 
 import pandas as pd
+import stanza
 from typing import Dict, Text
+
+# instantiate stanza pipeline
+stanza.download('en')
+nlp = stanza.Pipeline('en', 
+                    depparse_batch_size=50, 
+                    depparse_min_length_to_batch_separately=50,
+                    verbose=True,
+                    use_gpu=False, # set to true when on cloud/not on streaming computer
+                    batch_size=100
+                    )
 
 
 def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -19,6 +30,49 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         """This function looks for recipes which somehow have no ingredients at all and will remove them from the dataframe to allow further processing"""
         df.drop(df[df["ingredients"].isna()].index, inplace=True)
         return df
+    
+    def stanza_lemmafier(recipe_ingredients: list, stanza_pipeline) -> pd.DataFrame:
+        """This function converts a list of ingredients into a list of ingredient lemmas
+        It is intended to be used via an apply(lambda) until a better way is devised
+        
+        Args:
+            recipe_ingredients: List
+        
+        """
+        lemmafied = " ".join(str(word.lemma) 
+                            for sent in stanza_pipeline(recipe_ingredients).sentences
+                            for word in sent.words
+                            if (word.upos 
+                                not in ["NUM", 
+                                        "DET", 
+                                        "ADV", 
+                                        "CCONJ", 
+                                        "ADP", 
+                                        "SCONJ",
+                                        "PUNCT"
+                                        ]
+                                and word is not None
+                                )
+                            )
+        return lemmafied
+    
+    def ingredient_lemmafier(df:pd.DataFrame, stanza_pipeline) -> pd.DataFrame:
+        """This function performs some text preprocessing:
+        1. Converts the raw list of ingredients into a big string with ' brk ' token
+        2. Remove accented characters
+        3. Lowercase all characters
+        4. Fill in nulls with filler
+        5. Apply the lemmafier function above and store the results in a new column
+        """
+        df['ingredients_lemmafied'] = (df['ingredients']
+                                      .str.join(" brk ")
+                                      .str.normalize('NFKC')
+                                      .str.lower()
+                                      .fillna("Missing ingredients")
+                                      ).apply(lambda x: stanza_lemmafier(x, stanza_pipeline))
+        
+        return df
+        
 
     def link_maker(recipe_link: Text) -> Text:
         """This function takes in the incomplete recipe link from the dataframe and returns the complete one."""
@@ -92,7 +146,7 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                     # Otherwise, there should be no issue with returning
                     return to_check[key_target]
 
-    df = drop_null_ingredient_records(df)
+    df = ingredient_lemmafier(df)
 
     # Dive into the tag column and extract the cuisine label. Put into new column or fills with "missing data"
     df["cuisine_name"] = df["tag"].apply(
