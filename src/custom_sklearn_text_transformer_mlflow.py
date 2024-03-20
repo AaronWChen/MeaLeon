@@ -29,7 +29,7 @@ class CustomSKLearnAnalyzer:
         depparse_batch_size=50,
         depparse_min_length_to_batch_separately=50,
         verbose=True,
-        use_gpu=False,
+        use_gpu=True,
         batch_size=100,
     ):
         """
@@ -77,285 +77,334 @@ class CustomSKLearnAnalyzer:
 
         return nlp
 
-    def fit_transform(
-        self,
-        input_data,
-        stanza_pipeline,
-        strip_accents="unicode",
-        lowercase=True,
-        min_ngram_length=1,
-        max_ngram_length=4,
-        min_df=3,
-        sklearn_type="OneHotEncode",
-    ):
-        """
-        Method to simplify construction of custom sklearn text processor.
+    # def fit_transform(
+    #     # self,
+    #     input_data,
+    #     stanza_pipeline,
+    #     analyzer,
+    #     binary,
+    #     strip_accents="unicode",
+    #     lowercase=True,
+    #     min_ngram_length=1,
+    #     max_ngram_length=4,
+    #     min_df=3,
+    #     sklearn_type="OneHotEncode",
+    #     # analyzer=stanza_analyzer(stanza_pipeline=nlp, minNgramLength=1, maxNgramLength=4)
+    # ):
+    #     """
+    #     Method to simplify construction of custom sklearn text processor.
 
-        Follows construction of standard CountVectorizer/TFIDFVectorizer
+    #     Follows construction of standard CountVectorizer/TFIDFVectorizer
 
-        Args:
-            Follows sklearn CountVectorizer construction with some changes:
+    #     Args:
+    #         Follows sklearn CountVectorizer construction with some changes:
 
-            input_data:
-                pd.Series to be transformed. Each element in the series should be list of strings
+    #         input_data:
+    #             pd.Series to be transformed. Each element in the series should be list of strings
 
-            stanza_pipeline:
-                stanza.pipeline from prepare_stanza_pipeline
+    #         stanza_pipeline:
+    #             stanza.pipeline from prepare_stanza_pipeline
 
-            min_ngram_length:
-                setting for minimum number in ngram vectoriazation,
-                used with custom analyzer
-                default of 1
+    #         min_ngram_length:
+    #             setting for minimum number in ngram vectoriazation,
+    #             used with custom analyzer
+    #             default of 1
 
-            max_ngram_length:
-                setting for maximum number in ngram vectoriazation,
-                used with custom analyzer
-                default of 4
+    #         max_ngram_length:
+    #             setting for maximum number in ngram vectoriazation,
+    #             used with custom analyzer
+    #             default of 4
 
-            sklearn_type:
-                Setting for OneHotEncode, Regular CountVectorization, or TFIDFVectorization
-                default for OneHotEncode, choose between "OneHotEncode", "CountVectorizer", "TFIDF"
+    #         sklearn_type:
+    #             Setting for OneHotEncode, Regular CountVectorization, or TFIDFVectorization
+    #             default for OneHotEncode, choose between "OneHotEncode", "CountVectorizer", "TFIDF"
 
-        Returns:
-            sklearn_transformer:
-                sklearn text transformer for usage later/in MLflow models
+    #     Returns:
+    #         sklearn_transformer:
+    #             sklearn text transformer for usage later/in MLflow models
 
-            transformed_text:
-                pd.DataFrame that combines the vectorized text with the original dataframe
-        """
+    #         transformed_text:
+    #             pd.DataFrame that combines the vectorized text with the original dataframe
+    #     """
 
-        sklearn_transformer_params = {
-            "strip_accents": strip_accents,
-            "lowercase": lowercase,
-            "min_df": min_df,
-            "analyzer": CustomSKLearnAnalyzer().stanza_analyzer(
-                stanza_pipeline=stanza_pipeline,
-                min_ngram_length=min_ngram_length,
-                max_ngram_length=max_ngram_length,
-            ),
-            "sklearn_type": sklearn_type,
-        }
+    #     sklearn_transformer_params = {
+    #         "strip_accents": strip_accents,
+    #         "lowercase": lowercase,
+    #         "min_df": min_df,
+    #         "analyzer": analyzer,
+    #         "sklearn_type": sklearn_type,
+    #         "binary": binary,
+    #         "stanza_pipeline": stanza_pipeline,
+    #     }
 
-        sklearn_transformer = CustomSKLearnAnalyzer().fit(**sklearn_transformer_params)
+    #     sklearn_transformer = CustomSKLearnAnalyzer().fit(**sklearn_transformer_params)
 
-        transformed_recipe = CustomSKLearnAnalyzer().transform(
-            sklearn_transformer=sklearn_transformer,
-            input_data=input_data,
-        )
+    #     transformed_recipe = CustomSKLearnAnalyzer().transform(
+    #         sklearn_transformer=sklearn_transformer,
+    #         input_data=input_data,
+    #     )
 
-        return sklearn_transformer, transformed_recipe
+    #     return sklearn_transformer, transformed_recipe
 
-    def transform(
-        self,
-        sklearn_transformer,
-        input_data,
-        stanza_pipeline,
-        strip_accents="unicode",
-        lowercase=True,
-        min_ngram_length=1,
-        max_ngram_length=4,
-        min_df=3,
-        sklearn_type="OneHotEncode",
-    ):
-        """
-        Method to simplify construction of custom sklearn text processor.
+    # def transform(
+    #     # self,
+    #     sklearn_transformer,
+    #     input_data,
+    #     stanza_pipeline,
+    #     analyzer,
+    #     binary,
+    #     strip_accents="unicode",
+    #     lowercase=True,
+    #     min_ngram_length=1,
+    #     max_ngram_length=4,
+    #     min_df=3,
+    #     sklearn_type="OneHotEncode",
+    # ):
+    #     """
+    #     Method to simplify construction of custom sklearn text processor.
 
-        Follows construction of standard CountVectorizer/TFIDFVectorizer
+    #     Follows construction of standard CountVectorizer/TFIDFVectorizer
 
-        Args:
-            Follows sklearn CountVectorizer construction with some changes:
+    #     Args:
+    #         Follows sklearn CountVectorizer construction with some changes:
 
-            input_data:
-                pd.Series to be transformed. Each element in the series should be list of strings
+    #         input_data:
+    #             pd.Series to be transformed. Each element in the series should be list of strings
 
-            stanza_pipeline:
-                stanza.pipeline from prepare_stanza_pipeline
+    #         stanza_pipeline:
+    #             stanza.pipeline from prepare_stanza_pipeline
 
-            min_ngram_length:
-                setting for minimum number in ngram vectoriazation,
-                used with custom analyzer
-                default of 1
+    #         min_ngram_length:
+    #             setting for minimum number in ngram vectoriazation,
+    #             used with custom analyzer
+    #             default of 1
 
-            max_ngram_length:
-                setting for maximum number in ngram vectoriazation,
-                used with custom analyzer
-                default of 4
+    #         max_ngram_length:
+    #             setting for maximum number in ngram vectoriazation,
+    #             used with custom analyzer
+    #             default of 4
 
-            sklearn_type:
-                Setting for OneHotEncode, Regular CountVectorization, or TFIDFVectorization
-                default for OneHotEncode, choose between "OneHotEncode", "CountVectorizer", "TFIDF"
+    #         sklearn_type:
+    #             Setting for OneHotEncode, Regular CountVectorization, or TFIDFVectorization
+    #             default for OneHotEncode, choose between "OneHotEncode", "CountVectorizer", "TFIDF"
 
-        Returns:
-            sklearn_transformer:
-                sklearn text transformer for usage later/in MLflow models
+    #     Returns:
+    #         sklearn_transformer:
+    #             sklearn text transformer for usage later/in MLflow models
 
-            transformed_text:
-                pd.DataFrame that combines the vectorized text with the original dataframe
-        """
+    #         transformed_text:
+    #             pd.DataFrame that combines the vectorized text with the original dataframe
+    #     """
 
-        response = sklearn_transformer.transform(input_data)
+    #     response = sklearn_transformer.transform(input_data)
 
-        transformed_recipe = pd.DataFrame(
-            response.toarray(),
-            columns=sklearn_transformer.get_feature_names_out(),
-            index=input_data.index,
-        )
+    #     transformed_recipe = pd.DataFrame(
+    #         response.toarray(),
+    #         columns=sklearn_transformer.get_feature_names_out(),
+    #         index=input_data.index,
+    #     )
 
-        return transformed_recipe
+    #     return transformed_recipe
 
-    def fit(
-        self,
-        input_data,
-        stanza_pipeline,
-        strip_accents="unicode",
-        lowercase=True,
-        min_ngram_length=1,
-        max_ngram_length=4,
-        min_df=3,
-        sklearn_type="OneHotEncode",
-    ):
-        """
-        Method to simplify construction of custom sklearn text processor.
+    # def fit(
+    #     # self,
+    #     input_data,
+    #     stanza_pipeline,
+    #     analyzer,
+    #     binary,
+    #     strip_accents="unicode",
+    #     lowercase=True,
+    #     min_ngram_length=1,
+    #     max_ngram_length=4,
+    #     min_df=3,
+    #     sklearn_type="OneHotEncode",
+    # ):
+    #     """
+    #     Method to simplify construction of custom sklearn text processor.
 
-        Follows construction of standard CountVectorizer/TFIDFVectorizer
+    #     Follows construction of standard CountVectorizer/TFIDFVectorizer
 
-        Args:
-            Follows sklearn CountVectorizer construction with some changes:
+    #     Args:
+    #         Follows sklearn CountVectorizer construction with some changes:
 
-            input_data:
-                pd.Series to be transformed. Each element in the series should be list of strings
+    #         input_data:
+    #             pd.Series to be transformed. Each element in the series should be list of strings
 
-            stanza_pipeline:
-                stanza.pipeline from prepare_stanza_pipeline
+    #         stanza_pipeline:
+    #             stanza.pipeline from prepare_stanza_pipeline
 
-            min_ngram_length:
-                setting for minimum number in ngram vectoriazation,
-                used with custom analyzer
-                default of 1
+    #         min_ngram_length:
+    #             setting for minimum number in ngram vectoriazation,
+    #             used with custom analyzer
+    #             default of 1
 
-            max_ngram_length:
-                setting for maximum number in ngram vectoriazation,
-                used with custom analyzer
-                default of 4
+    #         max_ngram_length:
+    #             setting for maximum number in ngram vectoriazation,
+    #             used with custom analyzer
+    #             default of 4
 
-            sklearn_type:
-                Setting for OneHotEncode, Regular CountVectorization, or TFIDFVectorization
-                default for OneHotEncode, choose between "OneHotEncode", "CountVectorizer", "TFIDF"
+    #         sklearn_type:
+    #             Setting for OneHotEncode, Regular CountVectorization, or TFIDFVectorization
+    #             default for OneHotEncode, choose between "OneHotEncode", "CountVectorizer", "TFIDF"
 
-        Returns:
-            sklearn_transformer:
-                sklearn text transformer for usage later/in MLflow models
+    #     Returns:
+    #         sklearn_transformer:
+    #             sklearn text transformer for usage later/in MLflow models
 
-            transformed_text:
-                pd.DataFrame that combines the vectorized text with the original dataframe
-        """
+    #         transformed_text:
+    #             pd.DataFrame that combines the vectorized text with the original dataframe
+    #     """
 
-        sklearn_transformer_params = {
-            "strip_accents": strip_accents,
-            "lowercase": lowercase,
-            "min_df": min_df,
-            "analyzer": CustomSKLearnAnalyzer().stanza_analyzer(
-                stanza_pipeline=stanza_pipeline,
-                min_ngram_length=min_ngram_length,
-                max_ngram_length=max_ngram_length,
-            ),
-            "sklearn_type": sklearn_type,
-        }
+    #     sklearn_transformer_params = {
+    #         "strip_accents": strip_accents,
+    #         "lowercase": lowercase,
+    #         "min_df": min_df,
+    #         "analyzer": analyzer,
+    #         # CustomSKLearnAnalyzer().stanza_analyzer(
+    #         #     stanza_pipeline=stanza_pipeline,
+    #         #     min_ngram_length=min_ngram_length,
+    #         #     max_ngram_length=max_ngram_length,
+    #         # ),
+    #         "sklearn_type": sklearn_type,
+    #     }
 
-        if sklearn_type == "OneHotEncode":
-            sklearn_transformer_params["binary"] = True
-            sklearn_transformer = CountVectorizer(**sklearn_transformer_params)
+    #     if sklearn_type == "OneHotEncode":
+    #         # sklearn_transformer_params["binary"] = True
 
-        elif sklearn_type == "CountVectorizer":
-            print("/n")
-            print(
-                "Using CountVectorizer, but is not OneHotEncoded or TFIDF transformed"
-            )
-            sklearn_transformer_params["binary"] = False
-            sklearn_transformer = CountVectorizer(**sklearn_transformer_params)
+    #         sub_params = {
+    #             "strip_accents": strip_accents,
+    #             "lowercase": lowercase,
+    #             "min_df": min_df,
+    #             "analyzer": analyzer,
+    #             "binary": True,
+    #         }
 
-        elif sklearn_type == "TFIDF":
-            sklearn_transformer_params["binary"] = False
-            sklearn_transformer = TfidfVectorizer(**sklearn_transformer_params)
+    #         sklearn_transformer = CountVectorizer(**sub_params)
 
-        else:
-            print("/n")
-            print(
-                "Invalid sklearn text processing type, please choose between 'OneHotEncode', 'CountVectorizer', 'TFIDF'"
-            )
-            return None
+    #     elif sklearn_type == "CountVectorizer":
+    #         print("/n")
+    #         print(
+    #             "Using CountVectorizer, but is not OneHotEncoded or TFIDF transformed"
+    #         )
+    #         # sklearn_transformer_params["binary"] = False
+    #         sub_params = {
+    #             "strip_accents": strip_accents,
+    #             "lowercase": lowercase,
+    #             "min_df": min_df,
+    #             "analyzer": analyzer,
+    #             "binary": False,
+    #         }
+    #         sklearn_transformer = CountVectorizer(**sklearn_transformer_params)
 
-        sklearn_transformer.fit(input_data)
+    #     elif sklearn_type == "TFIDF":
+    #         # sklearn_transformer_params["binary"] = False
+    #         sub_params = {
+    #             "strip_accents": strip_accents,
+    #             "lowercase": lowercase,
+    #             "min_df": min_df,
+    #             "analyzer": analyzer,
+    #             "binary": False,
+    #         }
+    #         sklearn_transformer = TfidfVectorizer(**sklearn_transformer_params)
 
-        return sklearn_transformer
+    #     else:
+    #         print("/n")
+    #         print(
+    #             "Invalid sklearn text processing type, please choose between 'OneHotEncode', 'CountVectorizer', 'TFIDF'"
+    #         )
+    #         return None
+
+    #     sklearn_transformer.fit(input_data)
+
+    #     return sklearn_transformer
+
+    # @classmethod
+    # def stanza_analyzer(self, stanza_pipeline, minNgramLength, maxNgramLength):
+    #     """
+    #     Custom ngram analyzer function, matching only ngrams that belong to the same line
+
+    #     The source for this was StackOverflow because I couldn't figure out how to let sklearn pipelines use arguments for custom analyzers
+
+    #     Use this as the analyzer for an sklearn pipeline, and it should work
+
+    #     Args:
+    #         stanza_pipeline: Stanza pipeline
+    #         minNgramLength: integer for the minimum ngram (usually 1)
+    #         maxNgramLength: integer for maximum length ngram (usually should not exceed 4)
+
+    #     Returns:
+    #         A function that will be used in sklearn pipeline. Said function yields a generator
+
+    #     """
+
+    #     def ngrams_per_line(ingredients_list):
+
+    #         lowered = " brk ".join(
+    #             map(str, [ingred for ingred in ingredients_list if ingred is not None])
+    #         ).lower()
+
+    #         if lowered is None:
+    #             lowered = "Missing ingredients"
+
+    #         preproc = stanza_pipeline(lowered)
+
+    #         lemmad = " ".join(
+    #             map(
+    #                 str,
+    #                 [
+    #                     word.lemma
+    #                     for sent in preproc.sentences
+    #                     for word in sent.words
+    #                     if (
+    #                         word.upos
+    #                         not in ["NUM", "DET", "ADV", "CCONJ", "ADP", "SCONJ"]
+    #                         and word is not None
+    #                     )
+    #                 ],
+    #             )
+    #         )
+
+    #         # analyze each line of the input string seperately
+    #         for ln in lemmad.split(" brk "):
+
+    #             # tokenize the input string (customize the regex as desired)
+    #             at_least_two_english_characters_whole_words = "(?u)\b[a-zA-Z]{2,}\b"
+    #             terms = re.split(at_least_two_english_characters_whole_words, ln)
+
+    #             # loop ngram creation for every number between min and max ngram length
+    #             for ngramLength in range(minNgramLength, maxNgramLength + 1):
+
+    #                 # find and return all ngrams
+    #                 # for ngram in zip(*[terms[i:] for i in range(3)]):
+    #                 # <-- solution without a generator (works the same but has higher memory usage)
+    #                 for ngram in zip(
+    #                     *[
+    #                         islice(seq, i, len(terms))
+    #                         for i, seq in enumerate(tee(terms, ngramLength))
+    #                     ]
+    #                 ):  # <-- solution using a generator
+
+    #                     ngram = " ".join(map(str, ngram))
+    #                     yield ngram
+
+    #     return ngrams_per_line
 
     @classmethod
-    def stanza_analyzer(self, stanza_pipeline, minNgramLength, maxNgramLength):
-        """
-        Custom ngram analyzer function, matching only ngrams that belong to the same line
-
-        The source for this was StackOverflow because I couldn't figure out how to let sklearn pipelines use arguments for custom analyzers
-
-        Use this as the analyzer for an sklearn pipeline, and it should work
-
-        Args:
-            stanza_pipeline: Stanza pipeline
-            minNgramLength: integer for the minimum ngram (usually 1)
-            maxNgramLength: integer for maximum length ngram (usually should not exceed 4)
-
-        Returns:
-            A function that will be used in sklearn pipeline. Said function yields a generator
-
-        """
-
-        def ngrams_per_line(ingredients_list):
-
-            lowered = " brk ".join(
-                map(str, [ingred for ingred in ingredients_list if ingred is not None])
-            ).lower()
-
-            if lowered is None:
-                lowered = "Missing ingredients"
-
-            preproc = stanza_pipeline(lowered)
-
-            lemmad = " ".join(
-                map(
-                    str,
-                    [
-                        word.lemma
-                        for sent in preproc.sentences
-                        for word in sent.words
-                        if (
-                            word.upos
-                            not in ["NUM", "DET", "ADV", "CCONJ", "ADP", "SCONJ"]
-                            and word is not None
-                        )
-                    ],
-                )
-            )
-
-            # analyze each line of the input string seperately
-            for ln in lemmad.split(" brk "):
-
-                # tokenize the input string (customize the regex as desired)
-                at_least_two_english_characters_whole_words = "(?u)\b[a-zA-Z]{2,}\b"
-                terms = re.split(at_least_two_english_characters_whole_words, ln)
-
-                # loop ngram creation for every number between min and max ngram length
-                for ngramLength in range(minNgramLength, maxNgramLength + 1):
+    def ngrams_maker(min_ngram_length, max_ngram_length):
+        def ngrams_per_line(row):
+            for ln in row.split(" brk "):
+                at_least_two_english_characters_whole_words = r"(?u)\b\w{2,}\b"
+                terms = re.findall(at_least_two_english_characters_whole_words, ln)
+                for ngramLength in range(min_ngram_length, max_ngram_length + 1):
 
                     # find and return all ngrams
                     # for ngram in zip(*[terms[i:] for i in range(3)]):
                     # <-- solution without a generator (works the same but has higher memory usage)
-                    for ngram in zip(
-                        *[
-                            islice(seq, i, len(terms))
-                            for i, seq in enumerate(tee(terms, ngramLength))
-                        ]
-                    ):  # <-- solution using a generator
-
-                        ngram = " ".join(map(str, ngram))
+                    for ngram in (
+                        word
+                        for i in range(len(terms) - ngramLength + 1)
+                        for word in (" ".join(terms[i : i + ngramLength]),)
+                    ):
                         yield ngram
 
         return ngrams_per_line
