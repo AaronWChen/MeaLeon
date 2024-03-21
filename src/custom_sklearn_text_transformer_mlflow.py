@@ -390,20 +390,20 @@ class CustomSKLearnAnalyzer:
     #     return ngrams_per_line
 
     @classmethod
-    def ngrams_maker(min_ngram_length, max_ngram_length):
-        def ngrams_per_line(row):
+    def ngram_maker(self, min_ngram_length: int, max_ngram_length: int):
+        def ngrams_per_line(row: str):
             for ln in row.split(" brk "):
                 at_least_two_english_characters_whole_words = r"(?u)\b\w{2,}\b"
                 terms = re.findall(at_least_two_english_characters_whole_words, ln)
-                for ngramLength in range(min_ngram_length, max_ngram_length + 1):
+                for ngram_length in range(min_ngram_length, max_ngram_length + 1):
 
                     # find and return all ngrams
                     # for ngram in zip(*[terms[i:] for i in range(3)]):
                     # <-- solution without a generator (works the same but has higher memory usage)
                     for ngram in (
                         word
-                        for i in range(len(terms) - ngramLength + 1)
-                        for word in (" ".join(terms[i : i + ngramLength]),)
+                        for i in range(len(terms) - ngram_length + 1)
+                        for word in (" ".join(terms[i : i + ngram_length]),)
                     ):
                         yield ngram
 
