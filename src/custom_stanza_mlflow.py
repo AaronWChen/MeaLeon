@@ -14,19 +14,19 @@ class CustomSKLearnWrapper(mlflow.pyfunc.PythonModel):
     custom PythonModel
     """
 
-    def __init__(self, model):
-        """
-        Constructor method. Initializes the model with a Stanza libary language
-        type. The default is "en" for English
+    # def __init__(self, model):
+    #     """
+    #     Constructor method. Initializes the model with a Stanza libary language
+    #     type. The default is "en" for English
 
-        model:          sklearn.Transformer
-                The sklearn text Transformer or Pipeline that ends in a
-                Transformer
+    #     model:          sklearn.Transformer
+    #             The sklearn text Transformer or Pipeline that ends in a
+    #             Transformer
 
-        later can add functionality to include pretrained models needed for Stanza
+    #     later can add functionality to include pretrained models needed for Stanza
 
-        """
-        self.model = model
+    #     """
+    #     self.model = model
 
     def load_context(self, context):
         """

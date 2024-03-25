@@ -5525,6 +5525,27 @@ files = [
 ]
 
 [[package]]
+name = "pyvespa"
+version = "0.39.0"
+description = "Python API for vespa.ai"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pyvespa-0.39.0-py3-none-any.whl", hash = "sha256:b880fd738dfee88028e7ed0f6dbaa58b8f61a350819ef1e4d6a652dadd2064e0"},
+    {file = "pyvespa-0.39.0.tar.gz", hash = "sha256:a45df9264cbc943561fa052b55c11e7c350a8ec0941ca96fa45e125cee16fc78"},
+]
+
+[package.dependencies]
+aiohttp = "*"
+cryptography = "*"
+docker = "*"
+jinja2 = "*"
+pandas = "*"
+requests = "*"
+tenacity = "*"
+typing-extensions = "*"
+
+[[package]]
 name = "pywin32"
 version = "306"
 description = "Python for Window Extensions"
@@ -8322,4 +8343,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "36f718690991534972a8431bd455df137660a354911d5039b37886feed2a7966"
+content-hash = "89dfe5e4707b033820fcd9139add028d2c1d2b79835dc54b2da3a57148da4676"
