@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "MeaLeon"
-version = "0.1.16"
+version = "0.1.18"
 description = "MeaLeon suggests recipes for a user to cook! It is a full stack data science project using machine learning, natural language processing, a web form, and AWS. This is the Poetry file to make it easier to deploy and work on the project."
 authors = ["Aaron W. Chen <awc33@cornell.edu>"]
 license = "GPL-3.0-or-later"
@@ -52,6 +52,8 @@ torchvision = { version = "0.15.2", source = "torch" }
 # nvidia-cuda-runtime-cu12 = { version = "^12.2.53", source="nvidia"}
 dill = "^0.3.7"
 pyspark = "^3.5.0"
+more-itertools = "^10.2.0"
+flagembedding = "^1.2.5"
 
 [tool.poetry.dev-dependencies]
 black = "^21.12b0"
