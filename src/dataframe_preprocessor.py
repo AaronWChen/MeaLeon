@@ -27,11 +27,6 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame
     """
 
-    def drop_null_ingredient_records(df: pd.DataFrame) -> pd.DataFrame:
-        """This function looks for recipes which somehow have no ingredients at all and will remove them from the dataframe to allow further processing"""
-        df.drop(df[df["ingredients"].isna()].index, inplace=True)
-        return df
-
     def stanza_lemmafier(recipe_ingredients: list, stanza_pipeline) -> pd.DataFrame:
         """This function converts a list of ingredients into a list of ingredient lemmas
         It is intended to be used via an apply(lambda) until a better way is devised
@@ -141,7 +136,7 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                     # Otherwise, there should be no issue with returning
                     return to_check[key_target]
 
-    df = ingredient_lemmafier(df)
+    df = ingredient_lemmafier(df, nlp)
 
     # Dive into the tag column and extract the cuisine label. Put into new column or fills with "missing data"
     df["cuisine_name"] = df["tag"].apply(
