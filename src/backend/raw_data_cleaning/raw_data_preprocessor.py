@@ -1,0 +1,191 @@
+""" This script is intended to take in a pandas dataframe from read_json for the scraped Epicurious data and preprocess the dataframe to prepare it for natural language processing down the line. 
+
+TODO:
+1. Does this benefit from refactoring into a Class?
+
+"""
+
+import pandas as pd
+import stanza
+from typing import Dict, Text, List
+
+# instantiate stanza pipeline
+stanza.download("en")
+nlp = stanza.Pipeline(
+    "en",
+    depparse_batch_size=50,
+    depparse_min_length_to_batch_separately=50,
+    verbose=True,
+    use_gpu=True,  # set to true when on cloud/not on streaming computer
+    batch_size=100,
+)
+
+
+def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """This function takes in a pandas DataFrame from pd.read_json and performs some preprocessing by unpacking the nested dictionaries and creating new columns with the simplified structures. It will then drop the original columns that would no longer be needed.
+
+    Args:
+        pd.DataFrame
+
+    Returns:
+        pd.DataFrame
+    """
+
+    def stanza_filterer(recipe_ingredients: List[str], stanza_pipeline: stanza.Pipeline) -> str:
+        """This function converts a list of ingredients into a list of ingredient lemmas
+        It is intended to be used via an apply(lambda) until a better way is devised
+
+        Args:
+            recipe_ingredients: List[str]
+
+        Returns:
+            lemmafied: String
+        """
+        lemmafied = " ".join(
+            str(word.lemma)
+            for sent in stanza_pipeline(recipe_ingredients).sentences
+            for word in sent.words
+            if (
+                word.upos not in ["NUM", "DET", "ADV", "CCONJ", "ADP", "SCONJ", "PUNCT"]
+                and word is not None
+            )
+        )
+        return lemmafied
+
+    def ingredient_lemmafier(df: pd.DataFrame, stanza_pipeline: stanza.Pipeline) -> pd.DataFrame:
+        """This function performs some text preprocessing:
+        1. Converts the raw list of ingredients into a big string with ' brk ' token
+        2. Remove accented characters
+        3. Lowercase all characters
+        4. Fill in nulls with filler
+        5. Apply the lemmafier function above and store the results in a new column
+        """
+        df["ingredients_lemmafied"] = (
+            df["ingredients"]
+            .str.join(" brk ")
+            .str.normalize("NFKC")
+            .str.lower()
+            .fillna("Missing ingredients")
+        ).apply(lambda x: stanza_filterer(x, stanza_pipeline))
+
+        return df
+
+    def link_maker(recipe_link: str) -> str:
+        """This function takes in the incomplete recipe link from the dataframe and returns the complete one."""
+        full_link = f"https://www.epicurious.com{recipe_link}"
+        return full_link
+
+    def cuisine_renamer(text: str) -> str:
+        """This function converts redundant and/or rare categories into more common
+        ones/umbrella ones.
+
+        In the future, there's a hope that this renaming mechanism will not have
+        under sampled cuisine tags.
+        """
+        if text == "Central American/Caribbean":
+            return "Caribbean"
+        elif text == "Jewish":
+            return "Kosher"
+        elif text == "Eastern European/Russian":
+            return "Eastern European"
+        elif text in ["Spanish/Portuguese", "Greek"]:
+            return "Mediterranean"
+        elif text == "Central/South American":
+            return "Latin American"
+        elif text == "Sushi":
+            return "Japanese"
+        elif text == "Southern Italian":
+            return "Italian"
+        elif text in ["Southern", "Tex-Mex"]:
+            return "American"
+        elif text in ["Southeast Asian", "Korean"]:
+            return "Asian"
+        else:
+            return text
+
+    def null_filler(to_check: Dict[Text, Text], key_target: Text) -> Text:
+        """This function takes in a dictionary that is currently fed in with a lambda function and then performs column specific preprocessing.
+
+        Args:
+            to_check: dict
+            key_target: str
+
+        Returns:
+            str
+        """
+
+        # Only look in the following keys, if the input isn't one of these, it should be recognized as an improper key
+        valid_keys = ["name", "filename", "credit"]
+
+        # This dictionary converts the input keys into substrings that can be used in f-strings to fill in missing values in the record
+        translation_keys = {
+            "name": "Cuisine",
+            "filename": "Photo",
+            "credit": "Photo Credit",
+        }
+
+        if key_target not in valid_keys:
+            # this logic makes sure we are only looking at valid keys
+            # this is not a real try/except
+            return (
+                "Improper key target: can only pick from 'name', 'filename', 'credit'."
+            )
+
+        else:
+            if pd.isna(to_check):  
+                # this logic checks to see if the dictionary exists at all. if so, return Missing
+                return f"Missing {translation_keys[key_target]}"
+            else:
+                if key_target == "name" and (to_check["category"] != "cuisine"):
+                    # This logic checks for the cuisine, if the cuisine is not there (and instead has 'ingredient', 'type', 'item', 'equipment', 'meal'), mark as missing
+                    return f"Missing {translation_keys[key_target]}"
+                else:
+                    # Otherwise, there should be no issue with returning
+                    return to_check[key_target]
+
+    # separating out the below to execute with a __main__ would be cleaner
+    df = ingredient_lemmafier(df, nlp)
+
+    # Dive into the tag column and extract the cuisine label. Put into new column or fills with "missing data"
+    df["cuisine_name"] = df["tag"].apply(
+        lambda x: null_filler(to_check=x, key_target="name")
+    )  
+
+    # This apply uses the cuisine_renamer function above to relabel the cuisines to more general ones
+    df["cuisine_name"] = df["cuisine_name"].apply(cuisine_renamer)
+
+    # this lambda function goes into the photo data column and extracts just the filename from the dictionary
+    df["photo_filename"] = df["photoData"].apply(
+        lambda x: null_filler(to_check=x, key_target="filename")
+    )  # type:ignore
+
+    # This lambda function goes into the photo data column and extracts just the photo credit from the dictionary
+    df["photo_credit"] = df["photoData"].apply(
+        lambda x: null_filler(to_check=x, key_target="credit")
+    )  # type:ignore
+
+    # for the above, maybe they can be refactored to one function where the arguments are a column name, dictionary key name, the substring return
+
+    # this lambda function goes into the author column and extracts the author name or fills with "missing data"
+    df["author_name"] = df["author"].apply(
+        lambda x: x[0]["name"] if x else "Missing Author Name"
+    )  # type:ignore
+
+    # This function takes in the given pubDate column and creates a new column with the pubDate values converted to datetime objects
+    df["date_published"] = pd.to_datetime(
+        df["pubDate"], infer_datetime_format=True
+    )  # type:ignore
+
+    # this function takes in the given url column and prepends the full epicurious URL base
+    df["recipe_url"] = df["url"].apply(link_maker)  # type:ignore
+
+    # drop some original columns to clean up the dataframe
+    df.drop(
+        labels=["tag", "photoData", "author", "type", "dateCrawled", "pubDate", "url"],
+        axis=1,
+        inplace=True,
+    )
+
+    df.set_index("id", inplace=True)
+
+    return df
