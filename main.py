@@ -1,5 +1,5 @@
-from enum import Enum
 from fastapi import FastAPI, HTTPException
+from schemas import GenreURLChoices, Band
 
 # use localhost:{port} in browser
 # use localhost:{port}/docs to look at the interactive, automatically created documentation
@@ -7,31 +7,28 @@ from fastapi import FastAPI, HTTPException
 app = FastAPI()
 
 
-class GenreURLChoices(Enum):
-    ROCK = "rock"
-    ELECTRONIC = "electronic"
-    METAL = "metal"
-    HIP_HOP = "hip-hop"
-    SHOEGAZE = "shoegaze"
-
-
 BANDS = [
     {"id": 1, "name": "The Kinks", "genre": "Rock"},
     {"id": 2, "name": "Aphex Twin", "genre": "Electronic"},
     {"id": 3, "name": "Slowdive", "genre": "Shoegaze"},
     {"id": 4, "name": "Wu-Tang Clan", "genre": "Hip-Hop"},
-    {"id": 5, "name": "Black Sabbath", "genre": "Metal"},
+    {
+        "id": 5,
+        "name": "Black Sabbath",
+        "genre": "Metal",
+        "albums": [{"title": "Master of Reality", "release_date": "1971-07-21"}],
+    },
 ]
 
 
 @app.get("/bands")
-async def bands() -> list[dict]:
-    return BANDS
+async def bands() -> list[Band]:
+    return [Band(**b) for b in BANDS]
 
 
 @app.get("/bands/{band_id}")
-async def band(band_id: int) -> dict:
-    band = next((b for b in BANDS if b["id"] == band_id), None)
+async def band(band_id: int) -> Band:
+    band = next((Band(**b) for b in BANDS if b["id"] == band_id), None)
     # Aaron: I'm a little confused, could we use `get` instead?
 
     if band is None:
