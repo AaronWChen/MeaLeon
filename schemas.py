@@ -1,10 +1,158 @@
+from enum import Enum
 import mlflow
 import pandas as pd
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic.dataclasses import dataclass
 import re
-from typing import List
+from typing import Dict, List, Optional
+
+# from typing_extensions import TypedDict
+
 
 # BACKEND
+
+
+class Edamam_API_Link(BaseModel):
+    # if Edamam API starts implementing previous/next link in their search results, this could help
+    href: str  # url for Edamam API response link
+    title: str  # title of url/link
+
+
+class Edamam_API_Link_Handler(BaseModel):
+    next: Edamam_API_Link
+    previous: Optional[Edamam_API_Link] = None
+
+
+class Edamam_Recipe_Link(BaseModel):
+    uri: str
+
+
+class Edamam_Recipe_Image_Info(BaseModel):
+    url: str
+    width: int
+    height: int
+
+
+class Edamam_Recipe_Image_Collection(BaseModel):
+    THUMBNAIL: Optional[Edamam_Recipe_Image_Info]
+    SMALL: Optional[Edamam_Recipe_Image_Info]
+    REGULAR: Optional[Edamam_Recipe_Image_Info]
+    LARGE: Optional[Edamam_Recipe_Image_Info]
+
+
+class Edamam_Ingredient(BaseModel):
+    text: str
+    quantity: float
+    measure: str
+    food: str
+    weight: float
+    foodCategory: str
+    foodId: str
+    image: str
+
+
+class Edamam_Nutrient_Info(BaseModel):
+    label: str
+    quantity: float
+    unit: str
+
+
+class Edamam_Nutrients(BaseModel):
+    ENERC_KCAL: Edamam_Nutrient_Info
+    FAT: Edamam_Nutrient_Info
+    FASAT: Edamam_Nutrient_Info
+    FATRN: Edamam_Nutrient_Info
+    FAMS: Edamam_Nutrient_Info
+    FAPU: Edamam_Nutrient_Info
+    CHOCDF: Edamam_Nutrient_Info
+    CHOCDFnet_field: Edamam_Nutrient_Info = Field(..., alias="COCDF.net")
+    FIBTG: Edamam_Nutrient_Info
+    SUGAR: Edamam_Nutrient_Info
+    PROCNT: Edamam_Nutrient_Info
+    CHOLE: Edamam_Nutrient_Info
+    NA: Edamam_Nutrient_Info
+    CA: Edamam_Nutrient_Info
+    MG: Edamam_Nutrient_Info
+    K: Edamam_Nutrient_Info
+    FE: Edamam_Nutrient_Info
+    ZN: Edamam_Nutrient_Info
+    P: Edamam_Nutrient_Info
+    VITA_RAE: Edamam_Nutrient_Info
+    VITC: Edamam_Nutrient_Info
+    THIA: Edamam_Nutrient_Info
+    RIBF: Edamam_Nutrient_Info
+    NIA: Edamam_Nutrient_Info
+    VITB6A: Edamam_Nutrient_Info
+    FOLDFE: Edamam_Nutrient_Info
+    FOLFD: Edamam_Nutrient_Info
+    FOLAC: Edamam_Nutrient_Info
+    VITB12: Edamam_Nutrient_Info
+    VITD: Edamam_Nutrient_Info
+    TOCPHA: Edamam_Nutrient_Info
+    VITK1: Edamam_Nutrient_Info
+    WATER: Edamam_Nutrient_Info
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+class Edamam_Nutrition_Metainfo(BaseModel):
+    label: str
+    tag: str
+    schemaOrgTag: str
+    total: float
+    hasRDI: bool
+    daily: float
+    unit: str
+
+
+class Edamam_Nutrition_Metainfo_Sub(Edamam_Nutrition_Metainfo):
+    sub: Optional[List[Edamam_Nutrition_Metainfo]]
+
+
+class Edamam_Recipe_Links_Handler(BaseModel):
+    self: Edamam_API_Link
+
+
+class Edamam_Recipe(BaseModel):
+    recipe: Edamam_Recipe_Link
+    label: str
+    image: str
+    images: Edamam_Recipe_Image_Collection
+    source: str
+    url: str
+    shareAs: str
+    yield_field: float = Field(..., alias="yield")
+    dietLabels: List[str]
+    healthLabels: List[str]
+    cautions: List[str]
+    ingredientLines: List[str]
+    ingredients: List[Edamam_Ingredient]
+    calories: float
+    totalCO2Emissions: float
+    totalWeight: float
+    totalTime: float
+    cuisineType: List[str]
+    mealType: List[str]
+    dishType: List[str]
+    totalNutrients: Edamam_Nutrients
+    totalDaily: Edamam_Nutrients
+    digest: List[Edamam_Nutrition_Metainfo_Sub]
+    _links: Edamam_Recipe_Links_Handler
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+class Edamam_API_Response(BaseModel):
+    from_field: int  # starting index of returned results
+    to_field: int  # ending index of returned results
+    count_field: int  # total number of returned results
+
+    # _links: Dict[str, Dict[str, Edamam_API_Link]] # any links from returned results, usually leading to a next page
+    # testing the next link shows that there is no going backwards in responses. the link only goes to the next batch
+    # given this, I'm not going to stress about the next/previous link and in case there aren't a lot of responses, this should maybe be optional anyway
+
+    _links: Optional[Edamam_API_Link_Handler]
+    hits: List[Edamam_Recipe]
 
 
 @dataclass

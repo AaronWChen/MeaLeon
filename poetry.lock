@@ -3699,31 +3699,6 @@ yaml = ["PyYAML (>=3.10)"]
 zookeeper = ["kazoo (>=2.8.0)"]
 
 [[package]]
-name = "langchain"
-version = "0.0.117"
-description = "Building applications with LLMs through composability"
-optional = false
-python-versions = ">=3.8.1,<4.0"
-files = [
-    {file = "langchain-0.0.117-py3-none-any.whl", hash = "sha256:5f0c206e84fb19ba30d06aeab43f5b37893455aed0a971bf7eb5c05ff2a0e367"},
-    {file = "langchain-0.0.117.tar.gz", hash = "sha256:e21cfb84d109f786fafac53dd669c963fd658d5c8d9e7a9566679161a598ec73"},
-]
-
-[package.dependencies]
-aiohttp = ">=3.8.3,<4.0.0"
-dataclasses-json = ">=0.5.7,<0.6.0"
-numpy = ">=1,<2"
-pydantic = ">=1,<2"
-PyYAML = ">=5.4.1"
-requests = ">=2,<3"
-SQLAlchemy = ">=1,<2"
-tenacity = ">=8.1.0,<9.0.0"
-
-[package.extras]
-all = ["aleph-alpha-client (>=2.15.0,<3.0.0)", "anthropic (>=0.2.2,<0.3.0)", "beautifulsoup4 (>=4,<5)", "cohere (>=3,<4)", "deeplake (>=3.2.9,<4.0.0)", "elasticsearch (>=8,<9)", "faiss-cpu (>=1,<2)", "google-api-python-client (==2.70.0)", "google-search-results (>=2,<3)", "huggingface_hub (>=0,<1)", "jinja2 (>=3,<4)", "manifest-ml (>=0.0.1,<0.0.2)", "networkx (>=2.6.3,<3.0.0)", "nlpcloud (>=1,<2)", "nltk (>=3,<4)", "nomic (>=1.0.43,<2.0.0)", "openai (>=0,<1)", "opensearch-py (>=2.0.0,<3.0.0)", "pgvector (>=0.1.6,<0.2.0)", "pinecone-client (>=2,<3)", "psycopg2-binary (>=2.9.5,<3.0.0)", "pypdf (>=3.4.0,<4.0.0)", "qdrant-client (>=1.0.4,<2.0.0)", "redis (>=4,<5)", "sentence-transformers (>=2,<3)", "spacy (>=3,<4)", "tensorflow-text (>=2.11.0,<3.0.0)", "tiktoken (>=0,<1)", "torch (>=1,<2)", "transformers (>=4,<5)", "weaviate-client (>=3,<4)", "wikipedia (>=1,<2)", "wolframalpha (==5.0.0)"]
-llms = ["anthropic (>=0.2.2,<0.3.0)", "cohere (>=3,<4)", "huggingface_hub (>=0,<1)", "manifest-ml (>=0.0.1,<0.0.2)", "nlpcloud (>=1,<2)", "openai (>=0,<1)", "torch (>=1,<2)", "transformers (>=4,<5)"]
-
-[[package]]
 name = "langcodes"
 version = "3.3.0"
 description = "Tools for labeling human languages with IETF language tags"
@@ -8745,4 +8720,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "0bac02cd2b5ba00c2e9175f45e4fc4c3490fbe19d0766568e711f815e2f3e737"
+content-hash = "b26d34513c3431c162cc75af77806c91c7436b9bb13b4475bcb6ffbd7e7f50a9"

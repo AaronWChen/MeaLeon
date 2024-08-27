@@ -17,8 +17,16 @@ class Album(BaseModel):
     release_date: date
 
 
-class Band(BaseModel):
-    id: int
+class BandBase(BaseModel):
     name: str
     genre: str
     albums: list[Album] = []
+
+
+class BandCreate(BandBase):
+    # only pass because it is strictly inheriting and not adding other fields
+    pass
+
+
+class BandWithID(BandBase):
+    id: int
