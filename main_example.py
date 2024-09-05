@@ -29,7 +29,7 @@ async def bands(
     band_list = [BandWithID(**b) for b in BANDS]
 
     if genre:
-        band_list = [b for b in band_list if b.genre.lower() == genre.value]
+        band_list = [b for b in band_list if b.genre.value.lower() == genre.value]
 
     if has_albums:
         band_list = [b for b in band_list if len(b.albums) > 0]

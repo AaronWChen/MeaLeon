@@ -54,7 +54,6 @@ pyspark = "^3.5.0"
 more-itertools = "^10.2.0"
 flagembedding = "^1.2.5"
 pyvespa = "^0.39.0"
-fastapi = "^0.111.1"
 uvicorn = "^0.30.4"
 
 [tool.poetry.dev-dependencies]
@@ -76,6 +75,10 @@ priority = "supplemental"
 [[tool.poetry.source]]
 name = "PyPI"
 priority = "primary"
+
+
+[tool.poetry.group.app.dependencies]
+fastapi = {version = "0.112.2", extras = ["all"]}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

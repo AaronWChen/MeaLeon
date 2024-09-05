@@ -12,6 +12,33 @@ from typing import Dict, List, Optional
 # BACKEND
 
 
+class CuisineChoices(Enum):
+    AFRICAN = "African"
+    AMERICAN = "American"
+    ASIAN = "Asian"
+    CAJCRE = "Cajun/Creole"
+    CHINESE = "Chinese"
+    EASTERNEURO = "Eastern European"
+    ENGLISH = "English"
+    FILIPINO = "Filipino"
+    FRENCH = "French"
+    GERMAN = "German"
+    INDIAN = "Indian"
+    IRISH = "Irish"
+    ITALIAN = "Italian"
+    JAPANESE = "Japanese"
+    KOSHER = "Kosher"
+    LATAM = "Latin American"
+    MEDITERRANEAN = "Mediterranean"
+    MEXICAN = "Mexican"
+    MIDEAST = "Middle Eastern"
+    MOROCCAN = "Moroccan"
+    SCANDINAVIAN = "Scandinavian"
+    SOUTHWESTERN = "Southwestern"
+    THAI = "Thai"
+    VIET = "Vietnamese"
+
+
 class Edamam_API_Link(BaseModel):
     # if Edamam API starts implementing previous/next link in their search results, this could help
     href: str  # url for Edamam API response link
@@ -153,6 +180,22 @@ class Edamam_API_Response(BaseModel):
 
     _links: Optional[Edamam_API_Link_Handler]
     hits: List[Edamam_Recipe]
+
+
+# QUERY
+class RecipeQuery(BaseModel):
+    recipe_title: str
+
+
+class UserRecipeQuery(RecipeQuery):
+    cuisine_label: CuisineChoices  # moving forward, might be better to have this be List[CuisineChoices] to account for fusions/hybrids when scraping
+
+
+class ScraperRecipeQuery(RecipeQuery):
+    # use for scraping and inputting into database
+    cuisine_labels: List[
+        CuisineChoices
+    ]  # as from EdamamAPI, can store multiple labels this way
 
 
 @dataclass
