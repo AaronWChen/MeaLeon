@@ -183,7 +183,7 @@ class Edamam_API_Response(BaseModel):
 
 
 # QUERY
-class RecipeQuery(BaseModel):
+class RecipeQuery(BaseModel):  # maybe RecipeSearchString?
     recipe_title: str
 
 

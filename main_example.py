@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Path, Query
 from schemas_example import GenreURLChoices, BandBase, BandCreate, BandWithID
+from typing import Annotated
 
 # set --port argument, can't use 8000, the default uvicorn
 # use localhost:{port} in browser
@@ -24,20 +25,26 @@ BANDS = [
 
 @app.get("/bands")
 async def bands(
-    genre: GenreURLChoices | None = None, has_albums: bool = False
+    genre: GenreURLChoices | None = None,
+    # has_albums: bool = False,
+    name_query: Annotated[str | None, Query(max_length=10)] = None,
 ) -> list[BandWithID]:
     band_list = [BandWithID(**b) for b in BANDS]
 
     if genre:
         band_list = [b for b in band_list if b.genre.value.lower() == genre.value]
 
-    if has_albums:
-        band_list = [b for b in band_list if len(b.albums) > 0]
+    # if has_albums:
+    #     band_list = [b for b in band_list if len(b.albums) > 0]
+
+    if name_query:
+        band_list = [b for b in band_list if name_query.lower() in b.name.lower()]
+
     return band_list
 
 
 @app.get("/bands/{band_id}")
-async def band(band_id: int) -> BandWithID:
+async def band(band_id: Annotated[int, Path(title="The band ID")]) -> BandWithID:
     band = next((BandWithID(**b) for b in BANDS if b["id"] == band_id), None)
     # Aaron: I'm a little confused, could we use `get` instead?
 
