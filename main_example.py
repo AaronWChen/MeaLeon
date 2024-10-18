@@ -1,12 +1,22 @@
-from fastapi import FastAPI, HTTPException, Path, Query
-from schemas_example import GenreURLChoices, BandBase, BandCreate, BandWithID
+from fastapi import FastAPI, HTTPException, Path, Query, Depends
+from models_example import GenreURLChoices, BandBase, BandCreate, Band, Album
+from sqlmodel import Session, select
 from typing import Annotated
+from contextlib import asynccontextmanager
+from db_example import init_db, get_session
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
 
 # set --port argument, can't use 8000, the default uvicorn
 # use localhost:{port} in browser
 # use localhost:{port}/docs to look at the interactive, automatically created documentation
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 
 BANDS = [
@@ -28,8 +38,9 @@ async def bands(
     genre: GenreURLChoices | None = None,
     # has_albums: bool = False,
     name_query: Annotated[str | None, Query(max_length=10)] = None,
-) -> list[BandWithID]:
-    band_list = [BandWithID(**b) for b in BANDS]
+    session: Session = Depends(get_session),
+) -> list[Band]:
+    band_list = session.exec(select(Band)).all()
 
     if genre:
         band_list = [b for b in band_list if b.genre.value.lower() == genre.value]
@@ -44,8 +55,11 @@ async def bands(
 
 
 @app.get("/bands/{band_id}")
-async def band(band_id: Annotated[int, Path(title="The band ID")]) -> BandWithID:
-    band = next((BandWithID(**b) for b in BANDS if b["id"] == band_id), None)
+async def band(
+    band_id: Annotated[int, Path(title="The band ID")],
+    session: Session = Depends(get_session),
+) -> Band:
+    band = session.get(Band, band_id)
     # Aaron: I'm a little confused, could we use `get` instead?
 
     if band is None:
@@ -54,15 +68,28 @@ async def band(band_id: Annotated[int, Path(title="The band ID")]) -> BandWithID
     return band
 
 
-@app.get("/bands/genre/{genre}")
-async def bands_for_genre(genre: GenreURLChoices) -> list[dict]:
-    # originally this allowed any string to be used as an input and a list comprehension was used to find the value. However, this could result in server/computer waste, so we refactored to use a custom class that was restricted to a known set of genres
-    return [b for b in BANDS if b["genre"].lower() == genre.value]
+# @app.get("/bands/genre/{genre}")
+# async def bands_for_genre(genre: GenreURLChoices) -> list[dict]:
+#     # originally this allowed any string to be used as an input and a list comprehension was used to find the value. However, this could result in server/computer waste, so we refactored to use a custom class that was restricted to a known set of genres
+#     return [b for b in BANDS if b["genre"].lower() == genre.value]
 
 
 @app.post("/bands")
-async def create_band(band_data: BandCreate) -> BandWithID:
-    id = BANDS[-1]["id"] + 1
-    band = BandWithID(id=id, **band_data.model_dump()).model_dump()
-    BANDS.append(band)
+async def create_band(
+    band_data: BandCreate, session: Session = Depends(get_session)
+) -> Band:
+
+    band = Band(name=band_data.name, genre=band_data.genre)
+    session.add(band)
+
+    if band_data.albums:
+        for album in band_data.albums:
+            album_obj = Album(
+                title=album.title, release_date=album.release_date, band=band
+            )
+            session.add(album_obj)
+
+    session.commit()
+    session.refresh(band)
+
     return band
