@@ -31,6 +31,94 @@ test-trackers = ["comet-ml", "dvclive", "tensorboard", "wandb"]
 testing = ["bitsandbytes", "datasets", "deepspeed (<0.13.0)", "evaluate", "parameterized", "pytest (>=7.2.0,<=8.0.0)", "pytest-subtests", "pytest-xdist", "scikit-learn", "scipy", "timm", "torchpippy (>=0.2.0)", "tqdm", "transformers"]
 
 [[package]]
+name = "adbc-driver-flightsql"
+version = "1.4.0"
+description = "An ADBC driver for working with Apache Arrow Flight SQL."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "adbc_driver_flightsql-1.4.0-py3-none-macosx_10_15_x86_64.whl", hash = "sha256:a9e41907eda36e1d2fc1595c44d7f5753c24c7fa086588549f8a0f4754ce5870"},
+    {file = "adbc_driver_flightsql-1.4.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:7b8635f22e76f349eef5259890a4251ca8116138e654b9d9faabe9ed3d532091"},
+    {file = "adbc_driver_flightsql-1.4.0-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e2a7437f9b35e4789de0cfe33d721da427d102bf4be7cfe87ab8b5d7bc513ad5"},
+    {file = "adbc_driver_flightsql-1.4.0-py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9b3c7916606423883d7ad85e193356414297dcbdc0c576229702b2d943c7288b"},
+    {file = "adbc_driver_flightsql-1.4.0-py3-none-win_amd64.whl", hash = "sha256:29a83b0fbdd9d1eb86f58e8539847eb927dcd4031bdd497993a5494b87678221"},
+    {file = "adbc_driver_flightsql-1.4.0.tar.gz", hash = "sha256:18f2fd5b2dafca62adad8522774730166f51226ecf5893f1af7e3c2b99c649c5"},
+]
+
+[package.dependencies]
+adbc-driver-manager = "*"
+importlib-resources = ">=1.3"
+
+[package.extras]
+dbapi = ["pandas", "pyarrow (>=8.0.0)"]
+test = ["pandas", "protobuf", "pyarrow (>=8.0.0)", "pytest"]
+
+[[package]]
+name = "adbc-driver-manager"
+version = "1.4.0"
+description = "A generic entrypoint for ADBC drivers."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "adbc_driver_manager-1.4.0-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:018622cefcfa5ab60faefe31ca687075dc9fdfc814d39fb34a12afd26523511f"},
+    {file = "adbc_driver_manager-1.4.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:d38f512cc52e44fdfaea19410e49032cf8599fd2df94134467e2325fc14cd6e5"},
+    {file = "adbc_driver_manager-1.4.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0d8dc29ec8997217e45746205f42a0c79fdc44d07b76b97422fb11b12478b4d6"},
+    {file = "adbc_driver_manager-1.4.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1fa6d7dec7b3629bb154606e7ea40e8b82beb6c6950658e39fd32d8febfb94f0"},
+    {file = "adbc_driver_manager-1.4.0-cp310-cp310-win_amd64.whl", hash = "sha256:2c3073ff54998f04ef92f43d7637b5e96d2437f13a9e243db32c807031f8819e"},
+    {file = "adbc_driver_manager-1.4.0-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:7bd274386c3decd52212d225cc46f934ce3503a3f9e0e823e4f8a40162d89b2b"},
+    {file = "adbc_driver_manager-1.4.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:90d1055f2557d703fa2e7073d7b26cc6394159ff4b1422d2dae05d08b774f687"},
+    {file = "adbc_driver_manager-1.4.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:db899b18caeb9e26b99c0baf17e239f35274d6c3dc3aa0e3afc4d278ef3c6747"},
+    {file = "adbc_driver_manager-1.4.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4c1a7079c7f254c7010afe08872c4bfab6e716a507fc343c32204e8ce6bfd898"},
+    {file = "adbc_driver_manager-1.4.0-cp311-cp311-win_amd64.whl", hash = "sha256:27a8943ba838a4038b4ec6466e11eafe336ca5d382adb7c5d2cc9c00dd44bd10"},
+    {file = "adbc_driver_manager-1.4.0-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:3770180aa2cccc6c18ffd189d623ebbf35dccad75895f0fd4275b73d39297849"},
+    {file = "adbc_driver_manager-1.4.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:6ba26a0510d1e7596c827d1ef58185d32fb4f97837e463608801ec3b4850ce74"},
+    {file = "adbc_driver_manager-1.4.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:50eedc6b173a80a0a8f46ef6352761a2c53063ac94327b1f45603db33176010d"},
+    {file = "adbc_driver_manager-1.4.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:168a07ce237902dd9aa0e079d7e8c131ad6f61fb20f3b43020597b2a3c29d3ea"},
+    {file = "adbc_driver_manager-1.4.0-cp312-cp312-win_amd64.whl", hash = "sha256:1c165069fe3bcffc25e593cb933958b4a0563aff317cb6a37fc390c8dd0ed26f"},
+    {file = "adbc_driver_manager-1.4.0-cp313-cp313-macosx_10_15_x86_64.whl", hash = "sha256:acfe7ca9c227a0835abc52289601337bde7a96c20befc443c9ba4eb78d673214"},
+    {file = "adbc_driver_manager-1.4.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:b5fbf822e90fc6df5321067a25564cae11b404d4c9ba56fe4471c73c5b54e38f"},
+    {file = "adbc_driver_manager-1.4.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0e1d255116003514088990cc5af5995cc7f5d2ebea96b00e5b2a1f4d922d7137"},
+    {file = "adbc_driver_manager-1.4.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:682364a252de1029fa12a2f7526d4cb9e8e03e009d8d0f64bc3530a7539a74f6"},
+    {file = "adbc_driver_manager-1.4.0-cp313-cp313-win_amd64.whl", hash = "sha256:f01441fb8cc7859037ae0c39692bffa26f2fa0da68664589ced5b3794540f402"},
+    {file = "adbc_driver_manager-1.4.0-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:36a1019da980b4d0250f6139a0b4da019e362dd1dbc8cc1f4e5572590e4a765d"},
+    {file = "adbc_driver_manager-1.4.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:b4e59fcb9ba1e0c61f904d52a378ded3b5841aa6f6679fe01e2e10211dfcd0b9"},
+    {file = "adbc_driver_manager-1.4.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:88456823258e2bb43a5e43c18c462033da0877025784ee72ec6db7105709d510"},
+    {file = "adbc_driver_manager-1.4.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c113a4f3bed057217b046a1c22a7cf0daed63533faa1107da6b996f56b162e56"},
+    {file = "adbc_driver_manager-1.4.0-cp39-cp39-win_amd64.whl", hash = "sha256:39a1a84783e2290c34f348382fe257500c0ea0b1c3232199cfc3dc15397af236"},
+    {file = "adbc_driver_manager-1.4.0.tar.gz", hash = "sha256:fb8437f3e3aad9aa119ccbdfe05b83418ae552ca7e1e3f6d46d53e1f316610b8"},
+]
+
+[package.dependencies]
+typing-extensions = "*"
+
+[package.extras]
+dbapi = ["pandas", "pyarrow (>=8.0.0)"]
+test = ["duckdb", "pandas", "pyarrow (>=8.0.0)", "pytest"]
+
+[[package]]
+name = "adbc-driver-postgresql"
+version = "1.4.0"
+description = "A libpq-based ADBC driver for working with PostgreSQL."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "adbc_driver_postgresql-1.4.0-py3-none-macosx_10_15_x86_64.whl", hash = "sha256:ca62087f1496192c3131a30fc3e4d2710fa3b31b1982bf8374b6a05fdc446513"},
+    {file = "adbc_driver_postgresql-1.4.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:c75827a5cfdc8ea429c21292ac6bd598a64a42af53797c7ace3ad2b3044ddc71"},
+    {file = "adbc_driver_postgresql-1.4.0-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6ce4e30ced25802acd6d0baad70e7b9c7394869043c1349206218d51d27613c1"},
+    {file = "adbc_driver_postgresql-1.4.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d04b2ea0353bacca814fb15c5da0d407888d27e86b4f3f58d66ebe71a2e8d3da"},
+    {file = "adbc_driver_postgresql-1.4.0-py3-none-win_amd64.whl", hash = "sha256:10ae2584e47928e15da8ca541bbf594de13d6c1afc8c1adad6af3f832cf0a5fc"},
+    {file = "adbc_driver_postgresql-1.4.0.tar.gz", hash = "sha256:0bc9c34911b8d1a2e333ee5ef3d284a6517a8f20d5509b2c183cb4cf8337efc7"},
+]
+
+[package.dependencies]
+adbc-driver-manager = "*"
+importlib-resources = ">=1.3"
+
+[package.extras]
+dbapi = ["pandas", "pyarrow (>=8.0.0)"]
+test = ["pandas", "polars", "pyarrow (>=8.0.0)", "pytest"]
+
+[[package]]
 name = "adjusttext"
 version = "0.7.3"
 description = "Iteratively adjust text position in matplotlib plots to minimize overlaps"
@@ -411,6 +499,27 @@ types-python-dateutil = ">=2.8.10"
 [package.extras]
 doc = ["doc8", "sphinx (>=7.0.0)", "sphinx-autobuild", "sphinx-autodoc-typehints", "sphinx_rtd_theme (>=1.3.0)"]
 test = ["dateparser (==1.*)", "pre-commit", "pytest", "pytest-cov", "pytest-mock", "pytz (==2021.1)", "simplejson (==3.*)"]
+
+[[package]]
+name = "arrow-odbc"
+version = "8.0.7"
+description = "Read the data of an ODBC data source as sequence of Apache Arrow record batches."
+optional = false
+python-versions = "*"
+files = [
+    {file = "arrow_odbc-8.0.7-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:dc1b7d72fbe2a4649e6bd6be2a70a958379ea61a2da2e976f6f1dc556eb5c2d8"},
+    {file = "arrow_odbc-8.0.7-py3-none-macosx_11_0_arm64.whl", hash = "sha256:da8d1eb3c5781559106c5d6e2feed46c77c8b8407a7a1b92236170970426aed0"},
+    {file = "arrow_odbc-8.0.7-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7232f68fd56be6096d3e32f2af8a8ad6ca725fb38b72ed8df5f591c4ae8ef557"},
+    {file = "arrow_odbc-8.0.7-py3-none-win_amd64.whl", hash = "sha256:fbe87a612adb1ad50ae5f5abf63eea5bbd1d5f3942eb6af99c87960acbc04c14"},
+    {file = "arrow_odbc-8.0.7.tar.gz", hash = "sha256:f953bc5ce13c0c8cd0efde3ee651cc19f19f953e9fe8795c3ff30f5a59b76b82"},
+]
+
+[package.dependencies]
+cffi = "*"
+pyarrow = ">=8.0.0"
+
+[package.extras]
+test = ["duckdb", "pyodbc", "pytest (<8.0.0)"]
 
 [[package]]
 name = "astroid"
@@ -5082,6 +5191,48 @@ files = [
 poetry-core = ">=1.0.0,<2.0.0"
 
 [[package]]
+name = "polars"
+version = "1.20.0"
+description = "Blazingly fast DataFrame library"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "polars-1.20.0-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:9a313e10ea80b99a0d32bfb942b2260b9658155287b0c2ac5876323acaff4f2c"},
+    {file = "polars-1.20.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:4474bd004376599f7e4906bd350026cbbe805ba604121090578a97f63da15381"},
+    {file = "polars-1.20.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4996e17cb6f57d9aeaf79f66c54ef2913cea7bd025410c076ef8c05d4f7d792a"},
+    {file = "polars-1.20.0-cp39-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:d488ffb92d4934d9c326fa2d0fb2e9a4e3c2c625c59f4a77a77e4acd4d5a0d66"},
+    {file = "polars-1.20.0-cp39-abi3-win_amd64.whl", hash = "sha256:5ce417d2b6d4f3b8f422fcb3482039e8076182cceacbd880175fe970c6f99c84"},
+    {file = "polars-1.20.0-cp39-abi3-win_arm64.whl", hash = "sha256:f474f3d65450138cd2dbab2d9b6041b8646c30fad0b28e6d62457788f994bf62"},
+    {file = "polars-1.20.0.tar.gz", hash = "sha256:e8e9e3156fae02b58e276e5f2c16a5907a79b38617a9e2d731b533d87798f451"},
+]
+
+[package.extras]
+adbc = ["adbc-driver-manager[dbapi]", "adbc-driver-sqlite[dbapi]"]
+all = ["polars[async,cloudpickle,database,deltalake,excel,fsspec,graph,iceberg,numpy,pandas,plot,pyarrow,pydantic,style,timezone]"]
+async = ["gevent"]
+calamine = ["fastexcel (>=0.9)"]
+cloudpickle = ["cloudpickle"]
+connectorx = ["connectorx (>=0.3.2)"]
+database = ["nest-asyncio", "polars[adbc,connectorx,sqlalchemy]"]
+deltalake = ["deltalake (>=0.19.0)"]
+excel = ["polars[calamine,openpyxl,xlsx2csv,xlsxwriter]"]
+fsspec = ["fsspec"]
+gpu = ["cudf-polars-cu12"]
+graph = ["matplotlib"]
+iceberg = ["pyiceberg (>=0.5.0)"]
+numpy = ["numpy (>=1.16.0)"]
+openpyxl = ["openpyxl (>=3.0.0)"]
+pandas = ["pandas", "polars[pyarrow]"]
+plot = ["altair (>=5.4.0)"]
+pyarrow = ["pyarrow (>=7.0.0)"]
+pydantic = ["pydantic"]
+sqlalchemy = ["polars[pandas]", "sqlalchemy"]
+style = ["great-tables (>=0.8.0)"]
+timezone = ["tzdata"]
+xlsx2csv = ["xlsx2csv (>=0.8.0)"]
+xlsxwriter = ["xlsxwriter"]
+
+[[package]]
 name = "pre-commit"
 version = "3.5.0"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
@@ -9055,4 +9206,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "f94bb81cd6eb5e66493288d07f67081cb158ab26365d6c340efe2d4a22d47e61"
+content-hash = "303b1fe9936f157e944c987f32b58eec3b6ead70c0647b277d3a283a652dde7f"
