@@ -180,3 +180,5 @@ models/
 /data
 
 /secrets
+
+data/raw/

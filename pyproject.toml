@@ -1,91 +1,103 @@
-[tool.poetry]
+[project]
 name = "MeaLeon"
 version = "0.1.19"
 description = "MeaLeon suggests recipes for a user to cook! It is a full stack data science project using machine learning, natural language processing, a web form, and AWS. This is the Poetry file to make it easier to deploy and work on the project."
-authors = ["Aaron W. Chen <awc33@cornell.edu>"]
+authors = [{ name = "Aaron W. Chen", email = "awc33@cornell.edu" }]
+requires-python = ">=3.10"
 license = "GPL-3.0-or-later"
-packages = [{ include = "MeaLeon" }]
+dependencies = [
+    "Flask>=2.0.2,<3",
+    "gensim>=4.1.2,<5",
+    "jupyter>=1.0.0,<2",
+    "jupyterlab>=3.2.5,<4",
+    "numpy>=1.21.5,<2",
+    "pandas>=1.3.5,<2",
+    "requests>=2.26.0,<3",
+    "scikit-learn>=1.0.1,<2",
+    "scipy>=1.7.3,<2",
+    "spacy>=3.2.1,<4",
+    "stanza>=1.3.0,<2",
+    "tqdm>=4.62.3,<5",
+    "matplotlib>=3.5.2,<4",
+    "seaborn>=0.11.2,<0.12",
+    "importlib-resources>=5.8.0,<6",
+    "zipp>=3.8.0,<4",
+    "importlib-metadata>=4.12.0,<5",
+    "xgboost>=1.6.1,<2",
+    "graphviz>=0.20.1,<0.21",
+    "openTSNE>=0.6.2,<0.7",
+    "umap-learn>=0.5.3,<0.6",
+    "python-utils>=3.3.3,<4",
+    "adjustText>=0.7.3,<0.8",
+    "bokeh>=2.4.3,<3",
+    "gunicorn>=20.1.0,<21",
+    "waitress>=2.1.2,<3",
+    "nltk~=3.7",
+    "optuna>=3.0.3,<4",
+    "hdbscan>=0.8.29,<0.9",
+    "dvc>=2.43.2,<3",
+    "dagshub>=0.3.5,<0.4",
+    "boto3>=1.24.59",
+    "dvc-s3>=2.21.0,<3",
+    "mlflow>=2.2.1,<3",
+    "openai>=0.27.2,<0.28",
+    "bertopic>=0.15.0,<0.16",
+    "torch==2.0.1",
+    "torchaudio==2.0.2",
+    "torchvision==0.15.2",
+    "dill>=0.3.7,<0.4",
+    "pyspark>=3.5.0,<4",
+    "more-itertools>=10.2.0,<11",
+    "flagembedding>=1.2.5,<2",
+    "pyvespa>=0.39.0,<0.40",
+    "uvicorn>=0.30.4,<0.31",
+    "sqlmodel>=0.0.22,<0.0.23",
+    "pymysql>=1.1.1,<2",
+    "psycopg>=3.2.3,<4",
+    "polars>=1.20.0,<2",
+    "arrow-odbc>=8.0.7,<9",
+    "adbc-driver-postgresql>=1.4.0,<2",
+]
 
-[tool.poetry.dependencies]
-python = "~3.10"
-Flask = "^2.0.2"
-gensim = "^4.1.2"
-jupyter = "^1.0.0"
-jupyterlab = "^3.2.5"
-numpy = "^1.21.5"
-pandas = "^1.3.5"
-requests = "^2.26.0"
-scikit-learn = "^1.0.1"
-scipy = "^1.7.3"
-spacy = "^3.2.1"
-stanza = "^1.3.0"
-tqdm = "^4.62.3"
-matplotlib = "^3.5.2"
-seaborn = "^0.11.2"
-importlib-resources = "^5.8.0"
-zipp = "^3.8.0"
-importlib-metadata = "^4.12.0"
-xgboost = "^1.6.1"
-graphviz = "^0.20.1"
-openTSNE = "^0.6.2"
-umap-learn = "^0.5.3"
-python-utils = "^3.3.3"
-adjustText = "^0.7.3"
-bokeh = "^2.4.3"
-gunicorn = "^20.1.0"
-waitress = "^2.1.2"
-nltk = "^3.7"
-optuna = "^3.0.3"
-hdbscan = "^0.8.29"
-dvc = "^2.43.2"
-dagshub = "^0.3.5"
-boto3 = "==1.24.59"
-llvmlite = "^0.39.1"
-dvc-s3 = "^2.21.0"
-mlflow = "^2.2.1"
-openai = "^0.27.2"
-bertopic = "^0.15.0"
-torch = { version = "2.0.1", source = "torch" }
-torchaudio = { version = "2.0.2", source = "torch" }
-torchvision = { version = "0.15.2", source = "torch" }
-# nvidia-cuda-runtime-cu12 = { version = "^12.2.53", source="nvidia"}
-dill = "^0.3.7"
-pyspark = "^3.5.0"
-more-itertools = "^10.2.0"
-flagembedding = "^1.2.5"
-pyvespa = "^0.39.0"
-uvicorn = "^0.30.4"
-sqlmodel = "^0.0.22"
-pymysql = "^1.1.1"
-psycopg = "^3.2.3"
-polars = "^1.20.0"
-arrow-odbc = "^8.0.7"
-adbc-driver-postgresql = "^1.4.0"
+[dependency-groups]
+dev = [
+    "black~=21.12b0",
+    "pylint>=2.13.4,<3",
+    "pytest>=6.2.5,<7",
+    "click==8.0.4",
+    "nbdev>=2.3.9,<3",
+    "poetry2setup>=1.1.0,<2",
+    "pre-commit>=3.0.1,<4",
+    "nbqa>=1.6.1,<2",
+]
+app = ["fastapi[all]==0.112.2"]
 
-[tool.poetry.dev-dependencies]
-black = "^21.12b0"
-pylint = "^2.13.4"
-pytest = "^6.2.5"
-click = "8.0.4"
-nbdev = "^2.3.9"
-poetry2setup = "^1.1.0"
-pre-commit = "^3.0.1"
-nbqa = "^1.6.1"
+[tool.uv]
+default-groups = [
+    "dev",
+    "app",
+]
 
-[[tool.poetry.source]]
+[[tool.uv.index]]
 name = "torch"
 url = "https://download.pytorch.org/whl/cu117"
-priority = "supplemental"
 
-
-[[tool.poetry.source]]
+[[tool.uv.index]]
 name = "PyPI"
-priority = "primary"
+url = "https://pypi.org/simple/"
+default = true
 
+[tool.uv.sources]
+torch = { index = "torch" }
+torchaudio = { index = "torch" }
+torchvision = { index = "torch" }
 
-[tool.poetry.group.app.dependencies]
-fastapi = {version = "0.112.2", extras = ["all"]}
+[tool.hatch.build.targets.sdist]
+include = ["MeaLeon"]
+
+[tool.hatch.build.targets.wheel]
+include = ["MeaLeon"]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
