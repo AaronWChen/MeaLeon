@@ -3182,7 +3182,6 @@ dependencies = [
     { name = "nltk" },
     { name = "numpy" },
     { name = "openai" },
-    { name = "opentsne" },
     { name = "optuna" },
     { name = "pandas" },
     { name = "polars" },
@@ -3219,6 +3218,7 @@ app = [
 dev = [
     { name = "black" },
     { name = "click" },
+    { name = "ipykernel" },
     { name = "nbdev" },
     { name = "nbqa" },
     { name = "poetry2setup" },
@@ -3255,7 +3255,6 @@ requires-dist = [
     { name = "nltk", specifier = "~=3.7" },
     { name = "numpy", specifier = ">=1.21.5,<2" },
     { name = "openai", specifier = ">=0.27.2,<0.28" },
-    { name = "opentsne", specifier = ">=0.6.2,<0.7" },
     { name = "optuna", specifier = ">=3.0.3,<4" },
     { name = "pandas", specifier = ">=1.3.5,<2" },
     { name = "polars", specifier = ">=1.20.0,<2" },
@@ -3287,6 +3286,7 @@ app = [{ name = "fastapi", extras = ["all"], specifier = "==0.112.2" }]
 dev = [
     { name = "black", specifier = "~=21.12b0" },
     { name = "click", specifier = "==8.0.4" },
+    { name = "ipykernel" },
     { name = "nbdev", specifier = ">=2.3.9,<3" },
     { name = "nbqa", specifier = ">=1.6.1,<2" },
     { name = "poetry2setup", specifier = ">=1.1.0,<2" },
@@ -3847,22 +3847,6 @@ source = { registry = "https://pypi.org/simple/" }
 sdist = { url = "https://files.pythonhosted.org/packages/91/72/be4bc1b15c3f53cf3792748e644d688fc38a6784152fbb9fb41e32f9c661/opentelemetry_semantic_conventions-0.37b0.tar.gz", hash = "sha256:087ce2e248e42f3ffe4d9fa2303111de72bb93baa06a0f4655980bc1557c4228", size = 23707 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0a/09/560656591ba10d69c974d1c449e0bfcaaf697e0b849c2f098c9f56281e76/opentelemetry_semantic_conventions-0.37b0-py3-none-any.whl", hash = "sha256:462982278a42dab01f68641cd89f8460fe1f93e87c68a012a76fb426dcdba5ee", size = 26529 },
-]
-
-[[package]]
-name = "opentsne"
-version = "0.6.2"
-source = { registry = "https://pypi.org/simple/" }
-dependencies = [
-    { name = "numpy" },
-    { name = "scikit-learn" },
-    { name = "scipy" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/04/06/c5e3f4456f8b7aed601e382fedd550702bd08aa045585e45db22233a9237/openTSNE-0.6.2.tar.gz", hash = "sha256:92ea18afd4e34df8fb536c813c36533de892d96511f6683721003398b4fcf2e9", size = 796914 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/75/8e/b93cae7908bf8e57a9ef5a58ced7cf84bd07bdca73fff5b471e904131290/openTSNE-0.6.2-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:bcda086f0bcaa4b21e708e24ccd640f54d5c64753648e67c1bebca3f2310a8a6", size = 492338 },
-    { url = "https://files.pythonhosted.org/packages/ed/00/480b93e8e785ac38ce5b6c99b01b1d5e3fe03bf1d80ac7da083c552f9b69/openTSNE-0.6.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6f1739c5f01e0b435c993a85040d536b4f2cb203b37b72e3dbbf9e6437b94ac6", size = 2707714 },
-    { url = "https://files.pythonhosted.org/packages/18/bf/4a77d1aafa08477541610e71040d865acf1d12cb940183ea1824134256e1/openTSNE-0.6.2-cp310-cp310-win_amd64.whl", hash = "sha256:14cbbc406ed7f6bd5c7dc8881c5f14d931a5693dc831e89d9ce2325a4741309f", size = 388300 },
 ]
 
 [[package]]
@@ -6151,10 +6135,10 @@ name = "triton"
 version = "2.0.0"
 source = { registry = "https://download.pytorch.org/whl/cu117" }
 dependencies = [
-    { name = "cmake", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "filelock", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "lit", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "torch", version = "2.0.1+cu117", source = { registry = "https://download.pytorch.org/whl/cu117" }, marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "cmake", marker = "(platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'linux' and sys_platform != 'win32')" },
+    { name = "filelock", marker = "(platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'linux' and sys_platform != 'win32')" },
+    { name = "lit", marker = "(platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'linux' and sys_platform != 'win32')" },
+    { name = "torch", version = "2.0.1+cu117", source = { registry = "https://download.pytorch.org/whl/cu117" }, marker = "(platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'linux' and sys_platform != 'win32')" },
 ]
 wheels = [
     { url = "https://download.pytorch.org/whl/triton-2.0.0-1-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:38806ee9663f4b0f7cd64790e96c579374089e58f49aac4a6608121aa55e2505" },
