@@ -8,28 +8,11 @@ recipes based on cosine similarity distances for each list of ingredients.
 import requests
 import json
 import csv
-#import pymongo
 from datetime import datetime
 import joblib
-# import re
 import pandas as pd
 import numpy as np
-# from pandas.io.json import json_normalize
-# import nltk
-# <<<<<<< HEAD
-# nltk.download('wordnet')
-# nltk.download('stopwords')
-# =======
-# # nltk.download('stopwords')
-# >>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
-# from nltk.corpus import stopwords
-# from nltk import word_tokenize, FreqDist
-# from nltk.stem.wordnet import WordNetLemmatizer
-# import string
-# import sklearn
-# from sklearn.model_selection import train_test_split
-from sklearn.metrics.pairwise import cosine_similarity #, pairwise_distances
-# from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity 
 
 # Define all functions
 
@@ -119,8 +102,8 @@ def __main__(dish_name, cuisine_name):
 
   # Currently, just does an API call, may hit API limit if continuing with this
   # version
-  # with open("../secrets/edamam.json","r") as f:
-  #   cred = json.load(f)
+  with open("../secrets/edamam.json","r") as f:
+    cred = json.load(f)
 
   app_id = cred["id"]
   app_id_s = f"&app_id=${app_id}"
@@ -195,7 +178,6 @@ def __main__(dish_name, cuisine_name):
 
     print(query_similar)
     # query_similar.to_html("../write_data/results.html")
-    #print(query_similar_values)
 
   else:
     print("Error, unable to retrieve. Server response code is: ", 
