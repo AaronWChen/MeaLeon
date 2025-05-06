@@ -116,8 +116,8 @@ def __main__(dish_name, cuisine_name):
 
   # Currently, just does an API call, may hit API limit if continuing with this
   # version
-  # with open("../secrets/edamam.json","r") as f:
-  #   cred = json.load(f)
+  with open("../secrets/edamam.json","r") as f:
+    cred = json.load(f)
 
   app_id = cred["id"]
   app_id_s = f"&app_id=${app_id}"
