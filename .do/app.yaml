@@ -1,0 +1,21 @@
+ingress:
+  rules:
+  - component:
+      name: mealeon
+    match:
+      path:
+        prefix: /
+name: squid-app
+region: sfo
+services:
+- environment_slug: python
+  github:
+    branch: main
+    deploy_on_push: true
+    repo: AaronWChen/MeaLeon
+  http_port: 8080
+  instance_count: 1
+  instance_size_slug: basic-s
+  name: mealeon
+  run_command: gunicorn --worker-tmp-dir /dev/shm app:app
+  source_dir: /
