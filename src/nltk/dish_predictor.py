@@ -303,6 +303,10 @@ def find_similar_dishes(dish_name, cuisine_name):
             X_df=prepped,
         )
 
+        print(f"query similar:\n{query_similar.to_dict(orient="records")}\n")
+        print(f"ingreds_used:\n{ingreds_used}\n")
+        print(f"recipe weights:\n{recipe_weights}")
+
         return query_similar.to_dict(orient="records"), ingreds_used, recipe_weights
 
     else:
