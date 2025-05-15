@@ -237,7 +237,7 @@ def find_similar_dishes(dish_name, cuisine_name):
     # of the input in order to get better results from the API call
     # limiter = "&from=0&to=4"
     # API currently defaults to returning 10
-
+    print("start of edamam query: {api_base} + {q}")
     api_call = api_base + q + app_id_s + app_key_s  # + limiter
 
     resp = requests.get(api_call)
@@ -295,6 +295,8 @@ def find_similar_dishes(dish_name, cuisine_name):
             }
         )
 
+        print(query_df)
+
         query_tfidf = transform_tfidf(ingred_tfidf=ingred_tfidf, recipe=query_df)
         print(f"query shape: {query_tfidf.shape}")
 
@@ -304,6 +306,8 @@ def find_similar_dishes(dish_name, cuisine_name):
             cuisine_name=cuisine_name,
             # tfidf=ingred_tfidf,
         )
+
+        print(query_matrix)
 
         query_similar, ingreds_used, recipe_weights = find_closest_recipes(
             filtered_ingred_word_matrix=query_matrix,
