@@ -37,12 +37,15 @@ def import_stored_files():
     # prepare_database.py
     with open("joblib/tfidf_recipe_dataframe.joblib", "rb") as fo:
         prepped = joblib.load("joblib/tfidf_recipe_dataframe.joblib")
+        print(f"prepped dataframe size: {prepped.shape}")
 
     with open("joblib/recipe_tfidf.joblib", "rb") as fo:
         ingred_tfidf = joblib.load("joblib/recipe_tfidf.joblib")
+        print(f"tfidf parameters: {ingred_tfidf.get_params()}")
 
     with open("joblib/recipe_word_matrix_tfidf.joblib", "rb") as fo:
         ingred_word_matrix = joblib.load("joblib/recipe_word_matrix_tfidf.joblib")
+        print(f"word matrix size: {ingred_word_matrix.shape}")
 
     return prepped, ingred_tfidf, ingred_word_matrix
 
@@ -56,10 +59,11 @@ def transform_tfidf(ingred_tfidf, recipe):
     transformed_recipe = pd.DataFrame(
         response.toarray(), columns=ingred_tfidf.get_feature_names(), index=recipe.index
     )
+    print(f"transformed recipe shape: {transformed_recipe.shape}")
     return transformed_recipe
 
 
-def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name, tfidf):
+def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name):
     # This function takes in the ingredient word matrix (from joblib), a
     # dataframe made from the database (from joblib), the user inputted cuisine
     # name, and the ingredient TFIDF Vectorizer object (from joblib) and returns
@@ -119,6 +123,8 @@ def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name, tfidf):
     filtered_ingred_word_matrix = combo[combo["imputed_label"].isin(choices)].drop(
         "imputed_label", axis=1
     )
+    print(f"filtered matrix size: {filtered_ingred_word_matrix.shape}")
+
     return filtered_ingred_word_matrix
 
 
@@ -290,11 +296,13 @@ def find_similar_dishes(dish_name, cuisine_name):
         )
 
         query_tfidf = transform_tfidf(ingred_tfidf=ingred_tfidf, recipe=query_df)
+        print(f"query shape: {query_tfidf.shape}")
+
         query_matrix = filter_out_cuisine(
             ingred_word_matrix=ingred_word_matrix,
             X_df=prepped,
             cuisine_name=cuisine_name,
-            tfidf=ingred_tfidf,
+            # tfidf=ingred_tfidf,
         )
 
         query_similar, ingreds_used, recipe_weights = find_closest_recipes(
