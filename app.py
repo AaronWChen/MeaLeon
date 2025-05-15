@@ -16,8 +16,6 @@ def index():
 def get_results():
     """Display the five most similar recipes from the database based on the
     inputs."""
-    """Display the five most similar recipes from the database based on the
-    inputs."""
     data = request.form
     print(data)
 

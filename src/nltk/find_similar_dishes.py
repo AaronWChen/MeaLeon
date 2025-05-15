@@ -17,23 +17,20 @@ import joblib
 import pandas as pd
 import numpy as np
 
-# from pandas.io.json import json_normalize
-# import nltk
-# <<<<<<< HEAD
-# nltk.download('wordnet')
-# nltk.download('stopwords')
-# =======
-# # nltk.download('stopwords')
-# >>>>>>> fb087fe02fbaca242e605690a3ef10ec2d1cbcd9
-# from nltk.corpus import stopwords
-# from nltk import word_tokenize, FreqDist
-# from nltk.stem.wordnet import WordNetLemmatizer
-# import string
-# import sklearn
-# from sklearn.model_selection import train_test_split
+from pandas.io.json import json_normalize
+import nltk
+
+nltk.download("wordnet")
+nltk.download("stopwords")
+from nltk.corpus import stopwords
+from nltk import word_tokenize, FreqDist
+from nltk.stem.wordnet import WordNetLemmatizer
+import string
+import sklearn
+from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity  # , pairwise_distances
 
-# from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Define all functions
 
@@ -42,14 +39,14 @@ def import_stored_files():
     # Load in the stored Epicurious database, TFIDF Vectorizer object to transform,
     # the input, and the TFIDF word matrix from joblib and created by
     # prepare_database.py
-    with open("joblib/tfidf_recipe_dataframe.joblib", "rb") as fo:
-        prepped = joblib.load("../joblib/tfidf_recipe_dataframe.joblib")
+    # with open("joblib/tfidf_recipe_dataframe.joblib", "rb") as fo:
+    prepped = joblib.load("../joblib/tfidf_recipe_dataframe.joblib")
 
-    with open("joblib/recipe_tfidf.joblib", "rb") as fo:
-        ingred_tfidf = joblib.load("joblib/recipe_tfidf.joblib")
+    # with open("joblib/recipe_tfidf.joblib", "rb") as fo:
+    ingred_tfidf = joblib.load("../joblib/recipe_tfidf.joblib")
 
-    with open("joblib/recipe_word_matrix_tfidf.joblib", "rb") as fo:
-        ingred_word_matrix = joblib.load("joblib/recipe_word_matrix_tfidf.joblib")
+    # with open("joblib/recipe_word_matrix_tfidf.joblib", "rb") as fo:
+    ingred_word_matrix = joblib.load("../joblib/recipe_word_matrix_tfidf.joblib")
 
     return prepped, ingred_tfidf, ingred_word_matrix
 
@@ -97,7 +94,7 @@ def find_closest_recipes(filtered_ingred_word_matrix, recipe_tfidf, X_df):
 
 
 def __main__(dish_name, cuisine_name):
-    import_stored_files()
+    prepped, ingred_tfidf, ingred_word_matrix = import_stored_files()
     # This function calls the Edamam API, stores the results as a JSON, and
     # stores the timestamp, dish name, and cuisine name/classification in a
     # separate csv.
@@ -122,8 +119,8 @@ def __main__(dish_name, cuisine_name):
 
     # Currently, just does an API call, may hit API limit if continuing with this
     # version
-    # with open("../secrets/edamam.json","r") as f:
-    #   cred = json.load(f)
+    with open("../secrets/edamam.json", "r") as f:
+        cred = json.load(f)
 
     app_id = cred["id"]
     app_id_s = f"&app_id=${app_id}"
@@ -208,4 +205,5 @@ def __main__(dish_name, cuisine_name):
         # print(query_similar_values)
 
     else:
-        print("Error, unable to retrieve. Server response code is: ", resp.status_code)
+        print(f"Error, unable to retrieve. Server response code is: {resp.status_code}")
+        return ([[]], [[]], [[]])
