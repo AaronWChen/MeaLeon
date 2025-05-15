@@ -41,7 +41,7 @@ def import_stored_files():
 
     with open("joblib/recipe_tfidf.joblib", "rb") as fo:
         ingred_tfidf = joblib.load("joblib/recipe_tfidf.joblib")
-        print(f"tfidf parameters: {ingred_tfidf.get_feature_names()}")
+        print(f"tfidf feature name size: {len(ingred_tfidf.get_feature_names())}")
 
     with open("joblib/recipe_word_matrix_tfidf.joblib", "rb") as fo:
         ingred_word_matrix = joblib.load("joblib/recipe_word_matrix_tfidf.joblib")
@@ -237,7 +237,7 @@ def find_similar_dishes(dish_name, cuisine_name):
     # of the input in order to get better results from the API call
     # limiter = "&from=0&to=4"
     # API currently defaults to returning 10
-    print("start of edamam query: {api_base} + {q}")
+    print(f"start of edamam query: {api_base} + {q}")
     api_call = api_base + q + app_id_s + app_key_s  # + limiter
 
     resp = requests.get(api_call)
@@ -286,6 +286,7 @@ def find_similar_dishes(dish_name, cuisine_name):
                 one_recipe.append(ingred.lower())
 
         one_recipe = list(set(one_recipe))
+        print(one_recipe)
 
         query_df = pd.DataFrame(
             data={

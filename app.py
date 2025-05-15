@@ -25,6 +25,8 @@ def get_results():
         # Convert the dict of fields into a list
         dish = data["dish_name"]
         cuisine = data["cuisine_name"]
+        print(dish)
+        print(cuisine)
         results, ingreds, rec_weights = dp.find_similar_dishes(dish, cuisine)
         return render_template(
             "results.html",
