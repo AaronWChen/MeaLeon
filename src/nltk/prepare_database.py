@@ -1,4 +1,4 @@
-""" This file contains code needed to prepare the scraped Epicurious recipe 
+"""This file contains code needed to prepare the scraped Epicurious recipe
 JSON to convert to a database that can be used for cosine similarity analysis.
 """
 
@@ -9,21 +9,23 @@ import re
 import pandas as pd
 import numpy as np
 import nltk
-nltk.download('wordnet')
-nltk.download('stopwords')
-nltk.download('punkt')
+
+nltk.download("wordnet")
+nltk.download("stopwords")
+nltk.download("punkt")
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 import string
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity, pairwise_distances
-<<<<<<< HEAD
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import joblib
 
 stopwords_loc = "../food_stopwords.csv"
-=======
+with open(stopwords_loc, "r") as myfile:
+    reader = csv.reader(myfile)
+    food_stopwords = [col for row in reader for col in row]
 
 stopwords_list = stopwords.words("english") + list(string.punctuation) + food_stopwords
 
@@ -32,12 +34,12 @@ lemmatizer = WordNetLemmatizer()
 
 # Define functions
 def cuisine_namer(text):
-    """This function converts redundant and/or rare categories into more common 
-  ones/umbrella ones.
-  
-  In the future, there's a hope that this renaming mechanism will not have 
-  under sampled cuisine tags.
-  """
+    """This function converts redundant and/or rare categories into more common
+    ones/umbrella ones.
+
+    In the future, there's a hope that this renaming mechanism will not have
+    under sampled cuisine tags.
+    """
     if text == "Central American/Caribbean":
         return "Caribbean"
     elif text == "Jewish":
@@ -67,8 +69,8 @@ with open(filename, "r") as f:
 
 
 def load_data(filepath, test_size=0.1, random_state=10):
-    """ This function uses a filepath, test_size, and random_state
-    to load the Epicurious JSON into a dataframe and then split into 
+    """This function uses a filepath, test_size, and random_state
+    to load the Epicurious JSON into a dataframe and then split into
     train/test sets."""
     with open(filepath, "r") as f:
         datastore = json.load(f)
@@ -80,45 +82,46 @@ def load_data(filepath, test_size=0.1, random_state=10):
 
 
 def prep_data(X):
-  """ This function takes a dataframe X, drops columns that will not be used,
-  expands the hierarchical column into the dataframe, renames the columns
-  to be more human-readable, and drops one column created during dataframe
-  expansion"""
-  X.drop([
-          "pubDate",
-          "author",
-          "type",
-          "aggregateRating",
-          "reviewsCount",
-          "willMakeAgainPct",
-          "dateCrawled",
-          'prepSteps'
+    """This function takes a dataframe X, drops columns that will not be used,
+    expands the hierarchical column into the dataframe, renames the columns
+    to be more human-readable, and drops one column created during dataframe
+    expansion"""
+    X.drop(
+        [
+            "pubDate",
+            "author",
+            "type",
+            "aggregateRating",
+            "reviewsCount",
+            "willMakeAgainPct",
+            "dateCrawled",
+            "prepSteps",
         ],
         axis=1,
         inplace=True,
-        )
+    )
 
-  X.rename({'url': 'recipe_url'}, axis=1, inplace=True)
+    X.rename({"url": "recipe_url"}, axis=1, inplace=True)
 
-  concat = pd.concat([X.drop(["tag"], axis=1), X["tag"].apply(pd.Series)], axis=1)
-  concat.drop(
-      [
-          0,
-          "photosBadgeAltText",
-          "photosBadgeFileName",
-          "photosBadgeID",
-          "photosBadgeRelatedUri",
-          "url"
-      ],
-      axis=1,
-      inplace=True,
-  )
+    concat = pd.concat([X.drop(["tag"], axis=1), X["tag"].apply(pd.Series)], axis=1)
+    concat.drop(
+        [
+            0,
+            "photosBadgeAltText",
+            "photosBadgeFileName",
+            "photosBadgeID",
+            "photosBadgeRelatedUri",
+            "url",
+        ],
+        axis=1,
+        inplace=True,
+    )
 
-  cuisine_only = concat[concat["category"] == "cuisine"]
-  cuisine_only.dropna(axis=0, inplace=True)
-  cuisine_only["imputed_label"] = cuisine_only["name"].apply(cuisine_namer)
-  cuisine_only.drop('name', axis=1, inplace=True)
-  return cuisine_only
+    cuisine_only = concat[concat["category"] == "cuisine"]
+    cuisine_only.dropna(axis=0, inplace=True)
+    cuisine_only["imputed_label"] = cuisine_only["name"].apply(cuisine_namer)
+    cuisine_only.drop("name", axis=1, inplace=True)
+    return cuisine_only
 
 
 def fit_transform_tfidf_matrix(X_df, stopwords_list):
@@ -132,33 +135,29 @@ def fit_transform_tfidf_matrix(X_df, stopwords_list):
     temp = X_df["ingredients"].apply(" ".join).str.lower()
     tfidf.fit(temp)
     response = tfidf.transform(temp)
-    word_matrix = pd.DataFrame(response.toarray(), 
-                                columns=tfidf.get_feature_names(), 
-                                index=X_df.index
-                            )
+    word_matrix = pd.DataFrame(
+        response.toarray(), columns=tfidf.get_feature_names(), index=X_df.index
+    )
 
     return tfidf, word_matrix
 
 
 def transform_tfidf(tfidf, recipe):
-  ingreds = recipe['ingredients'].apply(" ".join).str.lower()
-  response = tfidf.transform(ingreds)
+    ingreds = recipe["ingredients"].apply(" ".join).str.lower()
+    response = tfidf.transform(ingreds)
 
-  transformed_recipe = pd.DataFrame(
-                                    response.toarray(), 
-                                    columns=tfidf.get_feature_names(), 
-                                    index=recipe.index
-                                    )
-  return transformed_recipe
+    transformed_recipe = pd.DataFrame(
+        response.toarray(), columns=tfidf.get_feature_names(), index=recipe.index
+    )
+    return transformed_recipe
 
 
 def transform_from_test_tfidf(tfidf, df, idx):
-    recipe = df['ingredients'].iloc[idx].apply(' '.join).str.lower()
+    recipe = df["ingredients"].iloc[idx].apply(" ".join).str.lower()
     response = tfidf.transform(recipe)
     transformed_recipe = pd.DataFrame(
-                                        response.toarray(), 
-                                        columns=tfidf.get_feature_names()
-                                        )
+        response.toarray(), columns=tfidf.get_feature_names()
+    )
     return transformed_recipe
 
 
@@ -184,16 +183,16 @@ def find_closest_recipes(filtered_ingred_word_matrix, recipe_tfidf, X_df):
 X_train, X_test = load_data(filename)
 
 with open("../joblib/tfidf_test_subset.joblib", "wb") as fo:
-  joblib.dump(X_test, fo, compress=True)
+    joblib.dump(X_test, fo, compress=True)
 
 prepped = prep_data(X_train)
 with open("../joblib/tfidf_recipe_dataframe.joblib", "wb") as fo:
-  joblib.dump(prepped, fo, compress=True)
+    joblib.dump(prepped, fo, compress=True)
 
 # Create the ingredients TF-IDF matrix
 ingred_tfidf, ingred_word_matrix = fit_transform_tfidf_matrix(prepped, stopwords_list)
 with open("../joblib/recipe_tfidf.joblib", "wb") as fo:
-  joblib.dump(ingred_tfidf, fo, compress=True)
+    joblib.dump(ingred_tfidf, fo, compress=True)
 
 with open("../joblib/recipe_word_matrix_tfidf.joblib", "wb") as fo:
-  joblib.dump(ingred_word_matrix, fo, compress=True)
+    joblib.dump(ingred_word_matrix, fo, compress=True)
