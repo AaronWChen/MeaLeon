@@ -41,7 +41,7 @@ def import_stored_files():
 
     with open("joblib/recipe_tfidf.joblib", "rb") as fo:
         ingred_tfidf = joblib.load("joblib/recipe_tfidf.joblib")
-        print(f"tfidf parameters: {ingred_tfidf.get_params()}")
+        print(f"tfidf parameters: {ingred_tfidf.get_feature_names()}")
 
     with open("joblib/recipe_word_matrix_tfidf.joblib", "rb") as fo:
         ingred_word_matrix = joblib.load("joblib/recipe_word_matrix_tfidf.joblib")
