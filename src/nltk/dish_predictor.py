@@ -216,7 +216,7 @@ def find_similar_dishes(dish_name, cuisine_name):
 
     # Currently, just does an API call, may hit API limit if continuing with this
     # version
-    f = open("../secrets/edamam.json", "r")
+    f = open("secrets/edamam.json", "r")
     cred = json.load(f)
     f.close()
 
