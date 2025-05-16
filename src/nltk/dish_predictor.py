@@ -35,17 +35,11 @@ def import_stored_files():
     # Load in the stored Epicurious database, TFIDF Vectorizer object to transform,
     # the input, and the TFIDF word matrix from joblib and created by
     # prepare_database.py
-    with open("joblib/tfidf_recipe_dataframe.joblib", "rb") as fo:
-        prepped = joblib.load("joblib/tfidf_recipe_dataframe.joblib")
-        print(f"prepped dataframe size: {prepped.shape}")
+    prepped = joblib.load("joblib/tfidf_recipe_dataframe.joblib")
 
-    with open("joblib/recipe_tfidf.joblib", "rb") as fo:
-        ingred_tfidf = joblib.load("joblib/recipe_tfidf.joblib")
-        print(f"tfidf feature name size: {len(ingred_tfidf.get_feature_names())}")
+    ingred_tfidf = joblib.load("joblib/recipe_tfidf.joblib")
 
-    with open("joblib/recipe_word_matrix_tfidf.joblib", "rb") as fo:
-        ingred_word_matrix = joblib.load("joblib/recipe_word_matrix_tfidf.joblib")
-        print(f"word matrix size: {ingred_word_matrix.shape}")
+    ingred_word_matrix = joblib.load("joblib/recipe_word_matrix_tfidf.joblib")
 
     return prepped, ingred_tfidf, ingred_word_matrix
 
@@ -222,7 +216,7 @@ def find_similar_dishes(dish_name, cuisine_name):
 
     # Currently, just does an API call, may hit API limit if continuing with this
     # version
-    f = open("secrets/edamam.json", "r")
+    f = open("../secrets/edamam.json", "r")
     cred = json.load(f)
     f.close()
 
@@ -241,6 +235,7 @@ def find_similar_dishes(dish_name, cuisine_name):
     api_call = api_base + q + app_id_s + app_key_s  # + limiter
 
     resp = requests.get(api_call)
+    print(f"response status code: {resp.status_code}")
 
     if resp.status_code == 200:
         response_dict = resp.json()
@@ -323,7 +318,5 @@ def find_similar_dishes(dish_name, cuisine_name):
         return query_similar.to_dict(orient="records"), ingreds_used, recipe_weights
 
     else:
-        return (
-            "Error, unable to retrieve. Server response code is: ",
-            resp.status_code,
-        )
+        print(f"Error, unable to retrieve. Server response code is: {resp.status_code}")
+        return ([[]], [[]], [[]])
