@@ -94,7 +94,13 @@ def find_closest_recipes(filtered_ingred_word_matrix, recipe_tfidf, X_df):
 
 
 def __main__(dish_name, cuisine_name):
+    # import pickled files
     prepped, ingred_tfidf, ingred_word_matrix = import_stored_files()
+
+    print(f"prepped dataframe size: {prepped.shape}\n")
+    print(f"number of ingredients: {len(ingred_tfidf)}\n")
+    print(f"word matrix size: {ingred_word_matrix.shape}\n")
+
     # This function calls the Edamam API, stores the results as a JSON, and
     # stores the timestamp, dish name, and cuisine name/classification in a
     # separate csv.
@@ -119,8 +125,7 @@ def __main__(dish_name, cuisine_name):
 
     # Currently, just does an API call, may hit API limit if continuing with this
     # version
-    with open("../secrets/edamam.json", "r") as f:
-        cred = json.load(f)
+    cred = json.load("../secrets/edamam.json")
 
     app_id = cred["id"]
     app_id_s = f"&app_id=${app_id}"
@@ -134,9 +139,11 @@ def __main__(dish_name, cuisine_name):
     # limiter = "&from=0&to=4"
     # API currently defaults to returning 10
 
+    print(f"query base: {api_base}{q}")
     api_call = api_base + q + app_id_s + app_key_s  # + limiter
 
     resp = requests.get(api_call)
+    print(f"response status code: {resp.status_code}")
 
     if resp.status_code == 200:
         response_dict = resp.json()
@@ -181,6 +188,7 @@ def __main__(dish_name, cuisine_name):
                 one_recipe.append(ingred.lower())
 
         one_recipe = list(set(one_recipe))
+        print(one_recipe)
 
         query_df = pd.DataFrame(
             data={"name": search_q, "ingredients": [one_recipe], "cuisine": cuisine_q}
