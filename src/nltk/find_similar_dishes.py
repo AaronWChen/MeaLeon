@@ -112,7 +112,6 @@ def __main__(dish_name, cuisine_name):
     # version
     cred = os.environ["EDAMAM_API"]
 
-
     # Level up: 
     # Explicitly ask for a few recipes using limiter and make an "average version"
     # of the input in order to get better results from the API call
@@ -121,7 +120,8 @@ def __main__(dish_name, cuisine_name):
 
     api_call = api_base + q + cred #+ limiter
   
-    print(f"query base: {api_base}{q}")
+    print(f"query base: {api_base}{q}\n")
+    print(f"api call: {api_call}\n")
       
     resp = requests.get(api_call)
     print(f"response status code: {resp.status_code}")
