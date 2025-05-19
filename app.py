@@ -1,6 +1,6 @@
 from flask import Flask, send_from_directory, render_template, request, abort
 from waitress import serve
-from src.nltk.dish_predictor import find_similar_dishes
+from src.nltk import dish_predictor as dp  # import find_similar_dishes
 import json
 
 app = Flask(__name__, static_url_path="/static")
@@ -25,7 +25,9 @@ def get_results():
         # Convert the dict of fields into a list
         dish = data["dish_name"]
         cuisine = data["cuisine_name"]
-        results, ingreds, rec_weights = find_similar_dishes(dish, cuisine)
+        print(dish)
+        print(cuisine)
+        results, ingreds, rec_weights = dp.find_similar_dishes(dish, cuisine)
         return render_template(
             "results.html",
             results=results,
@@ -40,6 +42,9 @@ def get_results():
 
 
 if __name__ == "__main__":
+    website_url = "mealeon.buenosds.dev:5000"
+    app.config["SERVER_NAME"] = website_url
+    serve(app, host="0.0.0.0", port=5000)
     website_url = "mealeon.buenosds.dev:5000"
     app.config["SERVER_NAME"] = website_url
     serve(app, host="0.0.0.0", port=5000)
