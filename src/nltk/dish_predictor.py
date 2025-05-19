@@ -22,6 +22,7 @@ nltk.download("stopwords")
 from nltk.corpus import stopwords
 from nltk import word_tokenize, FreqDist
 from nltk.stem.wordnet import WordNetLemmatizer
+import os
 import string
 import sklearn
 from sklearn.model_selection import train_test_split
@@ -216,15 +217,7 @@ def find_similar_dishes(dish_name, cuisine_name):
 
     # Currently, just does an API call, may hit API limit if continuing with this
     # version
-    f = open("secrets/edamam.json", "r")
-    cred = json.load(f)
-    f.close()
-
-    app_id = cred["id"]
-    app_id_s = f"&app_id={app_id}"
-
-    app_key = cred["key"]
-    app_key_s = f"&app_key={app_key}"
+    cred = os.environ["EDAMAM_API"]
 
     # Level up:
     # Explicitly ask for a few recipes using limiter and make an "average version"
@@ -232,7 +225,7 @@ def find_similar_dishes(dish_name, cuisine_name):
     # limiter = "&from=0&to=4"
     # API currently defaults to returning 10
 
-    api_call = api_base + q + app_id_s + app_key_s  # + limiter
+    api_call = api_base + q + cred  # + limiter
 
     resp = requests.get(api_call)
 
