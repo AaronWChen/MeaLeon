@@ -117,103 +117,82 @@ def __main__(dish_name, cuisine_name):
     # future database be less likely to have redundant entries
     # (e.g., taco vs tacos)
 
-    q = f"q={search_q}"
+  # Currently, just does an API call, may hit API limit if continuing with this
+  # version
+  cred = os.environ["EDAMAM_API"]
 
-    # Level up:
-    # Check a database of dishes to see if this query has been asked for already
-    # If not, do an API call
 
-    # Currently, just does an API call, may hit API limit if continuing with this
-    # version
-    f = open("secrets/edamam.json", "r")
-    cred = json.load(f)
-    f.close()
+  # Level up: 
+  # Explicitly ask for a few recipes using limiter and make an "average version"
+  # of the input in order to get better results from the API call
+  # limiter = "&from=0&to=4"
+  # API currently defaults to returning 10
 
-    app_id = cred["id"]
-    app_id_s = f"&app_id=${app_id}"
+  api_call = api_base + q + cred #+ limiter
+  
+  print(f"query base: {api_base}{q}")
+    
+  resp = requests.get(api_call)
+  print(f"response status code: {resp.status_code}")
 
-    app_key = cred["key"]
-    app_key_s = f"&app_key=${app_key}"
+  if resp.status_code == 200:
+    response_dict = resp.json()
+    resp_dict_hits = response_dict['hits']
+    count = 0
 
-    # Level up:
-    # Explicitly ask for a few recipes using limiter and make an "average version"
-    # of the input in order to get better results from the API call
-    # limiter = "&from=0&to=4"
-    # API currently defaults to returning 10
+    # Store the API result into a JSON and the cuisine type and dish name into a 
+    # csv
+    # with open(f"../write_data/{dt_string}_{search_q}_edamam_api_return.json", "w") as f:
+    #   json.dump(resp_dict_hits, f)
 
-    print(f"query base: {api_base}{q}")
-    api_call = api_base + q + app_id_s + app_key_s  # + limiter
+    # fields = [dt_string, search_q, cuisine_q]
+    # with open("../write_data/user_requests.csv", "a", newline='') as f:
+    #   writer = csv.writer(f)
+    #   writer.writerow(fields)
 
-    resp = requests.get(api_call)
-    print(f"response status code: {resp.status_code}")
+    urls = []
+    labels = []
+    sources = []
+    ingreds = []
 
-    if resp.status_code == 200:
-        response_dict = resp.json()
-        resp_dict_hits = response_dict["hits"]
-        count = 0
+    for recipe in resp_dict_hits:
+        recipe_path = recipe['recipe']
+        urls.append(recipe_path['url'])
+        labels.append(recipe_path['label'])
+        sources.append(recipe_path['source'])
+        ingreds.append([item['food'] for item in recipe_path['ingredients']])
+        
+    all_recipes = {'url': urls,
+                  'label': labels, 
+                  'source': sources, 
+                  'ingredients': ingreds
+                  }
 
-        # Store the API result into a JSON and the cuisine type and dish name into a
-        # csv
-        # with open(f"../write_data/{dt_string}_{search_q}_edamam_api_return.json", "w") as f:
-        #   json.dump(resp_dict_hits, f)
+    recipe_df = pd.DataFrame(all_recipes)
 
-        # fields = [dt_string, search_q, cuisine_q]
-        # with open("../write_data/user_requests.csv", "a", newline='') as f:
-        #   writer = csv.writer(f)
-        #   writer.writerow(fields)
+    one_recipe =[]
 
-        urls = []
-        labels = []
-        sources = []
-        ingreds = []
+    for listing in recipe_df['ingredients']:
+        for ingred in listing:
+            one_recipe.append(ingred.lower())
+        
+    one_recipe = list(set(one_recipe))
 
-        for recipe in resp_dict_hits:
-            recipe_path = recipe["recipe"]
-            urls.append(recipe_path["url"])
-            labels.append(recipe_path["label"])
-            sources.append(recipe_path["source"])
-            ingreds.append([item["food"] for item in recipe_path["ingredients"]])
+    query_df = pd.DataFrame(data={'name': search_q, 'ingredients': [one_recipe], 'cuisine': cuisine_q})
 
-        all_recipes = {
-            "url": urls,
-            "label": labels,
-            "source": sources,
-            "ingredients": ingreds,
-        }
+    query_tfidf = transform_tfidf(ingred_tfidf=ingred_tfidf, recipe=query_df)
+    query_matrix = filter_out_cuisine(ingred_word_matrix=ingred_word_matrix, 
+                                      X_df=prepped, 
+                                      cuisine_name=cuisine_q, 
+                                      tfidf=ingred_tfidf)
+                                      
+    query_similar = find_closest_recipes(filtered_ingred_word_matrix=query_matrix, 
+                                                                recipe_tfidf=query_tfidf, 
+                                                                X_df=prepped)
 
-        recipe_df = pd.DataFrame(all_recipes)
+    print(query_similar)
+    # query_similar.to_html("../write_data/results.html")
 
-        one_recipe = []
-
-        for listing in recipe_df["ingredients"]:
-            for ingred in listing:
-                one_recipe.append(ingred.lower())
-
-        one_recipe = list(set(one_recipe))
-        print(one_recipe)
-
-        query_df = pd.DataFrame(
-            data={"name": search_q, "ingredients": [one_recipe], "cuisine": cuisine_q}
-        )
-
-        query_tfidf = transform_tfidf(ingred_tfidf=ingred_tfidf, recipe=query_df)
-        query_matrix = filter_out_cuisine(
-            ingred_word_matrix=ingred_word_matrix,
-            X_df=prepped,
-            cuisine_name=cuisine_q,
-            tfidf=ingred_tfidf,
-        )
-
-        query_similar = find_closest_recipes(
-            filtered_ingred_word_matrix=query_matrix,
-            recipe_tfidf=query_tfidf,
-            X_df=prepped,
-        )
-
-        print(query_similar)
-        # query_similar.to_html("../write_data/results.html")
-        # print(query_similar_values)
-
-    else:
-        print(f"Error, unable to retrieve. Server response code is: {resp.status_code}")
+  else:
+    print(f"Error, unable to retrieve. Server response code is: {resp.status_code}")
         return ([[]], [[]], [[]])
