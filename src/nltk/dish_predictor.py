@@ -226,7 +226,8 @@ def find_similar_dishes(dish_name, cuisine_name):
     # API currently defaults to returning 10
     api_call = api_base + q + cred  # + limiter
 
-    print(f"start of edamam query: {api_base} + {q}")
+    print(f"start of edamam query: {api_base}{q}\n")
+    print(f"api_call = {api_call}\n")
     
     resp = requests.get(api_call)
     print(f"response status code: {resp.status_code}")
