@@ -82,10 +82,6 @@ def __main__(dish_name, cuisine_name):
     # import pickled files
     prepped, ingred_tfidf, ingred_word_matrix = import_stored_files()
 
-    print(f"prepped dataframe size: {prepped.shape}\n")
-    print(f"number of ingredients: {len(ingred_tfidf)}\n")
-    print(f"word matrix size: {ingred_word_matrix.shape}\n")
-
     # This function calls the Edamam API, stores the results as a JSON, and
     # stores the timestamp, dish name, and cuisine name/classification in a
     # separate csv.
@@ -97,29 +93,17 @@ def __main__(dish_name, cuisine_name):
     search_q = dish_name
     cuisine_q = cuisine_name
 
-    # Level up:
-    # Implement lemmatization using trained dataset on input in order to make
-    # future database be less likely to have redundant entries
-    # (e.g., taco vs tacos)
-
     q = f"q={search_q}"
 
     # Level up:
     # Check a database of dishes to see if this query has been asked for already
     # If not, do an API call
 
-    # Currently, just does an API call, may hit API limit if continuing with this
-    # version
+    # Currently, just does an API call, may hit API limit if continuing with this version
     cred_appid = os.environ["EDAMAM_API_APPID"]
     cred_appkey = os.environ["EDAMAM_API_APPKEY"]
 
-    # Level up: 
-    # Explicitly ask for a few recipes using limiter and make an "average version"
-    # of the input in order to get better results from the API call
-    # limiter = "&from=0&to=4"
-    # API currently defaults to returning 10
-
-    api_call = f"{api_base}q={dish_name}&app_id={cred_appid}&app_key={cred_appkey}" #+ limiter
+    api_call = f"{api_base}q={dish_name}&app_id={cred_appid}&app_key={cred_appkey}" 
 
     resp = requests.get(api_call)
 
@@ -132,11 +116,6 @@ def __main__(dish_name, cuisine_name):
       # csv
       # with open(f"../write_data/{dt_string}_{search_q}_edamam_api_return.json", "w") as f:
       #   json.dump(resp_dict_hits, f)
-
-      # fields = [dt_string, search_q, cuisine_q]
-      # with open("../write_data/user_requests.csv", "a", newline='') as f:
-      #   writer = csv.writer(f)
-      #   writer.writerow(fields)
 
       urls = []
       labels = []
@@ -161,8 +140,6 @@ def __main__(dish_name, cuisine_name):
           "cuisines": cuisines
       }
 
-      # recipe_df = pd.DataFrame(all_recipes)
-
       one_recipe = []
 
       for listing in all_recipes["ingredients"]:
@@ -179,8 +156,6 @@ def __main__(dish_name, cuisine_name):
           }
       )
 
-      print(query_df)
-    
       query_tfidf = transform_tfidf(ingred_tfidf=ingred_tfidf, recipe=query_df)
       query_matrix = filter_out_cuisine(ingred_word_matrix=ingred_word_matrix, 
                                         X_df=prepped, 
@@ -191,9 +166,7 @@ def __main__(dish_name, cuisine_name):
                                                                   recipe_tfidf=query_tfidf, 
                                                                   X_df=prepped)
 
-      print(query_similar)
-      # query_similar.to_html("../write_data/results.html")
-
+      
     else:
       print(f"Error, unable to retrieve. Server response code is: {resp.status_code}")
       return ([[]], [[]], [[]])
