@@ -54,7 +54,6 @@ def transform_tfidf(ingred_tfidf, recipe):
     transformed_recipe = pd.DataFrame(
         response.toarray(), columns=ingred_tfidf.get_feature_names(), index=recipe.index
     )
-    print(f"transformed recipe shape: {transformed_recipe.shape}")
     return transformed_recipe
 
 
@@ -118,7 +117,6 @@ def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name):
     filtered_ingred_word_matrix = combo[combo["imputed_label"].isin(choices)].drop(
         "imputed_label", axis=1
     )
-    print(f"filtered matrix size: {filtered_ingred_word_matrix.shape}")
 
     return filtered_ingred_word_matrix
 
@@ -205,28 +203,14 @@ def find_similar_dishes(dish_name, cuisine_name):
     api_base = "https://api.edamam.com/api/recipes/v2?type=public&"
 
     # Level up:
-    # Implement lemmatization using trained dataset on input in order to make
-    # future database be less likely to have redundant entries
-    # (e.g., taco vs tacos)
-
-    # q = f"q={dish_name}"
-
-    # Level up:
     # Check a database of dishes to see if this query has been asked for already
     # If not, do an API call
 
-    # Currently, just does an API call, may hit API limit if continuing with this
-    # version
+    # Currently, just does an API call, may hit API limit if continuing with this version
     cred_appid = os.environ["EDAMAM_API_APPID"]
     cred_appkey = os.environ["EDAMAM_API_APPKEY"]
 
-    # Level up: 
-    # Explicitly ask for a few recipes using limiter and make an "average version"
-    # of the input in order to get better results from the API call
-    # limiter = "&from=0&to=4"
-    # API currently defaults to returning 10
-
-    api_call = f"{api_base}q={dish_name}&app_id={cred_appid}&app_key={cred_appkey}" #+ limiter
+    api_call = f"{api_base}q={dish_name}&app_id={cred_appid}&app_key={cred_appkey}" 
 
     
     resp = requests.get(api_call)
@@ -242,10 +226,6 @@ def find_similar_dishes(dish_name, cuisine_name):
         # with open(f"../write_data/{dt_string}_{dish_name}_edamam_api_return.json", "w") as f:
         #   json.dump(resp_dict_hits, f)
 
-        # fields = [dt_string, dish_name, cuisine_name]
-        # with open("../write_data/user_requests.csv", "a", newline='') as f:
-        #   writer = csv.writer(f)
-        #   writer.writerow(fields)
 
         urls = []
         labels = []
@@ -270,8 +250,6 @@ def find_similar_dishes(dish_name, cuisine_name):
             "cuisines": cuisines
         }
 
-        # recipe_df = pd.DataFrame(all_recipes)
-
         one_recipe = []
 
         for listing in all_recipes["ingredients"]:
@@ -288,10 +266,7 @@ def find_similar_dishes(dish_name, cuisine_name):
             }
         )
 
-        print(query_df)
-
         query_tfidf = transform_tfidf(ingred_tfidf=ingred_tfidf, recipe=query_df)
-        print(f"query shape: {query_tfidf.shape}")
 
         query_matrix = filter_out_cuisine(
             ingred_word_matrix=ingred_word_matrix,
@@ -300,17 +275,11 @@ def find_similar_dishes(dish_name, cuisine_name):
             # tfidf=ingred_tfidf,
         )
 
-        print(query_matrix)
-
         query_similar, ingreds_used, recipe_weights = find_closest_recipes(
             filtered_ingred_word_matrix=query_matrix,
             recipe_tfidf=query_tfidf,
             X_df=prepped,
         )
-
-        print(f"query similar:\n{query_similar.to_dict(orient='records')}\n")
-        print(f"ingreds_used:\n{ingreds_used}\n")
-        print(f"recipe weights:\n{recipe_weights}")
 
         return query_similar.to_dict(orient="records"), ingreds_used, recipe_weights
 
