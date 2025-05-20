@@ -119,13 +119,9 @@ def __main__(dish_name, cuisine_name):
     # limiter = "&from=0&to=4"
     # API currently defaults to returning 10
 
-    api_call = f"{api_base}q={dish_name}?app_id={cred_appid}&app_key={cred_appkey}" #+ limiter
+    api_call = f"{api_base}q={dish_name}&app_id={cred_appid}&app_key={cred_appkey}" #+ limiter
 
-    print(f"start of edamam query: {api_base}q={dish_name}\n")
-    print(f"api_call = {api_call}\n")
-    
     resp = requests.get(api_call)
-    print(f"response status code: {resp.status_code}")
 
     if resp.status_code == 200:
       response_dict = resp.json()
@@ -146,32 +142,45 @@ def __main__(dish_name, cuisine_name):
       labels = []
       sources = []
       ingreds = []
+      cuisines = []
 
       for recipe in resp_dict_hits:
-          recipe_path = recipe['recipe']
-          urls.append(recipe_path['url'])
-          labels.append(recipe_path['label'])
-          sources.append(recipe_path['source'])
-          ingreds.append([item['food'] for item in recipe_path['ingredients']])
-          
-      all_recipes = {'url': urls,
-                    'label': labels, 
-                    'source': sources, 
-                    'ingredients': ingreds
-                    }
+          recipe_path = recipe["recipe"]
+          urls.append(recipe_path["url"])
+          labels.append(recipe_path["label"])
+          sources.append(recipe_path["source"])
+          # ingreds.append([item["text"] for item in recipe_path["ingredients"]])
+          ingreds.append(recipe_path["ingredientLines"])
+          cuisines.append(recipe_path["cuisineType"])
 
-      recipe_df = pd.DataFrame(all_recipes)
+      all_recipes = {
+          "url": urls,
+          "label": labels,
+          "source": sources,
+          "ingredients": ingreds,
+          "cuisines": cuisines
+      }
 
-      one_recipe =[]
+      # recipe_df = pd.DataFrame(all_recipes)
 
-      for listing in recipe_df['ingredients']:
+      one_recipe = []
+
+      for listing in all_recipes["ingredients"]:
           for ingred in listing:
               one_recipe.append(ingred.lower())
-          
+
       one_recipe = list(set(one_recipe))
+      
+      query_df = pd.DataFrame(
+          data={
+              "name": dish_name,
+              "ingredients": [one_recipe],
+              "cuisine": cuisine_name,
+          }
+      )
 
-      query_df = pd.DataFrame(data={'name': search_q, 'ingredients': [one_recipe], 'cuisine': cuisine_q})
-
+      print(query_df)
+    
       query_tfidf = transform_tfidf(ingred_tfidf=ingred_tfidf, recipe=query_df)
       query_matrix = filter_out_cuisine(ingred_word_matrix=ingred_word_matrix, 
                                         X_df=prepped, 
