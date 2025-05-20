@@ -17,7 +17,6 @@ def get_results():
     """Display the five most similar recipes from the database based on the
     inputs."""
     data = request.form
-    print(data)
 
     expected_features = ("dish_name", "cuisine_name")
 
@@ -25,8 +24,6 @@ def get_results():
         # Convert the dict of fields into a list
         dish = data["dish_name"]
         cuisine = data["cuisine_name"]
-        print(dish)
-        print(cuisine)
         results, ingreds, rec_weights = dp.find_similar_dishes(dish, cuisine)
         return render_template(
             "results.html",
@@ -42,9 +39,6 @@ def get_results():
 
 
 if __name__ == "__main__":
-    website_url = "mealeon.buenosds.dev:5000"
-    app.config["SERVER_NAME"] = website_url
-    serve(app, host="0.0.0.0", port=5000)
     website_url = "mealeon.buenosds.dev:5000"
     app.config["SERVER_NAME"] = website_url
     serve(app, host="0.0.0.0", port=5000)
