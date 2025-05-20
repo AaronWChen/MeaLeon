@@ -92,7 +92,7 @@ def __main__(dish_name, cuisine_name):
     now = datetime.now()
     dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
 
-    api_base = "https://api.edamam.com/search?"
+    api_base = "https://api.edamam.com/api/recipes/v2?type=public&"
 
     search_q = dish_name
     cuisine_q = cuisine_name
@@ -110,7 +110,8 @@ def __main__(dish_name, cuisine_name):
 
     # Currently, just does an API call, may hit API limit if continuing with this
     # version
-    cred = os.environ["EDAMAM_API"]
+    cred_appid = os.environ["EDAMAM_API_APPID"]
+    cred_appkey = os.environ["EDAMAM_API_APPKEY"]
 
     # Level up: 
     # Explicitly ask for a few recipes using limiter and make an "average version"
@@ -118,7 +119,7 @@ def __main__(dish_name, cuisine_name):
     # limiter = "&from=0&to=4"
     # API currently defaults to returning 10
 
-    api_call = api_base + q + cred #+ limiter
+    api_call = api_base + q + "?app_id=" + cred_appid + "&app_key=" + cred_appkey #+ limiter
   
     print(f"query base: {api_base}{q}\n")
     print(f"api call: {api_call}\n")
