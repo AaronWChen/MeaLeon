@@ -202,14 +202,14 @@ def find_similar_dishes(dish_name, cuisine_name):
     now = datetime.now()
     dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
 
-    api_base = "https://api.edamam.com/search?"
+    api_base = "https://api.edamam.com/api/recipes/v2?type=public&"
 
     # Level up:
     # Implement lemmatization using trained dataset on input in order to make
     # future database be less likely to have redundant entries
     # (e.g., taco vs tacos)
 
-    q = f"q={dish_name}"
+    # q = f"q={dish_name}"
 
     # Level up:
     # Check a database of dishes to see if this query has been asked for already
@@ -226,9 +226,9 @@ def find_similar_dishes(dish_name, cuisine_name):
     # limiter = "&from=0&to=4"
     # API currently defaults to returning 10
 
-    api_call = api_base + q + "?app_id=" + cred_appid + "&app_key=" + cred_appkey #+ limiter
-    
-    print(f"start of edamam query: {api_base}{q}\n")
+    api_call = f"{api_base}q={dish_name}?app_id={cred_appid}&app_key={cred_appkey}" #+ limiter
+
+    print(f"start of edamam query: {api_base}q={dish_name}\n")
     print(f"api_call = {api_call}\n")
     
     resp = requests.get(api_call)

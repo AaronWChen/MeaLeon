@@ -119,11 +119,11 @@ def __main__(dish_name, cuisine_name):
     # limiter = "&from=0&to=4"
     # API currently defaults to returning 10
 
-    api_call = api_base + q + "?app_id=" + cred_appid + "&app_key=" + cred_appkey #+ limiter
-  
-    print(f"query base: {api_base}{q}\n")
-    print(f"api call: {api_call}\n")
-      
+    api_call = f"{api_base}q={dish_name}?app_id={cred_appid}&app_key={cred_appkey}" #+ limiter
+
+    print(f"start of edamam query: {api_base}q={dish_name}\n")
+    print(f"api_call = {api_call}\n")
+    
     resp = requests.get(api_call)
     print(f"response status code: {resp.status_code}")
 
