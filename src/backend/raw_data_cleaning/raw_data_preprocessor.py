@@ -1,9 +1,13 @@
 """ This script is intended to take in a pandas dataframe from read_json for the scraped Epicurious data and preprocess the dataframe to prepare it for natural language processing down the line. 
+
+TODO:
+1. Does this benefit from refactoring into a Class?
+
 """
 
 import pandas as pd
 import stanza
-from typing import Dict, Text
+from typing import Dict, Text, List
 
 # instantiate stanza pipeline
 stanza.download("en")
@@ -12,7 +16,7 @@ nlp = stanza.Pipeline(
     depparse_batch_size=50,
     depparse_min_length_to_batch_separately=50,
     verbose=True,
-    use_gpu=False,  # set to true when on cloud/not on streaming computer
+    use_gpu=True,  # set to true when on cloud/not on streaming computer
     batch_size=100,
 )
 
@@ -27,13 +31,15 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame
     """
 
-    def stanza_lemmafier(recipe_ingredients: list, stanza_pipeline) -> pd.DataFrame:
+    def stanza_filterer(recipe_ingredients: List[str], stanza_pipeline: stanza.Pipeline) -> str:
         """This function converts a list of ingredients into a list of ingredient lemmas
         It is intended to be used via an apply(lambda) until a better way is devised
 
         Args:
-            recipe_ingredients: List
+            recipe_ingredients: List[str]
 
+        Returns:
+            lemmafied: String
         """
         lemmafied = " ".join(
             str(word.lemma)
@@ -46,7 +52,7 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         )
         return lemmafied
 
-    def ingredient_lemmafier(df: pd.DataFrame, stanza_pipeline) -> pd.DataFrame:
+    def ingredient_lemmafier(df: pd.DataFrame, stanza_pipeline: stanza.Pipeline) -> pd.DataFrame:
         """This function performs some text preprocessing:
         1. Converts the raw list of ingredients into a big string with ' brk ' token
         2. Remove accented characters
@@ -60,16 +66,16 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
             .str.normalize("NFKC")
             .str.lower()
             .fillna("Missing ingredients")
-        ).apply(lambda x: stanza_lemmafier(x, stanza_pipeline))
+        ).apply(lambda x: stanza_filterer(x, stanza_pipeline))
 
         return df
 
-    def link_maker(recipe_link: Text) -> Text:
+    def link_maker(recipe_link: str) -> str:
         """This function takes in the incomplete recipe link from the dataframe and returns the complete one."""
         full_link = f"https://www.epicurious.com{recipe_link}"
         return full_link
 
-    def cuisine_namer(text: Text):
+    def cuisine_renamer(text: str) -> str:
         """This function converts redundant and/or rare categories into more common
         ones/umbrella ones.
 
@@ -120,12 +126,13 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
         if key_target not in valid_keys:
             # this logic makes sure we are only looking at valid keys
+            # this is not a real try/except
             return (
                 "Improper key target: can only pick from 'name', 'filename', 'credit'."
             )
 
         else:
-            if pd.isna(to_check):  # type:ignore
+            if pd.isna(to_check):  
                 # this logic checks to see if the dictionary exists at all. if so, return Missing
                 return f"Missing {translation_keys[key_target]}"
             else:
@@ -136,15 +143,16 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                     # Otherwise, there should be no issue with returning
                     return to_check[key_target]
 
+    # separating out the below to execute with a __main__ would be cleaner
     df = ingredient_lemmafier(df, nlp)
 
     # Dive into the tag column and extract the cuisine label. Put into new column or fills with "missing data"
     df["cuisine_name"] = df["tag"].apply(
         lambda x: null_filler(to_check=x, key_target="name")
-    )  # type:ignore
+    )  
 
-    # This apply uses the cuisune_namer function above to relabel the cuisines to more general ones
-    df["cuisine_name"] = df["cuisine_name"].apply(cuisine_namer)
+    # This apply uses the cuisine_renamer function above to relabel the cuisines to more general ones
+    df["cuisine_name"] = df["cuisine_name"].apply(cuisine_renamer)
 
     # this lambda function goes into the photo data column and extracts just the filename from the dictionary
     df["photo_filename"] = df["photoData"].apply(
@@ -158,7 +166,7 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     # for the above, maybe they can be refactored to one function where the arguments are a column name, dictionary key name, the substring return
 
-    # this lambda funciton goes into the author column and extract the author name or fills with "missing data"
+    # this lambda function goes into the author column and extracts the author name or fills with "missing data"
     df["author_name"] = df["author"].apply(
         lambda x: x[0]["name"] if x else "Missing Author Name"
     )  # type:ignore
