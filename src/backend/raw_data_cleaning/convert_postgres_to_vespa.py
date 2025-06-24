@@ -6,7 +6,7 @@ import sys
 import unicodedata
 
 data_dir = sys.argv[1]
-doc_type = sys.argv[2]
+doc_type = sys.argv[2]  # mealeon
 # fields = sys.argv[3].split(",")
 
 docs_file = os.path.join(data_dir, "postgres_table_dump.json")
@@ -18,22 +18,28 @@ def unicode_cleaner(k, v):
     str_keys = ["title", "description"]
 
     if k in lst_keys:
-        field = (
-            "".join(
-                cha if unicodedata.category(cha)[0] != "C" else " "
-                for sen in v
-                for cha in sen + "|"
+        if v is None:
+            field = [f"Missing + {k}"]
+        else:
+            field = (
+                "".join(
+                    cha if unicodedata.category(cha)[0] != "C" else " "
+                    for sen in v
+                    for cha in sen + "|"
+                )
+                .rstrip("|")
+                .split("|")
             )
-            .rstrip("|")
-            .split("|")
-        )
 
     elif k in str_keys:
-        field = "".join(
-            cha if unicodedata.category(cha)[0] != "C" else " "
-            for sen in v
-            for cha in sen
-        )
+        if v is None:
+            field = f"Missing {k}"
+        else:
+            field = "".join(
+                cha if unicodedata.category(cha)[0] != "C" else " "
+                for sen in v
+                for cha in sen
+            )
 
     else:
         field = v
