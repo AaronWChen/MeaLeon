@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
-from schemas import GenreURLChoices, Band
+from schemas_example import GenreURLChoices, Band
 
+# set --port argument, can't use 8000, the default uvicorn
 # use localhost:{port} in browser
 # use localhost:{port}/docs to look at the interactive, automatically created documentation
 
