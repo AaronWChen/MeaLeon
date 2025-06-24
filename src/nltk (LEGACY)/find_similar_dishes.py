@@ -36,14 +36,14 @@ def import_stored_files():
     # Load in the stored Epicurious database, TFIDF Vectorizer object to transform,
     # the input, and the TFIDF word matrix from joblib and created by
     # prepare_database.py
-    with open("joblib/tfidf_recipe_dataframe.joblib", "rb") as fo:
-        prepped = joblib.load("../joblib/tfidf_recipe_dataframe.joblib")
+    with open("joblib/recipe_dataframe.joblib", "rb") as fo:
+        prepped = joblib.load("joblib/recipe_dataframe.joblib")
 
     with open("joblib/recipe_tfidf.joblib", "rb") as fo:
         ingred_tfidf = joblib.load("joblib/recipe_tfidf.joblib")
 
-    with open("joblib/recipe_word_matrix_tfidf.joblib", "rb") as fo:
-        ingred_word_matrix = joblib.load("joblib/recipe_word_matrix_tfidf.joblib")
+    with open("joblib/recipe_word_matrix.joblib", "rb") as fo:
+        ingred_word_matrix = joblib.load("joblib/recipe_word_matrix.joblib")
 
     return prepped, ingred_tfidf, ingred_word_matrix
 

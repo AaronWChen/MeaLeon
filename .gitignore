@@ -143,4 +143,42 @@ heroku_key
 .elasticbeanstalk
 .elasticbeanstalk/
 
+# remove data directory, should be in DVC
 data/
+
+*Zone.Identifier
+
+# remove things inside joblib except README
+joblib/*.joblib
+joblib/*.pkl
+joblib/2019.11.15/
+joblib/2020.01.14/
+joblib/2020.01.30/
+joblib/2022.08.23/
+
+# remove models directory due to sizes (and being logged in MLflow)
+models/
+
+### JetBrains PyCharm support
+
+# User-specific stuff:
+.idea/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries
+
+# Sensitive or high-churn files:
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.xml
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+
+
+/data
+
+/secrets
+
+data/raw/

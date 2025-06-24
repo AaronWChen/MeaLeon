@@ -41,7 +41,7 @@ def import_stored_files():
     ingred_tfidf = joblib.load("joblib/recipe_tfidf.joblib")
 
     ingred_word_matrix = joblib.load("joblib/recipe_word_matrix_tfidf.joblib")
-
+    
     return prepped, ingred_tfidf, ingred_word_matrix
 
 
@@ -56,8 +56,8 @@ def transform_tfidf(ingred_tfidf, recipe):
     )
     return transformed_recipe
 
-
-def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name):
+  
+def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name, tfidf):
     # This function takes in the ingredient word matrix (from joblib), a
     # dataframe made from the database (from joblib), the user inputted cuisine
     # name, and the ingredient TFIDF Vectorizer object (from joblib) and returns
@@ -117,7 +117,7 @@ def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name):
     filtered_ingred_word_matrix = combo[combo["imputed_label"].isin(choices)].drop(
         "imputed_label", axis=1
     )
-
+    
     return filtered_ingred_word_matrix
 
 
@@ -199,12 +199,13 @@ def find_similar_dishes(dish_name, cuisine_name):
     # separate csv.
     now = datetime.now()
     dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
-
+    q = f"q={dish_name}"
     api_base = "https://api.edamam.com/api/recipes/v2?type=public&"
 
     # Level up:
     # Check a database of dishes to see if this query has been asked for already
     # If not, do an API call
+
 
     # Currently, just does an API call, may hit API limit if continuing with this version
     cred_appid = os.environ["EDAMAM_API_APPID"]
@@ -226,7 +227,6 @@ def find_similar_dishes(dish_name, cuisine_name):
         # with open(f"../write_data/{dt_string}_{dish_name}_edamam_api_return.json", "w") as f:
         #   json.dump(resp_dict_hits, f)
 
-
         urls = []
         labels = []
         sources = []
@@ -238,7 +238,6 @@ def find_similar_dishes(dish_name, cuisine_name):
             urls.append(recipe_path["url"])
             labels.append(recipe_path["label"])
             sources.append(recipe_path["source"])
-            # ingreds.append([item["text"] for item in recipe_path["ingredients"]])
             ingreds.append(recipe_path["ingredientLines"])
             cuisines.append(recipe_path["cuisineType"])
 
@@ -246,13 +245,13 @@ def find_similar_dishes(dish_name, cuisine_name):
             "url": urls,
             "label": labels,
             "source": sources,
-            "ingredients": ingreds,
+            "ingredients": ingreds,`
             "cuisines": cuisines
         }
 
         one_recipe = []
 
-        for listing in all_recipes["ingredients"]:
+        for listing in all_recipes["ingredients"]:`
             for ingred in listing:
                 one_recipe.append(ingred.lower())
 
@@ -267,7 +266,7 @@ def find_similar_dishes(dish_name, cuisine_name):
         )
 
         query_tfidf = transform_tfidf(ingred_tfidf=ingred_tfidf, recipe=query_df)
-
+        
         query_matrix = filter_out_cuisine(
             ingred_word_matrix=ingred_word_matrix,
             X_df=prepped,

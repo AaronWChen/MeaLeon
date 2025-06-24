@@ -49,8 +49,6 @@ def import_stored_files():
 def transform_ohe(ingred_ohe, recipe):
     # This function takes in a OHE/CountVectorizer object and a recipe, then
     # creates/transforms the given recipe into a CountVectorizer form
-    # pd.set_option('display.max_colwidth', 500)
-
     ingreds = recipe["ingredients"].apply(" ".join).str.lower()
 
     response = ingred_ohe.transform(ingreds)
