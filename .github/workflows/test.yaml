@@ -11,8 +11,11 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
 
     steps:
+      - name: checkout contents of PR
+        uses: actions/checkout@v4
+
       - name: Install UV
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         with:
           # install specific version of UV
           version: "0.6.10"
@@ -22,11 +25,8 @@ jobs:
         with:
           python-version-file: "pyproject.toml"
 
-      - name: checkout contents of PR
-        uses: actions/checkout@v3
-
       - name: Cache the virtualenv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         id: venv_cache
         with:
           enable-cache: true
@@ -43,21 +43,21 @@ jobs:
       - name: Download pretrained spacy libraries
         run: uv run spacy download en_core_web_sm
 
-      - name: check for data cache hit
-        uses: actions/cache@v3
-        if: env.caching == 'true'
-        id: data_cache
-        with:
-          path: ~/.fastai/data
-          key: 'fastai-test-data-v3'
+      # - name: check for data cache hit
+      #   uses: actions/cache@v3
+      #   if: env.caching == 'true'
+      #   id: data_cache
+      #   with:
+      #     path: ~/.fastai/data
+      #     key: 'fastai-test-data-v3'
 
-      - name: download data
-        if: env.download == 'true' && steps.cache.outputs.cache-hit != 'true'
-        run: |
-          wget https://raw.githubusercontent.com/fastai/docker-containers/master/fastai/tmp_scripts/download_testdata.py
-          ipython download_testdata.py
-          mkdir -p $HOME/.fastai/data
-          find $HOME/.fastai/archive/ -name "*.tgz" -exec tar -xzvf {} -C $HOME/.fastai/data \;
+      # - name: download data
+      #   if: env.download == 'true' && steps.cache.outputs.cache-hit != 'true'
+      #   run: |
+      #     wget https://raw.githubusercontent.com/fastai/docker-containers/master/fastai/tmp_scripts/download_testdata.py
+      #     ipython download_testdata.py
+      #     mkdir -p $HOME/.fastai/data
+      #     find $HOME/.fastai/archive/ -name "*.tgz" -exec tar -xzvf {} -C $HOME/.fastai/data \;
 
       - name: Pull data from DVC
         run: |
