@@ -66,6 +66,7 @@ jobs:
         run: |
           uv run dvc remote modify origin --local access_key_id ${{ secrets.DAGSHUB_TOKEN }}
           uv run dvc remote modify origin --local secret_access_key ${{ secrets.DAGSHUB_TOKEN }}
+          uv run dvc fetch
           uv run dvc pull
 
       - name: Test notebooks batch ${{matrix.nb_dec}}${{matrix.nb_unit}}
