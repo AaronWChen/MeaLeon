@@ -8,47 +8,40 @@ jobs:
       fail-fast: true
       matrix:
         os:  [ubuntu]
-        py_version: ["3.10"]
     runs-on: ${{ matrix.os }}-latest
 
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Install UV
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.py_version }}
+          # install specific version of UV
+          version: "0.6.10"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
 
       - name: checkout contents of PR
         uses: actions/checkout@v3
 
-      - name: Install Poetry via Public GitHub Action
-        uses: abatilo/actions-poetry@v2.0.0
-        with: 
-          poetry-version: 1.5.1
-
       - name: Cache the virtualenv
-        uses: actions/cache@v3
+        uses: astral-sh/setup-uv@v5
         id: venv_cache
         with:
-          path: ~/.virtualenvs
-          key: poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            poetry-${{ hashFiles('**/poetry.lock') }}
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
-      - name: Configure Poetry
+      - name: Install venv
         run: |
-          python -m poetry config virtualenvs.in-project false
-          python -m poetry config virtualenvs.path ~/.virtualenvs
-
-      - name: Install libraries
-        run: python -m poetry install
-        if: steps.cache.outputs.cache-hit != 'true'
+          uv sync
 
       - name: Log in to DagsHub
         run: |
-          poetry run dagshub login --token ${{ secrets.DAGSHUB_TOKEN }}
+          uv run dagshub login --token ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Download pretrained spacy libraries
-        run: poetry run spacy download en_core_web_sm
+        run: uv run spacy download en_core_web_sm
 
       - name: check for data cache hit
         uses: actions/cache@v3
@@ -68,13 +61,13 @@ jobs:
 
       - name: Pull data from DVC
         run: |
-          poetry run dvc remote modify origin --local auth basic
-          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
-          poetry run dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
-          poetry run dvc pull
+          uv run dvc remote modify origin --local auth basic
+          uv run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          uv run dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
+          uv run dvc pull
 
       - name: Test notebooks batch ${{matrix.nb_dec}}${{matrix.nb_unit}}
-        run: python -m poetry run nbdev_test --flags '' --n_workers 3 --pause 1.0 --file_re "${{matrix.nb_dec}}${{matrix.nb_unit}}.*"
+        run: python -m uv run nbdev_test --flags '' --n_workers 3 --pause 1.0 --file_re "${{matrix.nb_dec}}${{matrix.nb_unit}}.*"
 
       - name: test docs build
         if: ${{ (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch') && matrix.version == '3.9' && matrix.os == 'ubuntu' }}
