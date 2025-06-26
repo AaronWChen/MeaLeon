@@ -64,9 +64,8 @@ jobs:
 
       - name: Pull data from DVC
         run: |
-          uv run dvc remote modify origin --local auth basic
-          uv run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
-          uv run dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
+          uv run dvc remote modify origin --local access_key_id ${{ secrets.DAGSHUB_TOKEN }}
+          uv run dvc remote modify origin --local secret_access_key ${{ secrets.DAGSHUB_TOKEN }}
           uv run dvc pull
 
       - name: Test notebooks batch ${{matrix.nb_dec}}${{matrix.nb_unit}}
