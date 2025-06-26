@@ -3,7 +3,7 @@ name = "MeaLeon"
 version = "0.1.19"
 description = "MeaLeon suggests recipes for a user to cook! It is a full stack data science project using machine learning, natural language processing, a web form, and AWS. This is the Poetry file to make it easier to deploy and work on the project."
 authors = [{ name = "Aaron W. Chen", email = "awc33@cornell.edu" }]
-requires-python = ">=3.10"
+requires-python = ">=3.11, <3.12"
 license = "GPL-3.0-or-later"
 dependencies = [
     "Flask>=2.0.2,<3",
