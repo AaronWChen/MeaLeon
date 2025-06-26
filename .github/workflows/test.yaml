@@ -41,7 +41,7 @@ jobs:
           uv run dagshub login --token ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Download pretrained spacy libraries
-        run: uv run spacy download en_core_web_sm
+        run: uv run -- spacy download en_core_web_sm
 
       # - name: check for data cache hit
       #   uses: actions/cache@v3
