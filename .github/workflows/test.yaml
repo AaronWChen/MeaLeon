@@ -40,6 +40,9 @@ jobs:
         run: |
           uv run dagshub login --token ${{ secrets.DAGSHUB_TOKEN }}
 
+      - name: Install pip in UV
+        run: uv pip install pip
+
       - name: Download pretrained spacy libraries
         run: uv run -- spacy download en_core_web_sm
 
