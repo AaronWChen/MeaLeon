@@ -3,7 +3,7 @@ name="MeaLeon"
 version = "0.1.19"
 description = "MeaLeon suggests recipes for a user to cook! It is a full stack data science project using machine learning, natural language processing, a web form, and AWS. This is the Poetry file to make it easier to deploy and work on the project."
 authors = [{ name = "Aaron W. Chen", email = "awc33@cornell.edu" }]
-requires-python=">=3.8"
+requires-python=">=3.11"
 license = "GPL-3.0-or-later"
 dependencies = [
     "Flask>=2.0.2,<3",
@@ -64,7 +64,6 @@ dev = [
     "pylint>=2.13.4,<3",
     "pytest>=6.2.5,<7",
     "click>=8.0.4",
-    "nbdev>=2.3.9,<3",
     "poetry2setup>=1.1.0,<2",
     "pre-commit>=3.0.1,<4",
     "nbqa>=1.6.1,<2",
@@ -79,13 +78,13 @@ default-groups = [
 ]
 
 [[tool.uv.index]]
-name="MeaLeon"
+name="pytorch-cu124"
 url = "https://download.pytorch.org/whl/cu124"
 explicit = true
 
 
 [[tool.uv.index]]
-name="MeaLeon"
+name="PyPI"
 url = "https://pypi.org/simple/"
 default = true
 
