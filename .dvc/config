@@ -2,6 +2,10 @@
     url = s3://dvc
     endpointurl = https://dagshub.com/AaronWChen/MeaLeon.s3
     # read_timeout = 0
+    
+[core]
+    remote = origin
+
 # ['remote "origin-s3"']
 #     
 #     endpointurl = https://dagshub.com/AaronWChen/MeaLeon.s3
