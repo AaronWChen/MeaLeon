@@ -8,10 +8,10 @@ repos:
 #       additional_dependencies: ["mypy", "types-toml", "types-requests"]
 
   # use black-juptyer to format notebooks
-# - repo: https://github.com/psf/black/
-#   rev: 23.1.0
-#   hooks:
-#   - id: black-jupyter
+- repo: https://github.com/psf/black/
+  rev: 25.1.0
+  hooks:
+  - id: black-jupyter
 
 
   # nbhooks removes metadata and keeps notebooks cleaner to make git revisions easier to handle
@@ -32,8 +32,8 @@ repos:
 
   # nbdev_clean is supposed to use black to format the notebooks
   # nbdev_export exports notebooks to Python modules
-- repo: https://github.com/fastai/nbdev
-  rev: 2.2.10
-  hooks:
-  - id: nbdev_clean
-  - id: nbdev_export
+# - repo: https://github.com/fastai/nbdev
+#   rev: 2.2.10
+#   hooks:
+#   - id: nbdev_clean
+#   - id: nbdev_export
