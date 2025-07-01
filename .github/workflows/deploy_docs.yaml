@@ -43,6 +43,6 @@ jobs:
           publish_dir: ./_docs
           # The following lines assign commit authorship to the official GH-Actions bot for deploys to `gh-pages` branch.
           # You can swap them out with your own user credentials.
-          user_name: ${{ GITHUB_ACTOR }}
-          user_email: ${{ GITHUB_ACTOR_ID }}+${{ GITHUB_ACTOR }}@users.noreply.github.com
+          user_name: $GITHUB_ACTOR
+          user_email: $GITHUB_ACTOR_ID+$GITHUB_ACTOR@users.noreply.github.com
           publish_branch: ${{ inputs.publish_branch }}
