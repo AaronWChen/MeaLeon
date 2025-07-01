@@ -3,21 +3,14 @@ description: 'Create docs with nbdev and deploy to GitHub Pages'
 on:
   push:
     branches: ["main"]
+  workflow_dispatch:
 
 jobs:
   deploy_docs:
     runs-on: ubuntu-latest
-    
     steps:
       - name: checkout contents of PR
         uses: actions/checkout@v4
-
-      - name: Determine default branch
-        run: |
-          DEFAULT_BRANCH=$(git remote show origin | awk '/HEAD branch/ {print $NF}')
-          echo "default_branch=$DEFAULT_BRANCH" >> $GITHUB_ENV
-          echo "default_branch_ref=refs/heads/$DEFAULT_BRANCH" >> $GITHUB_ENV
-
 
       - name: Install UV
         uses: astral-sh/setup-uv@v6
@@ -40,6 +33,10 @@ jobs:
       - name: Install venv
         run: |
           uv sync
+          source .venv/bin/activate
+
+      - name: Build docs
+        run: nbdev_docs
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

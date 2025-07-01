@@ -11,6 +11,7 @@ website:
   twitter-card: true
   open-graph: true
   repo-actions: [issue]
+  repo-branch: main
   navbar:
     background: primary
     search: true
