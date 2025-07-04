@@ -1679,14 +1679,14 @@ wheels = [
 
 [[package]]
 name = "gunicorn"
-version = "20.1.0"
+version = "22.0.0"
 source = { registry = "https://pypi.org/simple/" }
 dependencies = [
-    { name = "setuptools" },
+    { name = "packaging" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/28/5b/0d1f0296485a6af03366604142ea8f19f0833894db3512a40ed07b2a56dd/gunicorn-20.1.0.tar.gz", hash = "sha256:e0a968b5ba15f8a328fdfd7ab1fcb5af4470c28aaf7e55df02a99bc13138e6e8", size = 370601 }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/88/e2f93c5738a4c1f56a458fc7a5b1676fc31dcdbb182bef6b40a141c17d66/gunicorn-22.0.0.tar.gz", hash = "sha256:4a0b436239ff76fb33f11c07a16482c521a7e09c1ce3cc293c2330afe01bec63", size = 3639760 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e4/dd/5b190393e6066286773a67dfcc2f9492058e9b57c4867a95f1ba5caf0a83/gunicorn-20.1.0-py3-none-any.whl", hash = "sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e", size = 79531 },
+    { url = "https://files.pythonhosted.org/packages/29/97/6d610ae77b5633d24b69c2ff1ac3044e0e565ecbd1ec188f02c45073054c/gunicorn-22.0.0-py3-none-any.whl", hash = "sha256:350679f91b24062c86e386e198a15438d53a7a8207235a78ba1b53df4c4378d9", size = 84443 },
 ]
 
 [[package]]
@@ -2451,15 +2451,6 @@ wheels = [
 ]
 
 [[package]]
-name = "markdown"
-version = "3.8.2"
-source = { registry = "https://pypi.org/simple/" }
-sdist = { url = "https://files.pythonhosted.org/packages/d7/c2/4ab49206c17f75cb08d6311171f2d65798988db4360c4d1485bd0eedd67c/markdown-3.8.2.tar.gz", hash = "sha256:247b9a70dd12e27f67431ce62523e675b866d254f900c4fe75ce3dda62237c45", size = 362071 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/96/2b/34cc11786bc00d0f04d0f5fdc3a2b1ae0b6239eef72d3d345805f9ad92a1/markdown-3.8.2-py3-none-any.whl", hash = "sha256:5c83764dbd4e00bdd94d85a19b8d55ccca20fe35b2e678a1422b380324dd5f24", size = 106827 },
-]
-
-[[package]]
 name = "markdown-it-py"
 version = "3.0.0"
 source = { registry = "https://pypi.org/simple/" }
@@ -2644,14 +2635,14 @@ requires-dist = [
     { name = "flask", specifier = ">=2.0.2,<3" },
     { name = "gensim", specifier = ">=4.1.2,<5" },
     { name = "graphviz", specifier = ">=0.20.1,<0.21" },
-    { name = "gunicorn", specifier = ">=20.1.0,<21" },
+    { name = "gunicorn", specifier = ">=22.0.0,<23" },
     { name = "hdbscan", specifier = ">=0.8.29,<0.9" },
     { name = "importlib-metadata", specifier = ">=4.12.0,<5" },
     { name = "importlib-resources", specifier = ">=5.8.0,<6" },
     { name = "jupyter", specifier = ">=1.0.0,<2" },
     { name = "jupyterlab", specifier = ">=3.2.5,<4" },
     { name = "matplotlib", specifier = ">=3.5.2,<4" },
-    { name = "mlflow", specifier = ">=2.2.1,<3" },
+    { name = "mlflow", specifier = ">=3.1.0,<4" },
     { name = "more-itertools", specifier = ">=10.2.0,<11" },
     { name = "nltk", specifier = "~=3.7" },
     { name = "numpy", specifier = ">=1.21.5,<2" },
@@ -2677,7 +2668,7 @@ requires-dist = [
     { name = "tqdm", specifier = ">=4.62.3,<5" },
     { name = "umap-learn", specifier = ">=0.5.3,<0.6" },
     { name = "uvicorn", specifier = ">=0.30.4,<0.31" },
-    { name = "waitress", specifier = ">=2.1.2,<3" },
+    { name = "waitress", specifier = ">=3.0.1,<4" },
     { name = "xgboost", specifier = ">=1.6.1,<2" },
     { name = "zipp", specifier = ">=3.8.0,<4" },
 ]
@@ -2706,7 +2697,7 @@ wheels = [
 
 [[package]]
 name = "mlflow"
-version = "2.22.1"
+version = "3.1.1"
 source = { registry = "https://pypi.org/simple/" }
 dependencies = [
     { name = "alembic" },
@@ -2714,8 +2705,6 @@ dependencies = [
     { name = "flask" },
     { name = "graphene" },
     { name = "gunicorn", marker = "sys_platform != 'win32'" },
-    { name = "jinja2" },
-    { name = "markdown" },
     { name = "matplotlib" },
     { name = "mlflow-skinny" },
     { name = "numpy" },
@@ -2726,14 +2715,14 @@ dependencies = [
     { name = "sqlalchemy" },
     { name = "waitress", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/34/37/65f82b6bf19e9f5751d28a05346a1458b2bb775f9c6a5db21c1aa115ddfc/mlflow-2.22.1.tar.gz", hash = "sha256:b7d6cb294112115cb0031a554629a21647c38ba88d0fd7455e0ddead02b4bb28", size = 28377360 }
+sdist = { url = "https://files.pythonhosted.org/packages/2b/e1/0cba7a8fc2c81078b4d31948f65fb1580cee1831e955a86028159724d057/mlflow-3.1.1.tar.gz", hash = "sha256:ee98fe929d61625b72ae5010fbf12a7c6d15527790397827191fd6e8246c33e5", size = 24098836 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8d/a2/f6c729f071437712bc1c0e181ab07260395fb4e6ffcbc66d1c814e625713/mlflow-2.22.1-py3-none-any.whl", hash = "sha256:d9702186ba15e4537bd49364adc6256f3ccc03b00b79fcef4e3fda231eaf98b8", size = 29003480 },
+    { url = "https://files.pythonhosted.org/packages/a2/07/9f28e7e2b1c9552e64e6161cd3943b02349f8164176cea6b75e69d7df94a/mlflow-3.1.1-py3-none-any.whl", hash = "sha256:16853335292217fde203a645fd50f38d5567ce7818587ed5236040418918872e", size = 24673365 },
 ]
 
 [[package]]
 name = "mlflow-skinny"
-version = "2.22.1"
+version = "3.1.1"
 source = { registry = "https://pypi.org/simple/" }
 dependencies = [
     { name = "cachetools" },
@@ -2754,9 +2743,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7c/0d/52bee7edd1270021f161426558315c0443651074503d0a0b49ab6e6324fa/mlflow_skinny-2.22.1.tar.gz", hash = "sha256:d9d4ae77288a3f216aed3c4e6607607baadcb2fd7d299adee6227358f662048d", size = 5891545 }
+sdist = { url = "https://files.pythonhosted.org/packages/dd/52/e63c0244a24ed23b5f82b30efffce150c19f126b8ef977b78a56f6d192c9/mlflow_skinny-3.1.1.tar.gz", hash = "sha256:9c2ea510eef6c115c7241305b65f7090d7fdc02399de2a6e8ddae5f285bb7a99", size = 1603411 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/75/da/8f77cbbd6c5f38a295d1ad2bc58805bd789fabd24d6d482b2aa19e9eb9fd/mlflow_skinny-2.22.1-py3-none-any.whl", hash = "sha256:3b3f9a17a4b9e60c7683b3458909aff15f3c6f5dc898a6cec13a6efb939e7e79", size = 6270162 },
+    { url = "https://files.pythonhosted.org/packages/f6/45/24d553e0f550f82aaadd8b9d08f1410a3d750c51733a5f43fcc6def1be00/mlflow_skinny-3.1.1-py3-none-any.whl", hash = "sha256:73b1be5d0ef3099c2d0e5ec3ca7fd0b85d4a6def7d7ab35feda9f06bf8bf7049", size = 1926660 },
 ]
 
 [[package]]
@@ -5115,11 +5104,11 @@ wheels = [
 
 [[package]]
 name = "waitress"
-version = "2.1.2"
+version = "3.0.2"
 source = { registry = "https://pypi.org/simple/" }
-sdist = { url = "https://files.pythonhosted.org/packages/72/83/c3de9799e2305898b02ea67bcd125ad06f271e2a82cc86fe66b7bf4e6f63/waitress-2.1.2.tar.gz", hash = "sha256:780a4082c5fbc0fde6a2fcfe5e26e6efc1e8f425730863c04085769781f51eba", size = 179823 }
+sdist = { url = "https://files.pythonhosted.org/packages/bf/cb/04ddb054f45faa306a230769e868c28b8065ea196891f09004ebace5b184/waitress-3.0.2.tar.gz", hash = "sha256:682aaaf2af0c44ada4abfb70ded36393f0e307f4ab9456a215ce0020baefc31f", size = 179901 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/58/6a/b4b5c582e04e837e4422cab6ec9de7fc10ca7ad7f4e370bb89d280d39552/waitress-2.1.2-py3-none-any.whl", hash = "sha256:7500c9625927c8ec60f54377d590f67b30c8e70ef4b8894214ac6e4cad233d2a", size = 57741 },
+    { url = "https://files.pythonhosted.org/packages/8d/57/a27182528c90ef38d82b636a11f606b0cbb0e17588ed205435f8affe3368/waitress-3.0.2-py3-none-any.whl", hash = "sha256:c56d67fd6e87c2ee598b76abdd4e96cfad1f24cacdea5078d382b1f9d7b5ed2e", size = 56232 },
 ]
 
 [[package]]
