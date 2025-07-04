@@ -133,9 +133,11 @@ dmypy.json
 # All recipe photos (the folder is too big for GitHub)
 static/photos/
 
-# Personal credentials for Edamam API
+# Personal credentials 
 secrets/**
 secrets/edamam.json
+/secrets
+secrets/
 
 heroku_key.pub
 heroku_key
@@ -145,6 +147,8 @@ heroku_key
 
 # remove data directory, should be in DVC
 data/
+/data
+data/raw/
 
 *Zone.Identifier
 
@@ -155,6 +159,7 @@ joblib/2019.11.15/
 joblib/2020.01.14/
 joblib/2020.01.30/
 joblib/2022.08.23/
+joblib/2024.03.19/
 
 # remove models directory due to sizes (and being logged in MLflow)
 models/
@@ -176,9 +181,4 @@ models/
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 
-
-/data
-
-/secrets
-
-data/raw/
+nbs/.last_checked
