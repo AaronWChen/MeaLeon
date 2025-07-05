@@ -41,7 +41,7 @@ def import_stored_files():
     ingred_tfidf = joblib.load("joblib/recipe_tfidf.joblib")
 
     ingred_word_matrix = joblib.load("joblib/recipe_word_matrix_tfidf.joblib")
-    
+
     return prepped, ingred_tfidf, ingred_word_matrix
 
 
@@ -56,7 +56,7 @@ def transform_tfidf(ingred_tfidf, recipe):
     )
     return transformed_recipe
 
-  
+
 def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name, tfidf):
     # This function takes in the ingredient word matrix (from joblib), a
     # dataframe made from the database (from joblib), the user inputted cuisine
@@ -117,7 +117,7 @@ def filter_out_cuisine(ingred_word_matrix, X_df, cuisine_name, tfidf):
     filtered_ingred_word_matrix = combo[combo["imputed_label"].isin(choices)].drop(
         "imputed_label", axis=1
     )
-    
+
     return filtered_ingred_word_matrix
 
 
@@ -143,7 +143,12 @@ def find_closest_recipes(filtered_ingred_word_matrix, recipe_tfidf, X_df):
     # containing the similarity amount
 
     m2 = (recipe_tfidf != 0).any()
-    recipe_weights = recipe_tfidf.iloc[0][recipe_tfidf.iloc[0] != 0].to_dict()
+    recipe_weights = (
+        recipe_tfidf.iloc[0][recipe_tfidf.iloc[0] != 0]
+        .T.sort_values(ascending=False)
+        .head()
+        .T.to_dict()
+    )
 
     ingreds_used = m2.index[m2].tolist()
     search_vec = np.array(recipe_tfidf).reshape(1, -1)
@@ -197,25 +202,21 @@ def find_similar_dishes(dish_name, cuisine_name):
     # This function calls the Edamam API, stores the results as a JSON, and
     # stores the timestamp, dish name, and cuisine name/classification in a
     # separate csv.
-    now = datetime.now()
-    dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
-    q = f"q={dish_name}"
+
     api_base = "https://api.edamam.com/api/recipes/v2?type=public&"
 
     # Level up:
     # Check a database of dishes to see if this query has been asked for already
     # If not, do an API call
 
-
     # Currently, just does an API call, may hit API limit if continuing with this version
     cred_appid = os.environ["EDAMAM_API_APPID"]
     cred_appkey = os.environ["EDAMAM_API_APPKEY"]
 
-    api_call = f"{api_base}q={dish_name}&app_id={cred_appid}&app_key={cred_appkey}" 
+    api_call = f"{api_base}q={dish_name}&app_id={cred_appid}&app_key={cred_appkey}"
 
-    
     resp = requests.get(api_call)
-    
+
     if resp.status_code == 200:
         response_dict = resp.json()
         resp_dict_hits = response_dict["hits"]
@@ -245,18 +246,18 @@ def find_similar_dishes(dish_name, cuisine_name):
             "url": urls,
             "label": labels,
             "source": sources,
-            "ingredients": ingreds,`
-            "cuisines": cuisines
+            "ingredients": ingreds,
+            "cuisines": cuisines,
         }
 
         one_recipe = []
 
-        for listing in all_recipes["ingredients"]:`
+        for listing in all_recipes["ingredients"]:
             for ingred in listing:
                 one_recipe.append(ingred.lower())
 
         one_recipe = list(set(one_recipe))
-        
+
         query_df = pd.DataFrame(
             data={
                 "name": dish_name,
@@ -266,12 +267,12 @@ def find_similar_dishes(dish_name, cuisine_name):
         )
 
         query_tfidf = transform_tfidf(ingred_tfidf=ingred_tfidf, recipe=query_df)
-        
+
         query_matrix = filter_out_cuisine(
             ingred_word_matrix=ingred_word_matrix,
             X_df=prepped,
             cuisine_name=cuisine_name,
-            # tfidf=ingred_tfidf,
+            tfidf=ingred_tfidf,
         )
 
         query_similar, ingreds_used, recipe_weights = find_closest_recipes(
