@@ -1091,7 +1091,7 @@ tokenizers==0.21.2
     # via transformers
 tomlkit==0.13.3
     # via dvc
-torch==2.7.1+cu128 @ https://download.pytorch.org/whl/cu128/torch-2.7.1%2Bcu128-cp311-cp311-manylinux_2_28_x86_64.whl#sha256=c301dc280458afd95450af794924c98fe07522dd148ff384739b810e3e3179f2
+torch @ https://download.pytorch.org/whl/cu128/torch-2.7.1%2Bcu128-cp311-cp311-manylinux_2_28_x86_64.whl
     # via
     #   mealeon (pyproject.toml)
     #   accelerate
@@ -1100,9 +1100,9 @@ torch==2.7.1+cu128 @ https://download.pytorch.org/whl/cu128/torch-2.7.1%2Bcu128-
     #   stanza
     #   torchaudio
     #   torchvision
-torchaudio==2.7.1+cu128
+torchaudio @ https://download.pytorch.org/whl/cu128/torchaudio-2.7.1%2Bcu128-cp311-cp311-manylinux_2_28_x86_64.whl
     # via mealeon (pyproject.toml)
-torchvision==0.22.1+cu128
+torchvision @ https://download.pytorch.org/whl/cu128/torchvision-0.22.1%2Bcu128-cp311-cp311-manylinux_2_28_x86_64.whl
     # via mealeon (pyproject.toml)
 tornado==6.5.1
     # via
