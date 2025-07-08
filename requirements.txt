@@ -335,7 +335,7 @@ greenlet==3.2.3
     # via sqlalchemy
 gto==1.7.2
     # via dvc
-gunicorn==22.0.0
+gunicorn==23.0.0
     # via
     #   mealeon (pyproject.toml)
     #   mlflow
