@@ -1,0 +1,14 @@
+flask
+gunicorn
+psycopg
+adbc-driver-postgresql
+arrow-odbc
+pandas
+numpy
+nltk
+pymysql
+requests
+scikit-learn
+sqlalchemy
+pydantic
+uvicorn
