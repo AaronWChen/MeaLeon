@@ -6,7 +6,6 @@ arrow-odbc
 pandas
 numpy
 nltk
-pymysql
 requests
 scikit-learn
 sqlalchemy

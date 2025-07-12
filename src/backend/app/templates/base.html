@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<html>
+    <head>
+        <title>{% block title %}{{ config.NAME }}{% endblock %}</title>
+        <meta property="og:image" content="https://mealeonstatic.s3-us-west-2.amazonaws.com/static/mealeon.png">
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="MeaLeon: A Machine Learning Powered Recipe Recommender" />
+        <meta property="og:url" content="https://mealeon.herokuapp.com" />
+        <meta property="description"
+          content="This is MeaLeon, a machine learning powered recipe recommender. It requests a recipe you like with the cuisine it's from then returns 5 with similar ingredients from other cuisines!" />
+      
+        <link rel="stylesheet" media="screen" href="/app/bootstrap.min.css">
+        <script src="https://developer.edamam.com/attribution/badge.js"></script>
+    </head>
+
+    <body>
+        {% block content %}{% endblock %}
+    </body>
+    <br>
+    <footer>
+        <div class="row">
+            <div class="col center">
+                <h5>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank">MeaLeon</a></h3>
+            </div>
+            <div class="col center">
+                <h5>Created by: <a href="https://aaronwchen.github.io/" target="_blank">Aaron W. Chen</a></h3>
+            </div>
+            <div class="col center">
+                <h5>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank">awashingtonchen</a></h3>
+            </div>
+        </div>
+        <br>
+        <div class="center" id="edamam-badge" data-color="white"></div>
+    </footer>
+</html>
