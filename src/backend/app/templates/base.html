@@ -2,6 +2,14 @@
 <html lang="en">
 
 <html>
+    <div class="row">
+        <div class="col center">
+            <h5 style="text-align:center;">MeaLeon:
+                <a href="/index">Home</a>
+                <a href="/login">Login</a>
+            </h5>
+        </div>
+    </div>
     <head>
         <title>{% block title %}{{ config.NAME }}{% endblock %}</title>
         <meta property="og:image" content="https://mealeonstatic.s3-us-west-2.amazonaws.com/static/mealeon.png">
@@ -9,9 +17,9 @@
         <meta property="og:title" content="MeaLeon: A Machine Learning Powered Recipe Recommender" />
         <meta property="og:url" content="https://mealeon.herokuapp.com" />
         <meta property="description"
-          content="This is MeaLeon, a machine learning powered recipe recommender. It requests a recipe you like with the cuisine it's from then returns 5 with similar ingredients from other cuisines!" />
-      
-        <link rel="stylesheet" media="screen" href="/app/bootstrap.min.css">
+            content="This is MeaLeon, a machine learning powered recipe recommender. It requests a recipe you like with the cuisine it's from then returns 5 with similar ingredients from other cuisines!" />
+
+        <link rel="stylesheet" media="screen" href="/static/bootstrap.min.css">
         <script src="https://developer.edamam.com/attribution/badge.js"></script>
     </head>
 
@@ -34,4 +42,5 @@
         <br>
         <div class="center" id="edamam-badge" data-color="white"></div>
     </footer>
+
 </html>

@@ -18,6 +18,7 @@ dependencies = [
     "dvc-s3>=3.2.2",
     "flagembedding>=1.2.11",
     "flask>=2.3.3",
+    "flask-wtf>=1.2.2",
     "gensim>=4.3.3",
     "graphviz>=0.21",
     "gunicorn>=23.0.0",

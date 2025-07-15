@@ -1,4 +1,5 @@
 from app import app
+from app.forms import LoginForm
 from flask import render_template, request, abort
 
 
@@ -8,6 +9,12 @@ def index():
     user = {"username": "CronoZero"}
 
     return render_template("index.html", user=user)
+
+
+@app.route("/login")
+def login():
+    form = LoginForm()
+    return render_template("login.html", title="Sign In", form=form)
 
 
 @app.route("/get_results", methods=["POST"])
