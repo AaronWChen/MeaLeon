@@ -2,14 +2,17 @@
 <html lang="en">
 
 <html>
-    <div class="row">
-        <div class="col center">
-            <h5 style="text-align:center;">MeaLeon:
-                <a href="/index">Home</a>
-                <a href="/login">Login</a>
-            </h5>
+    <header>
+        <div class="row">
+            <div class="col center">
+                <h5 style="text-align:center;">MeaLeon:
+                    <a href="{{ url_for('index') }}">Home</a>
+                    <a href="{{ url_for('login') }}">Login</a>
+                </h5>
+            </div>
         </div>
-    </div>
+    </header>
+    
     <head>
         <title>{% block title %}{{ config.NAME }}{% endblock %}</title>
         <meta property="og:image" content="https://mealeonstatic.s3-us-west-2.amazonaws.com/static/mealeon.png">
@@ -24,6 +27,16 @@
     </head>
 
     <body>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </body>
     <br>
