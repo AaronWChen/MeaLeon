@@ -1,7 +1,7 @@
 from typing import Optional
 import sqlalchemy as sa
-import sqlalchemy.orm as so  # refactor out the ORM stuff
-from src.backend.app import db
+import sqlalchemy.orm as so
+from src.backend.test_app import db
 
 
 class User(db.Model):
@@ -11,4 +11,4 @@ class User(db.Model):
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
     def __repr__(self):
-        return f"<User {self.username}>"
+        return "<User {}>".format(self.username)
