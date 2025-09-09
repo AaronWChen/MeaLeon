@@ -1,7 +1,10 @@
 # from flask import Flask, send_from_directory, render_template, request, abort
 # from waitress import serve
 # from src.nltk import dish_predictor as dp  # import find_similar_dishes
+import sqlalchemy as sa
+import sqlalchemy.orm as so
 from src.backend.app import app, db
+from src.backend.app.models import User, Review  # , Allergy
 
 # import json
 
@@ -44,3 +47,15 @@ from src.backend.app import app, db
 #     website_url = "mealeon.buenosds.dev:5000"
 #     app.config["SERVER_NAME"] = website_url
 #     serve(app, host="0.0.0.0", port=5000)
+
+
+@app.shell_context_processor
+def make_shell_context():
+    return {
+        "sa": sa,
+        "so": so,
+        "db": db,
+        "User": User,
+        "Review": Review,
+        # "Allergy": Allergy,
+    }

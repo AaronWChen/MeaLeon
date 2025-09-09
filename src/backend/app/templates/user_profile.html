@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}User: {{ user.username }}{% endblock %}
+{% block head %}
+{{ super() }}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    /* Create two unequal columns that floats next to each other */
+    .column {
+        float: left;
+        padding: 10px;
+    }
+
+    .left {
+        width: 25%;
+    }
+
+    .right {
+        width: 75%;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .center {
+        text-align: center
+    }
+
+    .card-img-overlay .details {
+        visibility: hidden;
+        opacity: 0;
+        height: 0;
+        padding: 0;
+    }
+
+    .card-img-overlay:hover .details {
+        height: auto;
+        visibility: visible;
+        opacity: 1;
+        transition: opacity 500ms ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<table>
+    <tr valign="top">
+        <td>
+            {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+            {% if user.last_seen %}<p>Last login on: {{ user.last_seen }}</p>{% endif %}
+            {% if user == current_user %}
+            <p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
+            {% endif %}
+        </td>
+    </tr>
+</table>
+<hr>
+{% for review in reviews %}
+{% include '_review.html' %}
+{% endfor %}
+{% endblock %}
+<hr>
