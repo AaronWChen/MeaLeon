@@ -1,5 +1,10 @@
 from src.backend.app import app, db
-from src.backend.app.forms import LoginForm, RegistrationForm, EditProfileForm
+from src.backend.app.forms import (
+    LoginForm,
+    RegistrationForm,
+    EditProfileForm,
+    EmptyForm,
+)
 from src.backend.app.models import User
 from src.nltk import dish_predictor as dp  # import find_similar_dishes
 
@@ -85,7 +90,9 @@ def user_profile(username):
         {"author": user, "body": "Review text 2"},
     ]
 
-    return render_template("user_profile.html", user=user, reviews=reviews)
+    form = EmptyForm()
+
+    return render_template("user_profile.html", user=user, reviews=reviews, form=form)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -132,6 +139,52 @@ def edit_profile():
         form.about_me.data = current_user.about_me
 
     return render_template("edit_profile.html", title="Edit Profile", form=form)
+
+
+@app.route("/follow/<username>", methods=["POST"])
+@login_required
+def follow(username):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(sa.select(User).where(User.username == username))
+
+        if user is None:
+            flash(f"User {username} not found.")
+            return redirect(url_for("index"))
+
+        if user == current_user:
+            flash("You cannot follow yourself")
+            return redirect(url_for("user_profile", username=username))
+
+        current_user.follow(user)
+        db.session.commit()
+        flash(f"You are now following {username}!")
+        return redirect(url_for("user_profile", username=username))
+    else:
+        return redirect(url_for("index"))
+
+
+@app.route("/unfollow/<username>", methods=["POST"])
+@login_required
+def unfollow(username):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(sa.select(User).where(User.username == username))
+
+        if user is None:
+            flash(f"User {username} not found.")
+            return redirect(url_for("index"))
+
+        if user == current_user:
+            flash("You cannot unfollow yourself!")
+            return redirect(url_for("user_profile", username=username))
+
+        current_user.unfollow(user)
+        db.session.commit()
+        flash(f"You are no longer following {username}")
+        return redirect(url_for("user_profile", username=username))
+    else:
+        return redirect(url_for("index"))
 
     # after this is a predetermined test recipe and results, in case we need to display results page without working nlp pipeline
     # dish = "Lasagna"
