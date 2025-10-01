@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}'s review for recipe {% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<!-- <div class="row" style="background-color: rgba(0, 0, 0, 0);">
+    <div class="center">-->
+    <h1>Hi, {{ current_user.username }}</h1>
+    {% if form %}
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.review.label }}<br>
+            {{ form.review(cols=32, rows=4) }}<br>
+            {% for error in form.review.errors %}
+            <span style="color:red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p> {{ form.submit() }} </p>
+    </form>
+    {% endif %}
+    <!-- </div> -->
+<!-- </div> -->
+    <br>
+    {% for review in reviews %}
+        {% include '_review.html' %}
+    {% endfor %}
+    
+    {% if prev_url %}
+    <a href="{{ prev_url }}">Newer reviews</a>
+    {% endif %}
+    {% if next_url %}
+    <a href="{{ next_url }}">Older reviews</a>
+    {% endif %}
+
+{% endblock %}

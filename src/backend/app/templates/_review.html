@@ -1,5 +1,16 @@
 <table>
     <tr valign="top">
-        <td> {{ review.author.username }} says: <b> {{ review.body }} </b> </td>
+        <td> 
+            <a href="{{ url_for('user', username=review.author.username) }}">
+                {{ review.author.username }}
+            </a>
+            {% endset %}
+            {{ _('%(username)s said %(when)s',
+                username=user_link,
+                when=moment(review.timestamp).fromNow())
+            }}
+            <br>
+            {{ review.body }}
+        </td>
     </tr>
 </table>

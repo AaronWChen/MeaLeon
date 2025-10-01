@@ -43,3 +43,5 @@ class Config:
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
     MAIL_PASSOWRD = os.environ.get("MAIL_PASSWORD")
     ADMINS = ["composedandfocused@gmail.com"]
+    REVIEWS_PER_PAGE = 3
+    LANGUAGES = ["en", "es"]

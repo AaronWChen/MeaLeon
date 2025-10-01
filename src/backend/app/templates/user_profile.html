@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
 
-{% block title %}User: {{ user.username }}{% endblock %}
+{% block title %}{{ _('User: %(username)s', username=user.username) }}{% endblock %}
 {% block head %}
 {{ super() }}
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -60,8 +61,9 @@
     <tr valign="top">
         <td>
             {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
-            {% if user.last_seen %}<p>Last login on: {{ user.last_seen }}</p>{% endif %}
+            {% if user.last_seen %}<p>Last login on: {{ moment(user.last_seen).format('LLL') }}</p>{% endif %}
             <p>{{ user.followers_count() }} followers, {{ user.following_count() }} following</p>
+            <p>{{ user.personal_reviews() }} reviews </p>
             {% if user == current_user %}
             <p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
             {% elif not current_user.is_following(user) %}
@@ -84,7 +86,13 @@
 </table>
 <hr>
 {% for review in reviews %}
-{% include '_review.html' %}
+    {% include '_review.html' %}
 {% endfor %}
+{% if prev_url %}
+<a href="{{ prev_url }}">Newer reviews</a>
+{% endif %}
+{% if next_url %}
+<a href="{{ next_url }}">Older reviews</a>
+{% endif %}
 {% endblock %}
 <hr>

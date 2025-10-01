@@ -1,81 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
+    <!-- <header>
+        <div class="row">
+            <div class="col center">
+                <h5 style="text-align:center;">MeaLeon
+                </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col center">
+                <h5 style="text-align:center;"><a href="{{ url_for('index') }}">Home</a>
+                </h5>
+            </div>
+            <div class="col center">
+                <h5 style="text-align:center;">
+                    {% if current_user.is_anonymous %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                    {% else %}
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="col center">
+                <h5 style="text-align:center;">
+                    {% if current_user.is_anonymous %}
+                    <a href="{{ url_for('register') }}">Create Account</a>
+                    {% else %}
+                    <a href="{{ url_for('user_profile', username=current_user.username) }}">Your Profile</a>
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="col center">
+                <h5 style="text-align:center;"><a href="{{ url_for('explore') }}">Explore</a>
+                </h5>
+            </div>
+        </div>
+    </header> -->
 
-<html>
-<header>
-    <div class="row">
-        <div class="col center">
-            <h5 style="text-align:center;">MeaLeon
-            </h5>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col center">
-            <h5 style="text-align:center;"><a href="{{ url_for('index') }}">Home</a>
-            </h5>
-        </div>
-        <div class="col center">
-            <h5 style="text-align:center;">
-                {% if current_user.is_anonymous %}
-                <a href="{{ url_for('login') }}">Login</a>
-                {% else %}
-                <a href="{{ url_for('logout') }}">Logout</a>
-                {% endif %}
-            </h5>
-        </div>
-        <div class="col center">
-            <h5 style="text-align:center;">
-                {% if current_user.is_anonymous %}
-                <a href="{{ url_for('register') }}">Create Account</a>
-                {% else %}
-                <a href="{{ url_for('user_profile', username=current_user.username) }}">Your Profile</a>
-                {% endif %}
-            </h5>
-        </div>
-    </div>
-</header>
+    <head>
+        {% if title %}
+        <title>{% block title %}{{ config.NAME }}{% endblock %}</title>
+        {% else %}
+        <title>{{ _('Welcome to MeaLeon') }}</title>
+        {% endif %}
+        <meta property="og:image" content="https://mealeonstatic.s3-us-west-2.amazonaws.com/static/mealeon.png">
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="MeaLeon: A Machine Learning Powered Recipe Recommender" />
+        <meta property="og:url" content="https://mealeon.herokuapp.com" />
+        <meta property="description"
+            content="This is MeaLeon, a machine learning powered recipe recommender. It requests a recipe you like with the cuisine it's from then returns 5 with similar ingredients from other cuisines!" />
 
-<head>
-    <title>{% block title %}{{ config.NAME }}{% endblock %}</title>
-    <meta property="og:image" content="https://mealeonstatic.s3-us-west-2.amazonaws.com/static/mealeon.png">
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="MeaLeon: A Machine Learning Powered Recipe Recommender" />
-    <meta property="og:url" content="https://mealeon.herokuapp.com" />
-    <meta property="description"
-        content="This is MeaLeon, a machine learning powered recipe recommender. It requests a recipe you like with the cuisine it's from then returns 5 with similar ingredients from other cuisines!" />
+        <link rel="stylesheet" media="screen" href="/static/bootstrap.min.css">
+        
+    </head>
 
-    <link rel="stylesheet" media="screen" href="/static/bootstrap.min.css">
+    <body>
+        <header>
+            <nav class="navbar sicky-top bg-body-tertiary">
+                <div class="container">
+                    <a class="navbar-brand" href="{{ url_for('index') }}">
+                        <img src= "/static/mealeon_no_bg.png" alt="Logo" Width="30" height="24" class="d-inline-block align-text-center">
+                        Home
+                    </a>
+                    <span class="navbar-text fs-1">
+                        {% if current_user.is_anonymous %}
+                        <a href="{{ url_for('login') }}">Login</a>
+                        {% else %}
+                        <a href="{{ url_for('logout') }}">Logout</a>
+                        {% endif %}
+                    </span>
+                    <span class="navbar-text fs-1">
+                        {% if current_user.is_anonymous %}
+                        <a href="{{ url_for('register') }}">Create Account</a>
+                        {% else %}
+                        <a href="{{ url_for('user_profile', username=current_user.username) }}">Your Profile</a>
+                        {% endif %}
+                    </span>
+                    <span class="navbar-text fs-1">
+                        <a href="{{ url_for('explore') }}">Explore</a>
+                    </span>
+                </div>
+            </nav>
+        </header>
+        
+        <main>
+            <div class="container mt-3">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-info" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <div class="container center align-text-center">
+                <div class="row">
+                    <div class="col-sm">
+                    <h5>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank">MeaLeon</a></h3>
+                    </div>
+                    <div class="col-sm">
+                        <h5>Created by: <a href="https://aaronwchen.github.io/" target="_blank">Aaron W. Chen</a></h3>
+                    </div>
+                    <div class="col-sm">
+                        <h5>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank">awashingtonchen</a></h3>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="align-text-center" id="edamam-badge" data-color="white"></div>
+                </div>
+            </div>            
+        </footer>
+        {{ moment.include_moment() }}
+    <!-- <script ... bootstrap JavaScript ... ></script> -->
+    </body>
+    
     <script src="https://developer.edamam.com/attribution/badge.js"></script>
-</head>
-
-<body>
-    <hr>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
-    {% block content %}{% endblock %}
-</body>
-<br>
-<footer>
-    <div class="row">
-        <div class="col center">
-            <h5>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank">MeaLeon</a></h3>
-        </div>
-        <div class="col center">
-            <h5>Created by: <a href="https://aaronwchen.github.io/" target="_blank">Aaron W. Chen</a></h3>
-        </div>
-        <div class="col center">
-            <h5>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank">awashingtonchen</a></h3>
-        </div>
-    </div>
-    <br>
-    <div class="center" id="edamam-badge" data-color="white"></div>
-</footer>
-
 </html>

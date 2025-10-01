@@ -1,7 +1,9 @@
 {% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
 
 {% block content %}
-<h1>Edit Profile</h1>
+<!-- <h1>Edit Profile</h1>
 <form action="" method="post">
     {{ form.hidden_tag() }}
     <p>
@@ -19,5 +21,8 @@
         {% endfor %}
     </p>
     <p>{{ form.submit() }}</p>
-</form>
+</form> -->
+
+    <h1>{{ _('Edit Profile') }}</h1>
+    {{ wtf.quick_form(form) }}
 {% endblock %}

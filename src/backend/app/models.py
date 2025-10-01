@@ -1,10 +1,12 @@
 from datetime import datetime, timezone
 from flask_login import UserMixin
+import jwt
 import sqlalchemy as sa
 import sqlalchemy.orm as so  # refactor out the ORM stuff
+from time import time
 from typing import Optional
 from werkzeug.security import generate_password_hash, check_password_hash
-from src.backend.app import db, login
+from src.backend.app import app, db, login
 
 followers = sa.Table(
     "followers",
@@ -43,7 +45,7 @@ class User(UserMixin, db.Model):
     # allergies: so.WriteOnlyMapped["Allergy"] = so.relationship(back_populates="user")
 
     def __repr__(self):
-        return f"<User {self.username}>"
+        return "<User {}>".format(self.username)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -92,6 +94,37 @@ class User(UserMixin, db.Model):
             .order_by(Review.timestamp.desc())
         )
 
+    def personal_reviews(self):
+        Author = so.aliased(User)
+
+        query = (
+            sa.select(sa.func.count())
+            .select_from(Review)
+            .where(Author.id == self.id)
+            .order_by(Review.timestamp.desc())
+        )
+
+        return db.session.scalar(query)
+
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {"reset_password": self.id, "exp": time() + expires_in},
+            app.config["SECRET_KEY"],
+            algorithm="HS256",
+        )
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])[
+                "reset_password"
+            ]
+
+        except:
+            return
+
+        return db.session.get(User, id)
+
 
 class Review(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -110,7 +143,7 @@ class Review(db.Model):
     author: so.Mapped[User] = so.relationship(back_populates="reviews")
 
     def __repr__(self):
-        return f"<Post {self.body}>"
+        return "<Review {}>".format(self.body)
 
 
 # might want to refactor this to be an ingredient table with an allergy status

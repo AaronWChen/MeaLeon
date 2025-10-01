@@ -1,9 +1,11 @@
 {% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
 
 {% block content %}
-<title>MeaLeon Sign In</title>
-<h1>Sign In</h1>
-<form action="" method="post" novalidate>
+<title>{{ _('MeaLeon Sign In') }}</title>
+<h1>{{ _('Sign In') }}</h1>
+{{ wtf.quick_form(form) }}
+<!-- <form action="" method="post" novalidate>
     {{ form.hidden_tag() }}
     <p>
         {{ form.username.label }}
@@ -28,6 +30,9 @@
     <p>
         {{ form.submit() }}
     </p>
-</form>
-<p>New User? <a href="{{ url_for('register') }}">Click to Register!</a></p>
+</form> -->
+<p>{{ _('New User?')' }}<a href="{{ url_for('register') }}">{{ _('Click to Register!') }}</a></p>
+<p>{{ _('Forgot your password?') }}
+    <a href="{{ url_for('reset_password_request') }}">{{ _('Click to Reset Password') }}</a>
+</p>
 {% endblock %}

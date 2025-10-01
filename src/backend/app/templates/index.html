@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
 
 <!-- {% block header %}{% endblock %} -->
 {% block title %}MeaLeon Home{% endblock %}
@@ -60,30 +61,30 @@
     <div class="jumbotron" style="background-color: rgba(0,0,0,0.4);">
       <h1 class="display-3 center">MeaLeon</h1>
       <br>
-      <h2 class="center">The Similar Recipe Suggester</h2>
+      <h2 class="center">_('The Similar Recipe Suggester')</h2>
       <br>
       <div class="row" style="background-color: rgba(0,0,0,0);">
         <div class="col center text-white">
-          <h4>18k Recipes</h4>
+          <h4>_('18k Recipes')</h4>
         </div>
         <div class="col center text-white">
-          <h4>2k Ingredients</h4>
+          <h4>_('2k Ingredients')</h4>
         </div>
         <div class="col center text-white">
-          <h4>24 Cuisines</h4>
+          <h4>_('24 Cuisines')</h4>
         </div>
       </div>
       <br>
       <div class="row">
         <p>
-          Hi {{ current_user.username }}!
+          {{ _('Hi %(username)s!', username=current_user.username) }}
         </p>
       </div>
       <div class="row">
         <p>
-          What do you like to eat? Type it in the text box, choose the
+          _('What do you like to eat? Type it in the text box, choose the
           cuisine it's from with the drop down menu, and get back something
-          with similar ingredients but from a different part of the world!
+          with similar ingredients but from a different part of the world!')'
         </p>
       </div>
       <p>
@@ -94,37 +95,37 @@
 
         <div class="column right">
           <form action="/get_results" method="post">
-            <p>Dish Name</p>
+            <p>_('Dish Name')</p>
             <input type="text" onfocus="this.value=''" name="dish_name" value="In the Mood for Food?">
 
             <br>
             <br>
 
-            <p>Cuisine Style</p>
+            <p>_('Cuisine Style')</p>
             <select name="cuisine_name">
-              <option value="African">African</option>
-              <option value="American">American</option>
-              <option value="Asian">Asian</option>
-              <option value="Cajun/Creole">Cajun/Creole</option>
-              <option value="Chinese">Chinese</option>
-              <option value="Eastern European">Eastern European</option>
-              <option value="English">English</option>
-              <option value="French">French</option>
-              <option value="German">German</option>
-              <option value="Indian">Indian</option>
-              <option value="Irish">Irish</option>
-              <option value="Italian">Italian</option>
-              <option value="Japanese">Japanese</option>
-              <option value="Kosher">Kosher</option>
-              <option value="Latin American">Latin American</option>
-              <option value="Mediterranean">Mediterranean</option>
-              <option value="Mexican">Mexican</option>
-              <option value="Middle Eastern">Middle Eastern</option>
-              <option value="Moroccan">Moroccan</option>
-              <option value="Scandinavian">Scandinavian</option>
-              <option value="Southwestern">Southwestern</option>
-              <option value="Thai">Thai</option>
-              <option value="Vietnamese">Vietnamese</option>
+              <option value="African">_('African')</option>
+              <option value="American">_('American')</option>
+              <option value="Asian">_('Asian')</option>
+              <option value="Cajun/Creole">_('Cajun/Creole')</option>
+              <option value="Chinese">_('Chinese')</option>
+              <option value="Eastern European">_('Eastern European')</option>
+              <option value="English">_('English')</option>
+              <option value="French">_('French')</option>
+              <option value="German">_('German')</option>
+              <option value="Indian">_('Indian')</option>
+              <option value="Irish">_('Irish')</option>
+              <option value="Italian">_('Italian')</option>
+              <option value="Japanese">_('Japanese')</option>
+              <option value="Kosher">_('Kosher')</option>
+              <option value="Latin American">_('Latin American')</option>
+              <option value="Mediterranean">_('Mediterranean')</option>
+              <option value="Mexican">_('Mexican')</option>
+              <option value="Middle Eastern">_('Middle Eastern')</option>
+              <option value="Moroccan">_('Moroccan')</option>
+              <option value="Scandinavian">_('Scandinavian')</option>
+              <option value="Southwestern">_('Southwestern')</option>
+              <option value="Thai">_('Thai')</option>
+              <option value="Vietnamese">_('Vietnamese')</option>
             </select>
 
             <br>
