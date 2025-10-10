@@ -1,1 +1,1 @@
-from app import app
+from src.backend.app import app, cli

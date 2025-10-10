@@ -59,19 +59,19 @@
   style="background-image: url('static/OTL3TX5YGBNCRBRWEFHTQKR6CI.jpg'); background-repeat: no-repeat; background-size: cover; background-position: center center;">
   <div class="container text-white center">
     <div class="jumbotron" style="background-color: rgba(0,0,0,0.4);">
-      <h1 class="display-3 center">MeaLeon</h1>
+      <h1 class="display-3 text-center">MeaLeon</h1>
       <br>
-      <h2 class="center">_('The Similar Recipe Suggester')</h2>
+      <h2 class="text-center">{{ _('The Similar Recipe Suggester') }}</h2>
       <br>
-      <div class="row" style="background-color: rgba(0,0,0,0);">
-        <div class="col center text-white">
-          <h4>_('18k Recipes')</h4>
+      <div class="row text-center" style="background-color: rgba(0,0,0,0);">
+        <div class="col-sm text-white">
+          <h4>{{ _('18k Recipes') }}</h4>
         </div>
-        <div class="col center text-white">
-          <h4>_('2k Ingredients')</h4>
+        <div class="col-sm text-white">
+          <h4>{{ _('2k Ingredients') }}</h4>
         </div>
-        <div class="col center text-white">
-          <h4>_('24 Cuisines')</h4>
+        <div class="col-sm text-white">
+          <h4>{{ _('24 Cuisines') }}</h4>
         </div>
       </div>
       <br>
@@ -82,57 +82,55 @@
       </div>
       <div class="row">
         <p>
-          _('What do you like to eat? Type it in the text box, choose the
+          {{ _("What do you like to eat? Type it in the text box, choose the
           cuisine it's from with the drop down menu, and get back something
-          with similar ingredients but from a different part of the world!')'
+          with similar ingredients but from a different part of the world!") }}
         </p>
       </div>
       <p>
       <div class="row" style="background-color: rgba(0,0,0,0);">
-        <div class="column left">
-          <img src="static/mealeon_no_bg.png" alt="This is a cartoon of a chameleon, the mascot of MeaLeon">
+        <div class="col-sm">
+          <img src="static/mealeon_no_bg.png" width="200" alt="This is a cartoon of a chameleon, the mascot of MeaLeon">
         </div>
 
-        <div class="column right">
+        <div class="col-sm text-right">
           <form action="/get_results" method="post">
-            <p>_('Dish Name')</p>
-            <input type="text" onfocus="this.value=''" name="dish_name" value="In the Mood for Food?">
-
+            <p>{{ _('Dish Name') }}</p>
+            <input type="text" onfocus="this.value=''" name="dish_name" value="{{ _('In the Mood for Food?') }}">
+            
             <br>
             <br>
 
-            <p>_('Cuisine Style')</p>
+            <p>{{ _('Cuisine Style') }}</p>
             <select name="cuisine_name">
-              <option value="African">_('African')</option>
-              <option value="American">_('American')</option>
-              <option value="Asian">_('Asian')</option>
-              <option value="Cajun/Creole">_('Cajun/Creole')</option>
-              <option value="Chinese">_('Chinese')</option>
-              <option value="Eastern European">_('Eastern European')</option>
-              <option value="English">_('English')</option>
-              <option value="French">_('French')</option>
-              <option value="German">_('German')</option>
-              <option value="Indian">_('Indian')</option>
-              <option value="Irish">_('Irish')</option>
-              <option value="Italian">_('Italian')</option>
-              <option value="Japanese">_('Japanese')</option>
-              <option value="Kosher">_('Kosher')</option>
-              <option value="Latin American">_('Latin American')</option>
-              <option value="Mediterranean">_('Mediterranean')</option>
-              <option value="Mexican">_('Mexican')</option>
-              <option value="Middle Eastern">_('Middle Eastern')</option>
-              <option value="Moroccan">_('Moroccan')</option>
-              <option value="Scandinavian">_('Scandinavian')</option>
-              <option value="Southwestern">_('Southwestern')</option>
-              <option value="Thai">_('Thai')</option>
-              <option value="Vietnamese">_('Vietnamese')</option>
+              <option value="African">{{ _('African') }}</option>
+              <option value="American">{{ _('American') }}</option>
+              <option value="Asian">{{ _('Asian') }}</option>
+              <option value="Cajun/Creole">{{ _('Cajun/Creole') }}</option>
+              <option value="Chinese">{{ _('Chinese') }}</option>
+              <option value="Eastern European">{{ _('Eastern European') }}</option>
+              <option value="English">{{ _('English') }}</option>
+              <option value="French">{{ _('French') }}</option>
+              <option value="German">{{ _('German') }}</option>
+              <option value="Indian">{{ _('Indian') }}</option>
+              <option value="Irish">{{ _('Irish') }}</option>
+              <option value="Italian">{{ _('Italian') }}</option>
+              <option value="Japanese">{{ _('Japanese') }}</option>
+              <option value="Kosher">{{ _('Kosher') }}</option>
+              <option value="Latin American">{{ _('Latin American') }}</option>
+              <option value="Mediterranean">{{ _('Mediterranean') }}</option>
+              <option value="Mexican">{{ _('Mexican') }}</option>
+              <option value="Middle Eastern">{{ _('Middle Eastern') }}</option>
+              <option value="Moroccan">{{ _('Moroccan') }}</option>
+              <option value="Scandinavian">{{ _('Scandinavian') }}</option>
+              <option value="Southwestern">{{ _('Southwestern') }}</option>
+              <option value="Thai">{{ _('Thai') }}</option>
+              <option value="Vietnamese">{{ _('Vietnamese') }}</option>
             </select>
 
             <br>
-
             <br>
-
-            <input type="submit" class="btn btn-primary btn-lg" value="Feed me!">
+            <input type="submit" name="submit_cuisine" class="btn btn-primary btn-lg" value="Feed me!">
           </form>
         </div>
       </div>

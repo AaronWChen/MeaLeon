@@ -22,18 +22,23 @@
         <p> {{ form.submit() }} </p>
     </form>
     {% endif %}
-    <!-- </div> -->
-<!-- </div> -->
     <br>
     {% for review in reviews %}
         {% include '_review.html' %}
     {% endfor %}
     
-    {% if prev_url %}
-    <a href="{{ prev_url }}">Newer reviews</a>
-    {% endif %}
-    {% if next_url %}
-    <a href="{{ next_url }}">Older reviews</a>
-    {% endif %}
-
+    <nav aria-label="Review navigation">
+        <ul class="pagination">
+            <li class="page-item{% if not prev_url %} disabled{% endif %}">
+                <a class="page-link" href="{{ prev_url }}">
+                    <span aria-hidden="true">&larr;</span> Newer Reviews
+                </a>
+            </li>
+            <li class="page-item{% if not next_url %} disabled{% endif %}">
+                <a class="page-link" href="{{ next_url }}">
+                    Older reviews <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 {% endblock %}

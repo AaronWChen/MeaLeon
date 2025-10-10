@@ -41,7 +41,8 @@ class Config:
     MAIL_PORT = int(os.environ.get("MAIL_PORT") or 25)
     MAIL_USE_TLS = os.environ.get("MAIL_USE_TLS") is not None
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
-    MAIL_PASSOWRD = os.environ.get("MAIL_PASSWORD")
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     ADMINS = ["composedandfocused@gmail.com"]
     REVIEWS_PER_PAGE = 3
-    LANGUAGES = ["en", "es"]
+    LANGUAGES = ["en", "es", "zh", "ja", "ko", "pl", "fr", "eo"]
+    # MS_TRANSLATOR_KEY = os.environ.get('MS_TRANSLATOR_KEY') # not using this, no access

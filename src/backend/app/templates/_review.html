@@ -1,4 +1,4 @@
-<table>
+<table class="table table-hover">
     <tr valign="top">
         <td> 
             <a href="{{ url_for('user', username=review.author.username) }}">
@@ -10,7 +10,17 @@
                 when=moment(review.timestamp).fromNow())
             }}
             <br>
-            {{ review.body }}
+            <span id="review{{ review.id }}">{{ review.body }}</span>
+            {% if review.language and review.language != g.locale %}
+            <br><br>
+            <span id="translation{{ review.id }}">
+                <a href="javascript::translate(
+                    'review{{ review.id }}', 
+                    'translation{{ review.id }}', 
+                    '{{ review.language }}', 
+                    '{{ g.locale }}');">{{ _('Translate') }}</a>
+            </span>
+            {% endif %}
         </td>
     </tr>
 </table>

@@ -11,15 +11,25 @@ from src.backend.app.forms import (
     ResetPasswordForm,
 )
 from src.backend.app.models import User, Review
+from src.backend.app.translate import translate
 from src.nltk import dish_predictor as dp  # import find_similar_dishes
 
 from datetime import datetime, timezone
 from flask import render_template, request, abort, flash, redirect, url_for, request, g
 from flask_babel import _, get_locale
 from flask_login import current_user, login_user, logout_user, login_required
+from langdetect import detect, LangDetectException
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from urllib.parse import urlsplit
+
+
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.now(timezone.utc)
+        db.session.commit()
+    g.locale = str(get_locale())
 
 
 @app.route("/")
@@ -202,7 +212,12 @@ def write_review():
 
     # display reviews from current user
     if form.validate_on_submit():
-        review = Review(body=form.review.data, author=current_user)
+        try:
+            language = detect(form.review.data)
+        except LangDetectException:
+            language = ""
+
+        review = Review(body=form.review.data, author=current_user, language=language)
         db.session.add(review)
         db.session.commit()
         flash(_("Your review is now live!"))
@@ -326,6 +341,15 @@ def reset_password(token):
         flash(_("Your password has been reset."))
         return redirect(url_for("login"))
     return render_template("reset_password.html", form=form)
+
+
+@app.route("/translate", methods=["POST"])
+@login_required
+def translate_text():
+    data = request.get_json()
+    return {
+        "text": translate(data["text"], data["source_language"], data["dest_language"])
+    }
 
     # reviews = [
     #     {

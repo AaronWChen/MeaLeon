@@ -1,5 +1,5 @@
 from flask import Flask, request
-from flask_babel import Babel
+from flask_babel import Babel, lazy_gettext as _l
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -30,6 +30,7 @@ babel = Babel(app, locale_selector=get_locale)
 
 # below is for forcing users to login if they reach a protected page
 login.login_view = "login"
+login.login_message = _l("Please log in to access this page.")
 
 if not app.debug:
     if app.config["MAIL_SERVER"]:

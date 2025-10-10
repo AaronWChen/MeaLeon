@@ -3,7 +3,7 @@
 # from src.nltk import dish_predictor as dp  # import find_similar_dishes
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from src.backend.app import app, db
+from src.backend.app import app, db, cli
 from src.backend.app.models import User, Review  # , Allergy
 
 # import json

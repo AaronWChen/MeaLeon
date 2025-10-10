@@ -1,42 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-    <!-- <header>
-        <div class="row">
-            <div class="col center">
-                <h5 style="text-align:center;">MeaLeon
-                </h5>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col center">
-                <h5 style="text-align:center;"><a href="{{ url_for('index') }}">Home</a>
-                </h5>
-            </div>
-            <div class="col center">
-                <h5 style="text-align:center;">
-                    {% if current_user.is_anonymous %}
-                    <a href="{{ url_for('login') }}">Login</a>
-                    {% else %}
-                    <a href="{{ url_for('logout') }}">Logout</a>
-                    {% endif %}
-                </h5>
-            </div>
-            <div class="col center">
-                <h5 style="text-align:center;">
-                    {% if current_user.is_anonymous %}
-                    <a href="{{ url_for('register') }}">Create Account</a>
-                    {% else %}
-                    <a href="{{ url_for('user_profile', username=current_user.username) }}">Your Profile</a>
-                    {% endif %}
-                </h5>
-            </div>
-            <div class="col center">
-                <h5 style="text-align:center;"><a href="{{ url_for('explore') }}">Explore</a>
-                </h5>
-            </div>
-        </div>
-    </header> -->
-
     <head>
         {% if title %}
         <title>{% block title %}{{ config.NAME }}{% endblock %}</title>
@@ -103,10 +66,10 @@
                     <h5>GitHub: <a href="https://github.com/AaronWChen/MeaLeon" target="_blank">MeaLeon</a></h3>
                     </div>
                     <div class="col-sm">
-                        <h5>Created by: <a href="https://aaronwchen.github.io/" target="_blank">Aaron W. Chen</a></h3>
+                        <h5>{{ _('Created by') }}: <a href="https://aaronwchen.github.io/" target="_blank">Aaron W. Chen</a></h3>
                     </div>
                     <div class="col-sm">
-                        <h5>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank">awashingtonchen</a></h3>
+                        <h5>Twitter: <a href="https://twitter.com/awashingtonchen" target="_blank">awashingtonchen</a></h5>
                     </div>
                 </div>
                 <br>
@@ -116,8 +79,32 @@
             </div>            
         </footer>
         {{ moment.include_moment() }}
+        {{ moment.lang(g.locale) }}
     <!-- <script ... bootstrap JavaScript ... ></script> -->
     </body>
     
     <script src="https://developer.edamam.com/attribution/badge.js"></script>
+    <script>
+        async function translate(
+            sourceElem, 
+            destElem, 
+            sourceLang, 
+            destLang
+        ) {document.getElementById(destElem).innerHTML = 
+            '<img src="{{ url_for('static', filename='loading.gif') }}">'; 
+            const response= await fetch('/translate', {
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json; charset=utf-8'},
+            body: JSON.stringify({
+                text: document.getElementById(sourceElem).innerText, 
+                source_langage: sourceLang, 
+                dest_language: destLang
+                })
+            })
+            const data = await response.json();
+            document.getElementById(destElem).innerText = data.text;
+        }
+    </script>
 </html>
+
+<!-- you need to add a loading.gif to app/static/ -->

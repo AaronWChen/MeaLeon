@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from flask_babel import lazy_gettext as _l
 from flask_login import UserMixin
 import jwt
 import sqlalchemy as sa
@@ -141,6 +142,7 @@ class Review(db.Model):
     rating: so.Mapped[int] = so.mapped_column(primary_key=False, default=3)
 
     author: so.Mapped[User] = so.relationship(back_populates="reviews")
+    language: so.Mapped[Optional[str]] = so.mapped_column(sa.String(5))
 
     def __repr__(self):
         return "<Review {}>".format(self.body)
