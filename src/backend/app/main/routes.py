@@ -1,30 +1,34 @@
-from src.backend.app import app, db
+from src.backend.app import db
 
-from src.backend.app.email import send_password_reset_email
-from src.backend.app.forms import (
-    LoginForm,
-    RegistrationForm,
+from src.backend.app.main import bp
+from src.backend.app.main.forms import (
     EditProfileForm,
     EmptyForm,
     ReviewForm,
-    ResetPasswordRequestForm,
-    ResetPasswordForm,
 )
 from src.backend.app.models import User, Review
 from src.backend.app.translate import translate
 from src.nltk import dish_predictor as dp  # import find_similar_dishes
 
 from datetime import datetime, timezone
-from flask import render_template, request, abort, flash, redirect, url_for, request, g
+from flask import (
+    render_template,
+    request,
+    abort,
+    flash,
+    redirect,
+    url_for,
+    g,
+    current_app,
+)
 from flask_babel import _, get_locale
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, login_required
 from langdetect import detect, LangDetectException
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from urllib.parse import urlsplit
 
 
-@app.before_request
+@bp.before_request
 def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.now(timezone.utc)
@@ -32,46 +36,206 @@ def before_request():
     g.locale = str(get_locale())
 
 
-@app.route("/")
-@app.route("/index")
+@bp.route("/")
+@bp.route("/index")
 def index():
     return render_template("index.html")
 
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    # check if user is logged in already, if so, send to index page
-    if current_user.is_authenticated:
-        return redirect(url_for("index"))
+@bp.route("/user/<username>")
+@login_required
+def user_profile(username):
+    # want this to display their most recently "to cook" recipes and allow updating of account info
+    # maybe show "how many to cook" and "recipes cooked"
+    user = db.first_or_404(sa.select(User).where(User.username == username))
 
-    form = LoginForm()
+    # reviews = [
+    #     {"author": user, "body": "Review text 1"},
+    #     {"author": user, "body": "Review text 2"},
+    # ]
+
+    form = EmptyForm()
+
+    return render_template("user_profile.html", user=user, form=form)
+
+
+@bp.route("/edit_profile", methods=["GET", "POST"])
+@login_required
+def edit_profile():
+    # allow users to update their profile
+    form = EditProfileForm(current_user.username)
+
     if form.validate_on_submit():
-        # get user from database
-        user = db.session.scalar(
-            sa.select(User).where(User.username == form.username.data)
-        )
+        current_user.username = form.username.data
+        current_user.about_me = form.about_me.data
+        db.session.commit()
+        flash(_("Your changes have been saved!"))
+        return redirect(url_for("main.edit_profile"))
 
-        # if user does not exist or password is incorrect, ask for relogin
-        if not user or not user.check_password(form.password.data):
-            flash(_("Invalid username or password"))
-            return redirect(url_for("login"))
+    elif request.method == "GET":
+        form.username.data = current_user.username
+        form.about_me.data = current_user.about_me
 
-        # else log the user in and return them to index page
-        login_user(user, remember=form.remember_me.data)
-        next_page = request.args.get("next")
-        if not next_page or urlsplit(next_page).netloc != "":
-            next_page = url_for("index")
-        return redirect(next_page)
-    return render_template("login.html", title=_("Sign In"), form=form)
+    return render_template("edit_profile.html", title=_("Edit Profile"), form=form)
 
 
-@app.route("/logout")
-def logout():
-    logout_user()
-    return redirect(url_for("index"))
+@bp.route("/follow/<username>", methods=["POST"])
+@login_required
+def follow(username):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(sa.select(User).where(User.username == username))
+
+        if user is None:
+            flash(_("User %(username) not found.", username=username))
+            return redirect(url_for("main.index"))
+
+        if user == current_user:
+            flash(_("You cannot follow yourself"))
+            return redirect(url_for("main.user_profile", username=username))
+
+        current_user.follow(user)
+        db.session.commit()
+        flash(_("You are now following %(username)!", username=username))
+        return redirect(url_for("main.user_profile", username=username))
+    else:
+        return redirect(url_for("main.index"))
 
 
-@app.route("/get_results", methods=["POST"])
+@bp.route("/unfollow/<username>", methods=["POST"])
+@login_required
+def unfollow(username):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(sa.select(User).where(User.username == username))
+
+        if user is None:
+            flash(_("User %(username) not found.", username=username))
+            return redirect(url_for("main.index"))
+
+        if user == current_user:
+            flash(_("You cannot unfollow yourself!"))
+            return redirect(url_for("main.user_profile", username=username))
+
+        current_user.unfollow(user)
+        db.session.commit()
+        flash(_("You are no longer following %(username)", username=username))
+        return redirect(url_for("main.user_profile", username=username))
+    else:
+        return redirect(url_for("main.index"))
+
+
+@bp.route("/write_review", methods=["GET", "POST"])
+@login_required
+def write_review():
+    form = ReviewForm()
+
+    # display reviews from current user
+    if form.validate_on_submit():
+        try:
+            language = detect(form.review.data)
+        except LangDetectException:
+            language = ""
+
+        review = Review(body=form.review.data, author=current_user, language=language)
+        db.session.add(review)
+        db.session.commit()
+        flash(_("Your review is now live!"))
+        return redirect(url_for("main.user_profile", username=current_user.username))
+
+    reviews = db.session.scalars(current_user.personal_reviews()).all()
+
+    return render_template(
+        "index.html",
+        title=_("Home Page"),
+        # form=form,
+        # reviews=reviews,
+    )
+
+
+@bp.route("/user/<username>/reviews", methods=["GET", "POST"])
+@login_required
+def user_reviews(username):
+    user = db.first_or_404(sa.select(User).where(User.username == username))
+
+    Author = so.aliased(User)
+    page = request.args.get("page", 1, type=int)
+    query = (
+        sa.select(Review).where(Author.id == user.id).order_by(Review.timestamp.desc())
+    )
+    reviews = db.paginate(
+        query,
+        page=page,
+        per_page=current_app.config["REVIEWS_PER_PAGE"],
+        error_out=True,
+    )
+
+    next_url = (
+        url_for("main.user_profile", page=reviews.next_num)
+        if reviews.has_next
+        else None
+    )
+
+    prev_url = (
+        url_for("main.user_profile", page=reviews.prev_num)
+        if reviews.has_prev
+        else None
+    )
+
+    return render_template(
+        "user_profile.html",
+        title=_("Reviews"),
+        user=user,
+        reviews=reviews.items,
+        next_url=next_url,
+        prev_url=prev_url,
+    )
+
+
+@bp.route("/explore")
+@login_required
+def explore():
+    page = request.args.get("page", 1, type=int)
+    query = sa.select(Review).order_by(Review.timestamp.desc())
+    reviews = db.paginate(
+        query,
+        page=page,
+        per_page=current_app.config["REVIEWS_PER_PAGE"],
+        error_out=True,
+    )
+
+    next_url = (
+        url_for("main.user_profile", page=reviews.next_num)
+        if reviews.has_next
+        else None
+    )
+
+    prev_url = (
+        url_for("main.user_profile", page=reviews.prev_num)
+        if reviews.has_prev
+        else None
+    )
+
+    return render_template(
+        "write_review.html",
+        user=current_user,
+        title=_("Explore"),
+        reviews=reviews.items,
+        next_url=next_url,
+        prev_url=prev_url,
+    )
+
+
+@bp.route("/translate", methods=["POST"])
+@login_required
+def translate_text():
+    data = request.get_json()
+    return {
+        "text": translate(data["text"], data["source_language"], data["dest_language"])
+    }
+
+
+@bp.route("/get_results", methods=["POST"])
 def get_results():
     """Display the five most similar recipes from the database based on the
     inputs."""
@@ -94,263 +258,6 @@ def get_results():
         )
     else:
         return abort(400)
-
-
-@app.route("/user/<username>")
-@login_required
-def user_profile(username):
-    # want this to display their most recently "to cook" recipes and allow updating of account info
-    # maybe show "how many to cook" and "recipes cooked"
-    user = db.first_or_404(sa.select(User).where(User.username == username))
-
-    # reviews = [
-    #     {"author": user, "body": "Review text 1"},
-    #     {"author": user, "body": "Review text 2"},
-    # ]
-
-    form = EmptyForm()
-
-    return render_template("user_profile.html", user=user, form=form)
-
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    # create a place for users to make an account
-    if current_user.is_authenticated:
-        # if logged in already, just go to homepage
-        return redirect(url_for("index"))
-
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash(_("Registration successful!"))
-        return redirect(url_for("login"))
-    return render_template("register.html", title="Register", form=form)
-
-
-@app.before_request
-def before_request():
-    # auto log the action time as last_seen time in the database
-    if current_user.is_authenticated:
-        current_user.last_seen = datetime.now(timezone.utc)
-        db.session.commit()
-
-
-@app.route("/edit_profile", methods=["GET", "POST"])
-@login_required
-def edit_profile():
-    # allow users to update their profile
-    form = EditProfileForm(current_user.username)
-
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.about_me = form.about_me.data
-        db.session.commit()
-        flash(_("Your changes have been saved!"))
-        return redirect(url_for("edit_profile"))
-
-    elif request.method == "GET":
-        form.username.data = current_user.username
-        form.about_me.data = current_user.about_me
-
-    return render_template("edit_profile.html", title=_("Edit Profile"), form=form)
-
-
-@app.route("/follow/<username>", methods=["POST"])
-@login_required
-def follow(username):
-    form = EmptyForm()
-    if form.validate_on_submit():
-        user = db.session.scalar(sa.select(User).where(User.username == username))
-
-        if user is None:
-            flash(_("User %(username) not found.", username=username))
-            return redirect(url_for("index"))
-
-        if user == current_user:
-            flash(_("You cannot follow yourself"))
-            return redirect(url_for("user_profile", username=username))
-
-        current_user.follow(user)
-        db.session.commit()
-        flash(_("You are now following %(username)!", username=username))
-        return redirect(url_for("user_profile", username=username))
-    else:
-        return redirect(url_for("index"))
-
-
-@app.route("/unfollow/<username>", methods=["POST"])
-@login_required
-def unfollow(username):
-    form = EmptyForm()
-    if form.validate_on_submit():
-        user = db.session.scalar(sa.select(User).where(User.username == username))
-
-        if user is None:
-            flash(_("User %(username) not found.", username=username))
-            return redirect(url_for("index"))
-
-        if user == current_user:
-            flash(_("You cannot unfollow yourself!"))
-            return redirect(url_for("user_profile", username=username))
-
-        current_user.unfollow(user)
-        db.session.commit()
-        flash(_("You are no longer following %(username)", username=username))
-        return redirect(url_for("user_profile", username=username))
-    else:
-        return redirect(url_for("index"))
-
-
-@app.route("/write_review", methods=["GET", "POST"])
-@login_required
-def write_review():
-    form = ReviewForm()
-
-    # display reviews from current user
-    if form.validate_on_submit():
-        try:
-            language = detect(form.review.data)
-        except LangDetectException:
-            language = ""
-
-        review = Review(body=form.review.data, author=current_user, language=language)
-        db.session.add(review)
-        db.session.commit()
-        flash(_("Your review is now live!"))
-        return redirect(url_for("user_profile", username=current_user.username))
-
-    reviews = db.session.scalars(current_user.personal_reviews()).all()
-
-    return render_template(
-        "index.html",
-        title=_("Home Page"),
-        # form=form,
-        # reviews=reviews,
-    )
-
-
-@app.route("/user/<username>/reviews", methods=["GET", "POST"])
-@login_required
-def user_reviews(username):
-    user = db.first_or_404(sa.select(User).where(User.username == username))
-
-    Author = so.aliased(User)
-    page = request.args.get("page", 1, type=int)
-    query = (
-        sa.select(Review).where(Author.id == user.id).order_by(Review.timestamp.desc())
-    )
-    reviews = db.paginate(
-        query,
-        page=page,
-        per_page=app.config["REVIEWS_PER_PAGE"],
-        error_out=True,
-    )
-
-    next_url = (
-        url_for("user_profile.html", page=reviews.next_num)
-        if reviews.has_next
-        else None
-    )
-
-    prev_url = (
-        url_for("user_profile.html", page=reviews.prev_num)
-        if reviews.has_prev
-        else None
-    )
-
-    return render_template(
-        "user_profile.html",
-        title=_("Reviews"),
-        user=user,
-        reviews=reviews.items,
-        next_url=next_url,
-        prev_url=prev_url,
-    )
-
-
-@app.route("/explore")
-@login_required
-def explore():
-    page = request.args.get("page", 1, type=int)
-    query = sa.select(Review).order_by(Review.timestamp.desc())
-    reviews = db.paginate(
-        query, page=page, per_page=app.config["REVIEWS_PER_PAGE"], error_out=True
-    )
-
-    next_url = (
-        url_for("user_profile.html", page=reviews.next_num)
-        if reviews.has_next
-        else None
-    )
-
-    prev_url = (
-        url_for("user_profile.html", page=reviews.prev_num)
-        if reviews.has_prev
-        else None
-    )
-
-    return render_template(
-        "write_review.html",
-        user=current_user,
-        title=_("Explore"),
-        reviews=reviews.items,
-        next_url=next_url,
-        prev_url=prev_url,
-    )
-
-
-@app.route("/reset_password_request", methods=["GET", "POST"])
-def reset_password_request():
-    if current_user.is_authenticated:
-        return redirect(url_for("index"))
-
-    form = ResetPasswordRequestForm()
-
-    if form.validate_on_submit():
-        user = db.session.scalar(sa.select(User).where(User.email == form.email.data))
-
-        if user:
-            send_password_reset_email(user)
-            print(user)
-
-        flash(_("Check your email for the instructions to reset your password"))
-
-        return redirect(url_for("login"))
-    return render_template(
-        "reset_password_request.html", title=_("Reset Password"), form=form
-    )
-
-
-@app.route("/reset_password/<token>", methods=["GET", "POST"])
-def reset_password(token):
-    if current_user.is_authenticated:
-        return redirect(url_for("index"))
-
-    user = User.verify_reset_password_token(token)
-    if not user:
-        return redirect(url_for("index"))
-
-    form = ResetPasswordForm()
-    if form.validate_on_submit():
-        user.set_password(form.password.data)
-        db.session.commit()
-        flash(_("Your password has been reset."))
-        return redirect(url_for("login"))
-    return render_template("reset_password.html", form=form)
-
-
-@app.route("/translate", methods=["POST"])
-@login_required
-def translate_text():
-    data = request.get_json()
-    return {
-        "text": translate(data["text"], data["source_language"], data["dest_language"])
-    }
-
     # reviews = [
     #     {
     #         'author': {'username':'John'},

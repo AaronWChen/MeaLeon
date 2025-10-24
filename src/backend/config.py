@@ -1,11 +1,14 @@
+from dotenv import load_dotenv
 import json
 import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, ".env"))
 
 
 class Config:
     # set edamam api access
+    # should be moved into .env file
     # with open("secrets/edamam_api.json", "r") as fo:
     #     edamam_cred = json.loads(fo.read())
     # EDAMAM_API_APPID = (
@@ -18,6 +21,7 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY") or "playful-passw0rd"
 
     # import postgres credentials from secrets file
+    # should be moved into .env file
     # postgres_key_path = "secrets/postgres_login.json"
     # with open(postgres_key_path, "r") as fo:
     #     postgres_key = json.loads(fo.read())

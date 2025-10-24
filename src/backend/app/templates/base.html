@@ -21,26 +21,26 @@
         <header>
             <nav class="navbar sicky-top bg-body-tertiary">
                 <div class="container">
-                    <a class="navbar-brand" href="{{ url_for('index') }}">
+                    <a class="navbar-brand" href="{{ url_for('main.index') }}">
                         <img src= "/static/mealeon_no_bg.png" alt="Logo" Width="30" height="24" class="d-inline-block align-text-center">
                         Home
                     </a>
                     <span class="navbar-text fs-1">
                         {% if current_user.is_anonymous %}
-                        <a href="{{ url_for('login') }}">Login</a>
+                        <a href="{{ url_for('auth.login') }}">Login</a>
                         {% else %}
-                        <a href="{{ url_for('logout') }}">Logout</a>
+                        <a href="{{ url_for('auth.logout') }}">Logout</a>
                         {% endif %}
                     </span>
                     <span class="navbar-text fs-1">
                         {% if current_user.is_anonymous %}
-                        <a href="{{ url_for('register') }}">Create Account</a>
+                        <a href="{{ url_for('auth.register') }}">Create Account</a>
                         {% else %}
-                        <a href="{{ url_for('user_profile', username=current_user.username) }}">Your Profile</a>
+                        <a href="{{ url_for('main.user_profile', username=current_user.username) }}">Your Profile</a>
                         {% endif %}
                     </span>
                     <span class="navbar-text fs-1">
-                        <a href="{{ url_for('explore') }}">Explore</a>
+                        <a href="{{ url_for('main.explore') }}">Explore</a>
                     </span>
                 </div>
             </nav>
