@@ -1423,6 +1423,18 @@ wheels = [
 ]
 
 [[package]]
+name = "flask-httpauth"
+version = "4.8.0"
+source = { registry = "https://pypi.org/simple/" }
+dependencies = [
+    { name = "flask" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/22/21/0160aa217c4df74e44a04919213f9c8af7e68551c10267b055f1e09d421c/Flask-HTTPAuth-4.8.0.tar.gz", hash = "sha256:66568a05bc73942c65f1e2201ae746295816dc009edd84b482c44c758d75097a", size = 230314 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/83/c4/e64ace124b927cd1f29270050ee0e0ef5faad75a512c5c8d733961dda9ca/Flask_HTTPAuth-4.8.0-py3-none-any.whl", hash = "sha256:a58fedd09989b9975448eef04806b096a3964a7feeebc0a78831ff55685b62b0", size = 6958 },
+]
+
+[[package]]
 name = "flask-login"
 version = "0.6.3"
 source = { registry = "https://pypi.org/simple/" }
@@ -1823,6 +1835,7 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c1/84/6b010387b795f774e1ec695df3c8660c15abd041783647d5e7e4076bfc6b/hdbscan-0.8.40.tar.gz", hash = "sha256:c9e383ff17beee0591075ff65d524bda5b5a35dfb01d218245a7ba30c8d48a17", size = 6904096 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/26/6b/88b8c8023c0c0b27589ad83c82084a1b751917a3e09bdf7fcacf7e6bd523/hdbscan-0.8.40-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:5e958f0d7a33cd2b5e8e927b47f7360bf8a3e7d72355dd65a701e8aabe407b27", size = 1491349 },
+    { url = "https://files.pythonhosted.org/packages/e5/72/84bc7b6ea9eb59ca6c5e4d3f32313cdfa8f4ab5cfece6fb6dfef4c9149fc/hdbscan-0.8.40-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:b95447c9c2cf6c95f98210c0edee3dc463d0a237e5531076855d9776495c96fc", size = 4459927 },
     { url = "https://files.pythonhosted.org/packages/a3/ef/32c8a0b3dc6e6c4e433b85b30c3723d8eb48d115c0185b82ab89e1a0ef89/hdbscan-0.8.40-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6e0d6197ee045b173e1f16e6884386f335a56091e373a839dd24f7331a8fa9ed", size = 4576215 },
     { url = "https://files.pythonhosted.org/packages/64/b1/96c347c7740efa1ac803be64155159284f92fafcff88c1077344e64eead5/hdbscan-0.8.40-cp311-cp311-win_amd64.whl", hash = "sha256:127cbe8c858dc77adfde33a3e1ce4f3bea810f78b01d2bd47b1147d4b5a50472", size = 732173 },
 ]
@@ -1862,6 +1875,27 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/06/94/82699a10bca87a5556c9c59b5963f2d039dbd239f25bc2a63907a05a14cb/httpcore-1.0.9.tar.gz", hash = "sha256:6e34463af53fd2ab5d807f399a9b45ea31c3dfa2276f15a2c3f00afff6e176e8", size = 85484 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7e/f5/f66802a942d491edb555dd61e3a9961140fd64c90bce1eafd741609d334d/httpcore-1.0.9-py3-none-any.whl", hash = "sha256:2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55", size = 78784 },
+]
+
+[[package]]
+name = "httpie"
+version = "3.2.4"
+source = { registry = "https://pypi.org/simple/" }
+dependencies = [
+    { name = "charset-normalizer" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "defusedxml" },
+    { name = "multidict" },
+    { name = "pip" },
+    { name = "pygments" },
+    { name = "requests", extra = ["socks"] },
+    { name = "requests-toolbelt" },
+    { name = "rich" },
+    { name = "setuptools" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3e/bb/aefb0abbdbadeb9e8e7f04fb0f1942bc084f4215bf8dc729236153d09e1e/httpie-3.2.4.tar.gz", hash = "sha256:302ad436c3dc14fd0d1b19d4572ef8d62b146bcd94b505f3c2521f701e2e7a2a", size = 382651 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/03/b6/39bcf01e1185882f34bc9fb77d1fb4a27911a55f60ab407de34abc8a2347/httpie-3.2.4-py3-none-any.whl", hash = "sha256:4bd0435cc4b9bca59501bc65089de96f3e93b393803f32a81951db62050ebf0b", size = 127860 },
 ]
 
 [[package]]
@@ -2684,6 +2718,7 @@ dependencies = [
     { name = "flagembedding" },
     { name = "flask" },
     { name = "flask-babel" },
+    { name = "flask-httpauth" },
     { name = "flask-login" },
     { name = "flask-mail" },
     { name = "flask-migrate" },
@@ -2694,6 +2729,7 @@ dependencies = [
     { name = "graphviz" },
     { name = "gunicorn" },
     { name = "hdbscan" },
+    { name = "httpie" },
     { name = "importlib-metadata" },
     { name = "importlib-resources" },
     { name = "jupyter" },
@@ -2765,6 +2801,7 @@ requires-dist = [
     { name = "flagembedding", specifier = ">=1.2.11" },
     { name = "flask", specifier = ">=2.3.3" },
     { name = "flask-babel", specifier = ">=4.0.0" },
+    { name = "flask-httpauth", specifier = ">=4.8.0" },
     { name = "flask-login", specifier = ">=0.6.3" },
     { name = "flask-mail", specifier = ">=0.10.0" },
     { name = "flask-migrate", specifier = ">=4.1.0" },
@@ -2775,6 +2812,7 @@ requires-dist = [
     { name = "graphviz", specifier = ">=0.21" },
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "hdbscan", specifier = ">=0.8.40" },
+    { name = "httpie", specifier = ">=3.2.4" },
     { name = "importlib-metadata", specifier = ">=8.7.0" },
     { name = "importlib-resources", specifier = ">=6.5.2" },
     { name = "jupyter", specifier = ">=1.1.1" },
@@ -3510,6 +3548,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pip"
+version = "25.3"
+source = { registry = "https://pypi.org/simple/" }
+sdist = { url = "https://files.pythonhosted.org/packages/fe/6e/74a3f0179a4a73a53d66ce57fdb4de0080a8baa1de0063de206d6167acc2/pip-25.3.tar.gz", hash = "sha256:8d0538dbbd7babbd207f261ed969c65de439f6bc9e5dbd3b3b9a77f25d95f343", size = 1803014 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/44/3c/d717024885424591d5376220b5e836c2d5293ce2011523c9de23ff7bf068/pip-25.3-py3-none-any.whl", hash = "sha256:9655943313a94722b7774661c21049070f6bbb0a1516bf02f7c8d5d9201514cd", size = 1778622 },
+]
+
+[[package]]
 name = "platformdirs"
 version = "4.3.8"
 source = { registry = "https://pypi.org/simple/" }
@@ -3948,6 +3995,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pysocks"
+version = "1.7.1"
+source = { registry = "https://pypi.org/simple/" }
+sdist = { url = "https://files.pythonhosted.org/packages/bd/11/293dd436aea955d45fc4e8a35b6ae7270f5b8e00b53cf6c024c83b657a11/PySocks-1.7.1.tar.gz", hash = "sha256:3f8804571ebe159c380ac6de37643bb4685970655d3bba243530d6558b799aa0", size = 284429 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8d/59/b4572118e098ac8e46e399a1dd0f2d85403ce8bbaad9ec79373ed6badaf9/PySocks-1.7.1-py3-none-any.whl", hash = "sha256:2725bd0a9925919b9b51739eea5f9e2bae91e83288108a9ad338b2e3a4435ee5", size = 16725 },
+]
+
+[[package]]
 name = "pyspark"
 version = "4.0.0"
 source = { registry = "https://pypi.org/simple/" }
@@ -4177,6 +4233,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/e1/0a/929373653770d8a0d7ea76c37de6e41f11eb07559b103b1c02cafb3f7cf8/requests-2.32.4.tar.gz", hash = "sha256:27d0316682c8a29834d3264820024b62a36942083d52caf2f14c0591336d3422", size = 135258 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7c/e4/56027c4a6b4ae70ca9de302488c5ca95ad4a39e190093d6c1a8ace08341b/requests-2.32.4-py3-none-any.whl", hash = "sha256:27babd3cda2a6d50b30443204ee89830707d396671944c998b5975b031ac2b2c", size = 64847 },
+]
+
+[package.optional-dependencies]
+socks = [
+    { name = "pysocks" },
 ]
 
 [[package]]
