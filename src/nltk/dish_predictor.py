@@ -13,7 +13,8 @@ import joblib
 import re
 import pandas as pd
 import numpy as np
-from pandas.io.json import json_normalize
+
+# from pandas.io.json import json_normalize
 import nltk
 
 nltk.download("omw-1.4")
@@ -52,7 +53,9 @@ def transform_tfidf(ingred_tfidf, recipe):
     ingreds = recipe["ingredients"].apply(" ".join).str.lower()
     response = ingred_tfidf.transform(ingreds)
     transformed_recipe = pd.DataFrame(
-        response.toarray(), columns=ingred_tfidf.get_feature_names(), index=recipe.index
+        response.toarray(),
+        columns=ingred_tfidf.get_feature_names_out(),
+        index=recipe.index,
     )
     return transformed_recipe
 
@@ -210,8 +213,16 @@ def find_similar_dishes(dish_name, cuisine_name):
     # If not, do an API call
 
     # Currently, just does an API call, may hit API limit if continuing with this version
-    cred_appid = os.environ["EDAMAM_API_APPID"]
-    cred_appkey = os.environ["EDAMAM_API_APPKEY"]
+    # set edamam api access
+    with open("secrets/edamam_api.json", "r") as fo:
+        edamam_cred = json.loads(fo.read())
+    cred_appid = os.environ.get("EDAMAM_API_APPID") or edamam_cred["EDAMAM_API_APPID"]
+    cred_appkey = (
+        os.environ.get("EDAMAM_API_APPKEY") or edamam_cred["EDAMAM_API_APPKEY"]
+    )
+
+    # cred_appid = os.environ["EDAMAM_API_APPID"]
+    # cred_appkey = os.environ["EDAMAM_API_APPKEY"]
 
     api_call = f"{api_base}q={dish_name}&app_id={cred_appid}&app_key={cred_appkey}"
 

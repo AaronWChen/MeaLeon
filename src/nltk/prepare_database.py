@@ -22,7 +22,7 @@ from sklearn.metrics.pairwise import cosine_similarity, pairwise_distances
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import joblib
 
-stopwords_loc = "../food_stopwords.csv"
+stopwords_loc = "../../data/food_stopwords.csv"
 with open(stopwords_loc, "r") as myfile:
     reader = csv.reader(myfile)
     food_stopwords = [col for row in reader for col in row]
@@ -62,7 +62,7 @@ def cuisine_namer(text):
         return text
 
 
-filename = "../secrets/recipes-en-201706/epicurious-recipes_m2.json"
+filename = "../../data/recipes-en-201706/epicurious-recipes_m2.json"
 with open(filename, "r") as f:
     datastore = json.load(f)
     f.close()
@@ -136,7 +136,7 @@ def fit_transform_tfidf_matrix(X_df, stopwords_list):
     tfidf.fit(temp)
     response = tfidf.transform(temp)
     word_matrix = pd.DataFrame(
-        response.toarray(), columns=tfidf.get_feature_names(), index=X_df.index
+        response.toarray(), columns=tfidf.get_feature_names_out(), index=X_df.index
     )
 
     return tfidf, word_matrix
@@ -147,7 +147,7 @@ def transform_tfidf(tfidf, recipe):
     response = tfidf.transform(ingreds)
 
     transformed_recipe = pd.DataFrame(
-        response.toarray(), columns=tfidf.get_feature_names(), index=recipe.index
+        response.toarray(), columns=tfidf.get_feature_names_out(), index=recipe.index
     )
     return transformed_recipe
 
@@ -156,7 +156,7 @@ def transform_from_test_tfidf(tfidf, df, idx):
     recipe = df["ingredients"].iloc[idx].apply(" ".join).str.lower()
     response = tfidf.transform(recipe)
     transformed_recipe = pd.DataFrame(
-        response.toarray(), columns=tfidf.get_feature_names()
+        response.toarray(), columns=tfidf.get_feature_names_out()
     )
     return transformed_recipe
 
@@ -182,17 +182,17 @@ def find_closest_recipes(filtered_ingred_word_matrix, recipe_tfidf, X_df):
 # Create the dataframe
 X_train, X_test = load_data(filename)
 
-with open("../joblib/tfidf_test_subset.joblib", "wb") as fo:
+with open("../../joblib/tfidf_test_subset.joblib", "wb") as fo:
     joblib.dump(X_test, fo, compress=True)
 
 prepped = prep_data(X_train)
-with open("../joblib/tfidf_recipe_dataframe.joblib", "wb") as fo:
+with open("../../joblib/tfidf_recipe_dataframe.joblib", "wb") as fo:
     joblib.dump(prepped, fo, compress=True)
 
 # Create the ingredients TF-IDF matrix
 ingred_tfidf, ingred_word_matrix = fit_transform_tfidf_matrix(prepped, stopwords_list)
-with open("../joblib/recipe_tfidf.joblib", "wb") as fo:
+with open("../../joblib/recipe_tfidf.joblib", "wb") as fo:
     joblib.dump(ingred_tfidf, fo, compress=True)
 
-with open("../joblib/recipe_word_matrix_tfidf.joblib", "wb") as fo:
+with open("../../joblib/recipe_word_matrix_tfidf.joblib", "wb") as fo:
     joblib.dump(ingred_word_matrix, fo, compress=True)

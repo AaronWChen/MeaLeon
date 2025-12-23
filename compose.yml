@@ -1,0 +1,15 @@
+services:
+  db:
+    container_name: mealeon-db
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mealeon
+    ports:
+      - ${POSTGRES_DOCKER_PORT}:5432
+    volumes: 
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}

@@ -1,0 +1,389 @@
+# Esperanto translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-10-06 22:56-0700\n"
+"PO-Revision-Date: 2025-10-02 22:18-0700\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: eo\n"
+"Language-Team: eo <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: src/backend/app/__init__.py:33
+msgid "Please log in to access this page."
+msgstr ""
+
+#: src/backend/app/email.py:18
+msgid "[MeaLeon] Reset Your Password"
+msgstr ""
+
+#: src/backend/app/forms.py:25 src/backend/app/forms.py:32
+#: src/backend/app/forms.py:54
+msgid "Username"
+msgstr ""
+
+#: src/backend/app/forms.py:26 src/backend/app/forms.py:34
+#: src/backend/app/forms.py:98
+msgid "Password"
+msgstr ""
+
+#: src/backend/app/forms.py:27
+msgid "Remember Me"
+msgstr ""
+
+#: src/backend/app/forms.py:28 src/backend/app/routes.py:65
+#: src/backend/app/templates/login.html:6
+msgid "Sign In"
+msgstr ""
+
+#: src/backend/app/forms.py:33 src/backend/app/forms.py:93
+msgid "Email"
+msgstr ""
+
+#: src/backend/app/forms.py:36 src/backend/app/forms.py:100
+msgid "Repeat Password"
+msgstr ""
+
+#: src/backend/app/forms.py:38 src/backend/app/templates/register.html:5
+msgid "Register"
+msgstr ""
+
+#: src/backend/app/forms.py:44 src/backend/app/forms.py:68
+msgid "Please use a different username."
+msgstr ""
+
+#: src/backend/app/forms.py:50
+msgid "Please use a different email address."
+msgstr ""
+
+#: src/backend/app/forms.py:55
+msgid "About me"
+msgstr ""
+
+#: src/backend/app/forms.py:56 src/backend/app/forms.py:72
+#: src/backend/app/forms.py:89
+msgid "Submit"
+msgstr ""
+
+#: src/backend/app/forms.py:77
+msgid "Write your review for a recipe"
+msgstr ""
+
+#: src/backend/app/forms.py:78
+msgid "What notes for your review?"
+msgstr ""
+
+#: src/backend/app/forms.py:79
+msgid "How did you modify the recipe?"
+msgstr ""
+
+#: src/backend/app/forms.py:81
+msgid "Rating"
+msgstr ""
+
+#: src/backend/app/forms.py:83
+msgid "Rating between 1 and 5 please!"
+msgstr ""
+
+#: src/backend/app/forms.py:88
+msgid "Make again?"
+msgstr ""
+
+#: src/backend/app/forms.py:94 src/backend/app/forms.py:102
+msgid "Request Password Reset"
+msgstr ""
+
+#: src/backend/app/routes.py:56
+msgid "Invalid username or password"
+msgstr ""
+
+#: src/backend/app/routes.py:129
+msgid "Registration successful!"
+msgstr ""
+
+#: src/backend/app/routes.py:152
+msgid "Your changes have been saved!"
+msgstr ""
+
+#: src/backend/app/routes.py:159 src/backend/app/templates/edit_profile.html:6
+msgid "Edit Profile"
+msgstr ""
+
+#: src/backend/app/routes.py:170 src/backend/app/routes.py:193
+msgid "User %(username) not found."
+msgstr ""
+
+#: src/backend/app/routes.py:174
+msgid "You cannot follow yourself"
+msgstr ""
+
+#: src/backend/app/routes.py:179
+msgid "You are now following %(username)!"
+msgstr ""
+
+#: src/backend/app/routes.py:197
+msgid "You cannot unfollow yourself!"
+msgstr ""
+
+#: src/backend/app/routes.py:202
+msgid "You are no longer following %(username)"
+msgstr ""
+
+#: src/backend/app/routes.py:223
+msgid "Your review is now live!"
+msgstr ""
+
+#: src/backend/app/routes.py:230
+msgid "Home Page"
+msgstr ""
+
+#: src/backend/app/routes.py:267
+msgid "Reviews"
+msgstr ""
+
+#: src/backend/app/routes.py:299
+msgid "Explore"
+msgstr ""
+
+#: src/backend/app/routes.py:320
+msgid "Check your email for the instructions to reset your password"
+msgstr ""
+
+#: src/backend/app/routes.py:324
+#: src/backend/app/templates/reset_password_request.html:6
+msgid "Reset Password"
+msgstr ""
+
+#: src/backend/app/routes.py:341
+msgid "Your password has been reset."
+msgstr ""
+
+#: src/backend/app/translate.py:8
+msgid "Error: the translation service is not configured."
+msgstr ""
+
+#: src/backend/app/translate.py:23
+msgid "Error: the translation service failed."
+msgstr ""
+
+#: src/backend/app/templates/404.html:4
+msgid "File not found!"
+msgstr ""
+
+#: src/backend/app/templates/404.html:5 src/backend/app/templates/500.html:6
+msgid "Back"
+msgstr ""
+
+#: src/backend/app/templates/500.html:4
+msgid "An unexpected error has occurred"
+msgstr ""
+
+#: src/backend/app/templates/500.html:5
+msgid "The administrator has been notified. Sorry for the inconvenience!"
+msgstr ""
+
+#: src/backend/app/templates/base.html:7
+msgid "Welcome to MeaLeon"
+msgstr ""
+
+#: src/backend/app/templates/base.html:69
+msgid "Created by"
+msgstr ""
+
+#: src/backend/app/templates/index.html:64
+msgid "The Similar Recipe Suggester"
+msgstr ""
+
+#: src/backend/app/templates/index.html:68
+msgid "18k Recipes"
+msgstr ""
+
+#: src/backend/app/templates/index.html:71
+msgid "2k Ingredients"
+msgstr ""
+
+#: src/backend/app/templates/index.html:74
+msgid "24 Cuisines"
+msgstr ""
+
+#: src/backend/app/templates/index.html:80
+#, python-format
+msgid "Hi %(username)s!"
+msgstr ""
+
+#: src/backend/app/templates/index.html:85
+msgid ""
+"What do you like to eat? Type it in the text box, choose the\n"
+"          cuisine it's from with the drop down menu, and get back "
+"something\n"
+"          with similar ingredients but from a different part of the world!"
+msgstr ""
+
+#: src/backend/app/templates/index.html:98
+msgid "Dish Name"
+msgstr ""
+
+#: src/backend/app/templates/index.html:99
+msgid "In the Mood for Food?"
+msgstr ""
+
+#: src/backend/app/templates/index.html:104
+msgid "Cuisine Style"
+msgstr ""
+
+#: src/backend/app/templates/index.html:106
+msgid "African"
+msgstr ""
+
+#: src/backend/app/templates/index.html:107
+msgid "American"
+msgstr ""
+
+#: src/backend/app/templates/index.html:108
+msgid "Asian"
+msgstr ""
+
+#: src/backend/app/templates/index.html:109
+msgid "Cajun/Creole"
+msgstr ""
+
+#: src/backend/app/templates/index.html:110
+msgid "Chinese"
+msgstr ""
+
+#: src/backend/app/templates/index.html:111
+msgid "Eastern European"
+msgstr ""
+
+#: src/backend/app/templates/index.html:112
+msgid "English"
+msgstr ""
+
+#: src/backend/app/templates/index.html:113
+msgid "French"
+msgstr ""
+
+#: src/backend/app/templates/index.html:114
+msgid "German"
+msgstr ""
+
+#: src/backend/app/templates/index.html:115
+msgid "Indian"
+msgstr ""
+
+#: src/backend/app/templates/index.html:116
+msgid "Irish"
+msgstr ""
+
+#: src/backend/app/templates/index.html:117
+msgid "Italian"
+msgstr ""
+
+#: src/backend/app/templates/index.html:118
+msgid "Japanese"
+msgstr ""
+
+#: src/backend/app/templates/index.html:119
+msgid "Kosher"
+msgstr ""
+
+#: src/backend/app/templates/index.html:120
+msgid "Latin American"
+msgstr ""
+
+#: src/backend/app/templates/index.html:121
+msgid "Mediterranean"
+msgstr ""
+
+#: src/backend/app/templates/index.html:122
+msgid "Mexican"
+msgstr ""
+
+#: src/backend/app/templates/index.html:123
+msgid "Middle Eastern"
+msgstr ""
+
+#: src/backend/app/templates/index.html:124
+msgid "Moroccan"
+msgstr ""
+
+#: src/backend/app/templates/index.html:125
+msgid "Scandinavian"
+msgstr ""
+
+#: src/backend/app/templates/index.html:126
+msgid "Southwestern"
+msgstr ""
+
+#: src/backend/app/templates/index.html:127
+msgid "Thai"
+msgstr ""
+
+#: src/backend/app/templates/index.html:128
+msgid "Vietnamese"
+msgstr ""
+
+#: src/backend/app/templates/login.html:5
+msgid "MeaLeon Sign In"
+msgstr ""
+
+#: src/backend/app/templates/login.html:8
+msgid "New User?"
+msgstr ""
+
+#: src/backend/app/templates/login.html:8
+msgid "Click to Register!"
+msgstr ""
+
+#: src/backend/app/templates/login.html:9
+msgid "Forgot your password?"
+msgstr ""
+
+#: src/backend/app/templates/login.html:10
+msgid "Click to Reset Password"
+msgstr ""
+
+#: src/backend/app/templates/results.html:70
+#, python-format
+msgid "Dish: %(dish)s"
+msgstr ""
+
+#: src/backend/app/templates/results.html:71
+#, python-format
+msgid "Cuisine: %(cuisine)s"
+msgstr ""
+
+#: src/backend/app/templates/results.html:72
+#, python-format
+msgid "Weights: %(recipe_weights)s"
+msgstr ""
+
+#: src/backend/app/templates/results.html:101
+#, python-format
+msgid "Cuisine: %(cuisine_label)s"
+msgstr ""
+
+#: src/backend/app/templates/results.html:102
+#, python-format
+msgid "Cosine Similarity of Ingredients: %(cos_sim)s"
+msgstr ""
+
+#: src/backend/app/templates/results.html:103
+#, python-format
+msgid "Five Most Important Ingredients: %(top_five_ingreds)s"
+msgstr ""
+
+#: src/backend/app/templates/user_profile.html:4
+#, python-format
+msgid "User: %(username)s"
+msgstr ""
+
