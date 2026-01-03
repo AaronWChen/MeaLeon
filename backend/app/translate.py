@@ -1,6 +1,6 @@
 import requests
 from flask_babel import _
-from src.backend.app import current_app
+from app import current_app
 
 
 def translate(text, source_langauge, dest_language):

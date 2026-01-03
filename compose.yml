@@ -1,15 +1,61 @@
 services:
   db:
-    container_name: mealeon-db
-    image: postgres:17
+    build: ./db/Dockerfile
+    restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mealeon
+      PG_ROOT_PW_FILE: /run/secrets/db_root_password
+      PG_DATABASE: mealeon
+      POSTGRES_USER: docker_user
+      POSTGRES_PASSWORD: /run/secrets/db_password
+    secrets:
+      - db_root_password
+      - db_password
     ports:
       - ${POSTGRES_DOCKER_PORT}:5432
     volumes: 
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - mealeon_network
+  
+  # pgadmin:
+  #   image:
+
+  # frontend:
+  #   build: ./frontend/Dockerfile
+
+  proxy:
+    build: ./network/Dockerfile
+    networks:
+      - mealeon_network
+
+  backend:
+    build: ./backend/Dockerfile
+    environment:
+      POSTGRES_USER: docker_user
+      POSTGRES_PASSWORD: /run/secrets/db_password
+      POSTGRES_HOST: db:5432
+
+      EDAMAM_API_APPID: /run/secrets/edamam_id
+      EDAMAM_API_APPKEY: /run/secrets/edamam_key
+    
+    depends_on:
+      - db
+      # - frontend
+      - proxy
+    
+    networks:
+      - mealeon_network
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  db_root_password:
+    file: ./secrets/db_root_password.txt
+
+  edamam_id:
+    file: ./secrets/edamam_id.txt
+  edamam_key:
+    file: ./secrets/edamam_key.txt
 
 volumes:
   pgdata: {}
