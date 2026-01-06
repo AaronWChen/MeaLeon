@@ -38,23 +38,23 @@ def create_app(config_class=Config):
     moment.init_app(app)
     babel.init_app(app, locale_selector=get_locale)
 
-    from src.backend.app.errors import bp as errors_bp
+    from app.errors import bp as errors_bp
 
     app.register_blueprint(errors_bp)
 
-    from src.backend.app.auth import bp as auth_bp
+    from app.auth import bp as auth_bp
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
-    from src.backend.app.main import bp as main_bp
+    from app.main import bp as main_bp
 
     app.register_blueprint(main_bp)
 
-    from src.backend.app.cli import bp as cli_bp
+    from app.cli import bp as cli_bp
 
     app.register_blueprint(cli_bp)
 
-    from src.backend.app.api import bp as api_bp
+    from app.api import bp as api_bp
 
     app.register_blueprint(api_bp, url_prefix="/api")
 
