@@ -281,7 +281,7 @@ flatten-dict==0.4.2
     #   dvc-s3
 flufl-lock==8.2.0
     # via dvc
-fonttools==4.58.5
+fonttools==4.60.2
     # via matplotlib
 fqdn==1.5.1
     # via jsonschema
