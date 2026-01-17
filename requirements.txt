@@ -1205,7 +1205,7 @@ umap-learn==0.5.9.post2
     #   bertopic
 uri-template==1.3.0
     # via jsonschema
-urllib3==2.5.0
+urllib3==2.6.3
     # via
     #   botocore
     #   docker
