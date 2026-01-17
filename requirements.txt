@@ -95,7 +95,7 @@ blinker==1.9.0
     # via flask
 blis==1.2.1
     # via thinc
-bokeh==3.7.3
+bokeh==3.8.2
     # via mealeon (pyproject.toml)
 boto3==1.38.27
     # via
