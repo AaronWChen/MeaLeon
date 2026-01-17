@@ -1,0 +1,7 @@
+# use modified image with uv installed
+# using Python 3.11
+FROM ghcr.io/astral-sh/uv:python3.11-trixie-slim
+
+# copy database migration information into container
+COPY migrations migrations
+
