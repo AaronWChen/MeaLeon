@@ -745,7 +745,7 @@ pathvalidate==3.3.1
     # via dagshub
 pexpect==4.9.0
     # via ipython
-pillow==11.3.0
+pillow==12.1.1
     # via
     #   bokeh
     #   dagshub-annotation-converter
