@@ -87,3 +87,64 @@ def update_user(id):
     user.from_dict(data, new_user=False)
     db.session.commit()
     return user.to_dict()
+
+
+# from fastapi import APIRouter, Depends, HTTPException, Request
+# from app.middleware.auth import get_current_user
+# from app.services.recommendation_service import RecommendationService
+# from app.schemas import SearchRequest, SearchResponse, RecommendationItem
+# from slowapi import Limiter
+# from slowapi.util import get_remote_address
+# from typing import List, Optional
+
+# router = APIRouter()
+# limiter = Limiter(key_func=get_remote_address)
+
+# def get_recommendation_service(request: Request) -> RecommendationService:
+#   """Dependency injection for recommendation service"""
+#   return request.app.state.recommendation_service
+
+# @router.post("/search", response_model=SearchResponse)
+# @limiter.limit("100/hour")
+# async def search_items(
+#   request: Request,
+#   search_request: SearchRequest,
+#   user=Depends(get_current_user),
+#   rec_service: RecommendationService = Depends(get_recommendation_service)
+# ):
+#   """Search for items using natural language query"""
+
+#   try:
+#       results = await rec_service.recommend_from_query(
+#           query=search_request.query,
+#           limit=search_request.limit or 10,
+#           filters=search_request.filters,
+#           min_score=search_request.min_score or 0.5
+#       )
+
+#       return SearchResponse(
+#           query=search_request.query,
+#           results=results,
+#           count=len(results)
+#       )
+
+#   except Exception as e:
+#       raise HTTPException(status_code=500, detail=str(e))
+
+# @router.get("/similar/{item_id}", response_model=List[RecommendationItem])
+# @limiter.limit("200/hour")
+# async def get_similar_items(
+#   request: Request,
+#   item_id: str,
+#   limit: int = 10,
+#   user=Depends(get_current_user),
+#   rec_service: RecommendationService = Depends(get_recommendation_service)
+# ):
+#   """Get items similar to a specific item"""
+
+#   results = await rec_service.recommend_from_item(
+#       item_id=item_id,
+#       limit=limit
+#   )
+
+#   return results
