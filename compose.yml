@@ -77,14 +77,14 @@ services:
       - ./models:/app/models
   
   # create embeddings with ML service
-  ml-service:
-    build: ./ml-service/Dockerfile
+  embedding_generation:
+    build: ./embedding_generation/Dockerfile
 
     ports:
       - "8000:8000"
 
     volumes:
-      - ./modeles:/app/models
+      - ./models:/app/models
       - dvc-cache:/root/.dvc/cache
     
     deploy:

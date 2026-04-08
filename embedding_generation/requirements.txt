@@ -1,0 +1,11 @@
+flask
+gunicorn
+pandas
+numpy
+nltk
+requests
+scikit-learn
+stanza
+pydantic
+uvicorn
+dill
