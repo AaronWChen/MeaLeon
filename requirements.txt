@@ -173,7 +173,7 @@ contourpy==1.3.2
     # via
     #   bokeh
     #   matplotlib
-cryptography==46.0.5
+cryptography==46.0.6
     # via
     #   asyncssh
     #   pyvespa
