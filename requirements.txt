@@ -802,7 +802,7 @@ pyarrow==20.0.0
     #   arrow-odbc
     #   datasets
     #   mlflow
-pyasn1==0.6.2
+pyasn1==0.6.3
     # via
     #   pyasn1-modules
     #   rsa
