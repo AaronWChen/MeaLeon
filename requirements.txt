@@ -1104,7 +1104,7 @@ torchaudio @ https://download.pytorch.org/whl/cu128/torchaudio-2.7.1%2Bcu128-cp3
     # via mealeon (pyproject.toml)
 torchvision @ https://download.pytorch.org/whl/cu128/torchvision-0.22.1%2Bcu128-cp311-cp311-manylinux_2_28_x86_64.whl
     # via mealeon (pyproject.toml)
-tornado==6.5.1
+tornado==6.5.5
     # via
     #   bokeh
     #   ipykernel
