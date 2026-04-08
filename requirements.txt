@@ -828,7 +828,7 @@ pydot==4.0.1
     # via dvc
 pygit2==1.18.0
     # via scmrepo
-pygments==2.19.2
+pygments==2.20.0
     # via
     #   ipython
     #   ipython-pygments-lexers
