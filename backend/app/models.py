@@ -40,7 +40,7 @@ class PaginatedAPIMixin(object):
                     else None
                 ),
                 "prev": (
-                    url_for(endpoint, page=page - 1, per_page=per_page, **kwardgs)
+                    url_for(endpoint, page=page - 1, per_page=per_page, **kwargs)
                     if resources.has_prev
                     else None
                 ),

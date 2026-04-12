@@ -1,7 +1,9 @@
 services:
+  # ── Databases ────────────────────────────────────────────────────────────
   # postgres database for most data
   db:
-    build: ./db/Dockerfile
+    build: ./db
+    dockerfile: Dockerfile
     restart: always
     environment:
       PG_ROOT_PW_FILE: /run/secrets/db_root_password
@@ -17,36 +19,96 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - mealeon_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docker_user -d mealeon"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   
   # pgadmin:
   #   image:
 
-  # React frontend
-  frontend:
-    build: ./frontend/Dockerfile
-    
-    ports: 
-      - "3000:80"
-    
-    depends_on:
-      - backend
-    
+  # Redis for caching user searches
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - mealeon_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Vespa chosen for vector database due to hybrid search
+  vespa:
+    image: vespaengine/vespa:8
+    ports:
+      - "8080:8080"   # query / document API
+      - "19071:19071" # config server
+    volumes:
+      - vespa_data:/opt/vespa/var
+    networks:
+      - mealeon_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:19071/state/v1/health | grep -q '\"status\":\"up\"'"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 60s  # Vespa takes a while to boot
+
+  # Neo4j — social graph (users/follows) + ingredient relationships
+  neo4j:
+    image: neo4j:5-community
+    ports:
+      - "7474:7474"   # browser UI
+      - "7687:7687"   # bolt protocol
     environment:
-      REACT_APP_API_URL: http://backend:5000
-    
+      NEO4J_AUTH: none  # set to neo4j/<password> for production
+    volumes:
+      - neo4j_data:/data
+    networks:
+      - mealeon_network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+# ── Application services ──────────────────────────────────────────────────
+  # nginx networking proxy
+  proxy:
+    build: 
+      context: ./proxy
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
     networks:
       - mealeon_network
 
-  # nginx networking proxy
-  proxy:
-    build: ./network/Dockerfile
+  # React frontend
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    
+    ports: 
+      - "3000:80"
     
     networks:
       - mealeon_network
 
   # flask python app
   backend:
-    build: ./backend/Dockerfile
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
     
     ports:
       - "5000:5000"
@@ -59,26 +121,78 @@ services:
       EDAMAM_API_APPID: /run/secrets/edamam_id
       EDAMAM_API_APPKEY: /run/secrets/edamam_key
 
-      ML_SERVICE_URL: http://ml-service:8000
+      SEARCH_SERVICE_URL: http://search_service:8001
+      RECOMMEND_SERVICE_URL: http://recommend_service:8002
+      ML_SERVICE_URL: http://embedding_generation:8000
       VECTOR_DB_URL: http://vector-db:6333
+      DATABASE_URL: postgresql+psycopg://docker_user:${DB_PASSWORD}@db:5432/mealeon
       REDIS_URL: redis://redis:6379
     
     depends_on:
-      - db
-      - frontend
-      - proxy
-      - ml-service
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     
     networks:
       - mealeon_network
 
     volumes:
       - ./data:/app/data
-      - ./models:/app/models
   
-  # create embeddings with ML service
+  # search service is an Edamam wrapper
+  search_service:
+    build:
+      context: ./search_service
+      dockerfile: Dockerfile_claude
+    ports:
+      - "8001:8001"
+    environment:
+      REDIS_URL: redis://redis:6379
+      EDAMAM_API_APPID_FILE: /run/secrets/edamam_id
+      EDAMAM_API_APPKEY_FILE: /run/secrets/edamam_key
+    secrets:
+      - edamam_id
+      - edamam_key
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - mealeon_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # recommender service - intentional stub 
+  recommend_service:
+    build:
+      context: ./recommend_service
+      dockerfile: Dockerfile_claude
+    ports:
+      - "8002:8002"
+    environment:
+      REDIS_URL: redis://redis:6379
+      VESPA_URL: http://vespa:8080
+      NEO4J_URL: bolt://neo4j:7687
+      ML_SERVICE_URL: http://embedding_generation:8000
+      SEARCH_SERVICE_URL: http://search_service:8001
+    depends_on:
+      search_service:
+        condition: service_healthy
+      vespa:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mealeon_network
+  
+  # create embeddings 
   embedding_generation:
-    build: ./embedding_generation/Dockerfile
+    build: 
+      context: ./embedding_generation
+      dockerfile: Dockerfile
 
     ports:
       - "8000:8000"
@@ -104,7 +218,8 @@ services:
       MLFLOW_TRACKING_URI: http://mlflow:5001
       MODEL_REGISTRY_URI: http://mlflow:5001
       # DVC_REMOTE: s3: dagshub
-  
+
+# ── dev services ──────────────────────────────────────────────────
   # MLflow tracking server
   # look at dagshub docs
   mlflow:
@@ -118,33 +233,38 @@ services:
       - ./mlruns:/mlflow/mlruns
     
     environment:
-      BACKEND_STORE_URI: 
+      BACKEND_STORE_URI: postgresql+psycopg://docker_user:${DB_PASSWORD}@db:5432/mealeon
       DEFAULT_ARTIFACT_ROOT: /mlflow/artifacts
 
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      
+    networks:
+      mealeon_network
 
     command: > 
       mlflow server
-      --backend-store-uri 
+      --backend-store-uri postgresql+psycopg://docker_user:${DB_PASSWORD}@db:5432/mealeon
       --default-artifact-root /mlflow/artifacts
       --host 0.0.0.0
       --port 5001
 
   # Scheduled ML training service
   # look in dagshub docs
-  ml-training:
-    build: ./ml-training/Dockerfile
+  ml_training:
+    build: 
+      context: ./ml-training
+      dockerfile: Dockerfile
 
     volumes:
       - ./data:/app/data
       - ./models:/app/models
       - dvc-cache:/root/.dvc/cache
-      - ~/.aws:/root/.aws:ro 
+      # - ~/.aws:/root/.aws:ro 
     
     environment:
       MLFLOW_TRACKING_URI: http://mlflow:5001
-      MODEL_REGISTRY_URI: http://mlflow:5001
       # DVC_REMOTE: s3: dagshub
 
     depends:
@@ -153,22 +273,11 @@ services:
 
     profiles:
       - training
+    
+    networks:
+      mealeon_network
   
-  #need to decide which vector databasea
-  vector-db:
-    build: ./vector-db
-    ports:
-      - "6333:6333"
-    volumes:
-      - vector_data:/
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-
+# ── dev services ──────────────────────────────────────────────────
 secrets:
   db_password:
     file: ./secrets/db_password.txt
@@ -180,8 +289,16 @@ secrets:
   edamam_key:
     file: ./secrets/edamam_key.txt
 
+# ── volumes ──────────────────────────────────────────────────
 volumes:
   pgdata: {}
-  vector_data:
-  mlflow-artifacts:
-  dvc-cache:
+  redis_data: {}
+  vespa_data: {}
+  neo4j_data: {}
+  mlflow-artifacts: {}
+  dvc-cache: {}
+
+# ── networks ──────────────────────────────────────────────────
+networks:
+  mealeon_network:
+    driver: bridge
