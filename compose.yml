@@ -3,7 +3,7 @@ services:
   # postgres database for most data
   db:
     build: ./db
-    dockerfile: Dockerfile
+    # dockerfile: Dockerfile
     restart: always
     environment:
       PG_ROOT_PW_FILE: /run/secrets/db_root_password
@@ -144,7 +144,7 @@ services:
   search_service:
     build:
       context: ./search_service
-      dockerfile: Dockerfile_claude
+      dockerfile: Dockerfile
     ports:
       - "8001:8001"
     environment:
@@ -169,7 +169,7 @@ services:
   recommend_service:
     build:
       context: ./recommend_service
-      dockerfile: Dockerfile_claude
+      dockerfile: Dockerfile
     ports:
       - "8002:8002"
     environment:
@@ -241,7 +241,7 @@ services:
         condition: service_healthy
       
     networks:
-      mealeon_network
+      - mealeon_network
 
     command: > 
       mlflow server
@@ -267,7 +267,7 @@ services:
       MLFLOW_TRACKING_URI: http://mlflow:5001
       # DVC_REMOTE: s3: dagshub
 
-    depends:
+    depends_on:
       - mlflow
       - db
 
@@ -275,7 +275,7 @@ services:
       - training
     
     networks:
-      mealeon_network
+      - mealeon_network
   
 # ── dev services ──────────────────────────────────────────────────
 secrets:
@@ -286,7 +286,11 @@ secrets:
 
   edamam_id:
     file: ./secrets/edamam_id.txt
+  EDAMAM_API_APPID:
+    file: ./secrets/edamam_id.txt
   edamam_key:
+    file: ./secrets/edamam_key.txt
+  EDAMAM_API_APPKEY:
     file: ./secrets/edamam_key.txt
 
 # ── volumes ──────────────────────────────────────────────────
