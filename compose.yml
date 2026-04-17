@@ -149,11 +149,9 @@ services:
       - "8001:8001"
     environment:
       REDIS_URL: redis://redis:6379
-      EDAMAM_API_APPID_FILE: /run/secrets/edamam_id
-      EDAMAM_API_APPKEY_FILE: /run/secrets/edamam_key
     secrets:
-      - edamam_id
-      - edamam_key
+      - EDAMAM_API_APPID
+      - EDAMAM_API_APPKEY
     depends_on:
       redis:
         condition: service_healthy
@@ -164,6 +162,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+
 
   # recommender service - intentional stub 
   recommend_service:
@@ -284,12 +283,8 @@ secrets:
   db_root_password:
     file: ./secrets/db_root_password.txt
 
-  edamam_id:
-    file: ./secrets/edamam_id.txt
   EDAMAM_API_APPID:
     file: ./secrets/edamam_id.txt
-  edamam_key:
-    file: ./secrets/edamam_key.txt
   EDAMAM_API_APPKEY:
     file: ./secrets/edamam_key.txt
 

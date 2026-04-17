@@ -27,7 +27,11 @@ from .cache import SearchCache
 from .models import SearchRequest, SearchResponse
 
 logger = logging.getLogger(__name__)
+with open("/run/secrets/EDAMAM_API_APPID") as eda_app_id:
+    app_id = eda_app_id.read().strip()
 
+with open("/run/secrets/EDAMAM_API_APPKEY") as eda_key:
+    app_key = eda_key.read().strip()
 
 # ---------------------------------------------------------------------------
 # Lifespan — set up shared resources once at startup, tear down on shutdown
@@ -40,8 +44,8 @@ async def lifespan(app: FastAPI):
     app.state.redis = aioredis.from_url(redis_url, decode_responses=True)
     app.state.cache = SearchCache(app.state.redis)
     app.state.edamam = EdamamClient(
-        app_id=os.environ["EDAMAM_API_APPID"],
-        app_key=os.environ["EDAMAM_API_APPKEY"],
+        app_id=app_id,
+        app_key=app_key,
     )
     logger.info("Search service ready")
     yield

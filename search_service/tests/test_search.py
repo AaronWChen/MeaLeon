@@ -15,7 +15,7 @@ import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient, ASGITransport
 
-from app.app import app
+from app.main import app
 from app.models import RecipeSearchResult, SearchRequest, SearchResponse
 from app.edamam_client import EdamamClient, EdamamRateLimitError
 
@@ -155,7 +155,7 @@ class TestSearchRoutes:
     async def test_health(self, mock_redis, mock_edamam):
         app.state.redis = mock_redis
         app.state.edamam = mock_edamam
-        from app.cache_claude import SearchCache
+        from app.cache import SearchCache
 
         app.state.cache = SearchCache(mock_redis)
 
@@ -170,7 +170,7 @@ class TestSearchRoutes:
     async def test_search_post_cache_miss(self, mock_redis, mock_edamam):
         app.state.redis = mock_redis
         app.state.edamam = mock_edamam
-        from app.cache_claude import SearchCache
+        from app.cache import SearchCache
 
         app.state.cache = SearchCache(mock_redis)
 
@@ -191,7 +191,7 @@ class TestSearchRoutes:
     async def test_search_get_convenience(self, mock_redis, mock_edamam):
         app.state.redis = mock_redis
         app.state.edamam = mock_edamam
-        from app.cache_claude import SearchCache
+        from app.cache import SearchCache
 
         app.state.cache = SearchCache(mock_redis)
 
@@ -214,7 +214,7 @@ class TestSearchRoutes:
 
         app.state.redis = mock_redis
         app.state.edamam = mock_edamam
-        from app.cache_claude import SearchCache
+        from app.cache import SearchCache
 
         app.state.cache = SearchCache(mock_redis)
 
@@ -235,7 +235,7 @@ class TestSearchRoutes:
         mock_edamam.search.side_effect = Exception("API down")
         app.state.redis = mock_redis
         app.state.edamam = mock_edamam
-        from app.cache_claude import SearchCache
+        from app.cache import SearchCache
 
         app.state.cache = SearchCache(mock_redis)
 
