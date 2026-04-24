@@ -1,6 +1,0 @@
-fastapi==0.115.14
-uvicorn[standard]==0.30.6
-httpx==0.28.1
-pydantic==2.11.7
-redis==5.2.1   # hiredis gives ~10x faster parsing for bulk ops
-python-dotenv==1.1.0

@@ -2,8 +2,7 @@ services:
   # ── Databases ────────────────────────────────────────────────────────────
   # postgres database for most data
   db:
-    build: ./db
-    # dockerfile: Dockerfile
+    image: postgres:17  
     restart: always
     environment:
       PG_ROOT_PW_FILE: /run/secrets/db_root_password
@@ -24,7 +23,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  
+
   # pgadmin:
   #   image:
 
@@ -104,6 +103,15 @@ services:
     networks:
       - mealeon_network
 
+    # depends_on:
+    #   - backend
+    
+    environment:
+      REACT_APP_API_URL: http://backend:5000
+
+    volumes: 
+      - ./static:/usr/share/nginx/html:ro
+
   # flask python app
   backend:
     build: 
@@ -122,8 +130,8 @@ services:
       EDAMAM_API_APPKEY: /run/secrets/edamam_key
 
       SEARCH_SERVICE_URL: http://search_service:8001
-      RECOMMEND_SERVICE_URL: http://recommend_service:8002
-      ML_SERVICE_URL: http://embedding_generation:8000
+      # RECOMMEND_SERVICE_URL: http://recommend_service:8002
+      ML_SERVICE_URL: http://ml-service:8000
       VECTOR_DB_URL: http://vector-db:6333
       DATABASE_URL: postgresql+psycopg://docker_user:${DB_PASSWORD}@db:5432/mealeon
       REDIS_URL: redis://redis:6379
@@ -133,12 +141,20 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      embedding_generation:
+        condition: service_healthy
     
     networks:
       - mealeon_network
 
     volumes:
       - ./data:/app/data
+      - ./models:/app/models
+    
+    secrets:
+      - db_password
+      - EDAMAM_API_APPID
+      - EDAMAM_API_APPKEY
   
   # search service is an Edamam wrapper
   search_service:
@@ -165,27 +181,27 @@ services:
 
 
   # recommender service - intentional stub 
-  recommend_service:
-    build:
-      context: ./recommend_service
-      dockerfile: Dockerfile
-    ports:
-      - "8002:8002"
-    environment:
-      REDIS_URL: redis://redis:6379
-      VESPA_URL: http://vespa:8080
-      NEO4J_URL: bolt://neo4j:7687
-      ML_SERVICE_URL: http://embedding_generation:8000
-      SEARCH_SERVICE_URL: http://search_service:8001
-    depends_on:
-      search_service:
-        condition: service_healthy
-      vespa:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - mealeon_network
+  # recommend_service:
+  #   build:
+  #     context: ./recommend_service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8002:8002"
+  #   environment:
+  #     REDIS_URL: redis://redis:6379
+  #     VESPA_URL: http://vespa:8080
+  #     NEO4J_URL: bolt://neo4j:7687
+  #     ML_SERVICE_URL: http://embedding_generation:8000
+  #     SEARCH_SERVICE_URL: http://search_service:8001
+  #   depends_on:
+  #     search_service:
+  #       condition: service_healthy
+  #     vespa:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - mealeon_network
   
   # create embeddings 
   embedding_generation:
@@ -264,6 +280,7 @@ services:
     
     environment:
       MLFLOW_TRACKING_URI: http://mlflow:5001
+      MODEL_REGISTRY_URI: http://mlflow:5001
       # DVC_REMOTE: s3: dagshub
 
     depends_on:

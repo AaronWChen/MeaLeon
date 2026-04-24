@@ -11,15 +11,15 @@ WORKDIR /app
 ENV UV_LINK_MODE=copy
 
 # Install project's dependencies using `lockfile` and settings
-RUN --mount=type=cache, target=/root/.cache/uv \
-    --mount=type=bind, source=uv.lock, target=uv.lock \
-    --mount=type=bind, source=pyproject.toml, target=pyproject.toml \
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-install-project --no-dev
 
 # Add project source code and install
 # Installing separately from dependences allows optimal layer caching
 COPY . /app
-RUN --mount=type=cache, target=/root/.cache/uv \
+RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
 # Place executables in the env at the front of the PATH

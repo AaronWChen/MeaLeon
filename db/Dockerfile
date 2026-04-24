@@ -3,15 +3,17 @@
 # syntax=docker/dockerfile:1
 
 # dump existing data build stage
-FROM postgres:17
+FROM postgres:17 
+# AS dumper
 
-COPY mealeon_dump.sql /docker-entrypoint-initdb.d/
+# # next line needs the SQL file to run
+# # COPY mealeon_dump.sql /docker-entrypoint-initdb.d/
 
-RUN ["sed", "-i", "s/exec \"$@\"/echo \"skipping...\"/", "/usr/local/bin/docker-entrypoint.sh"]
+# RUN ["sed", "-i", "s/exec \"$@\"/echo \"skipping...\"/", "/usr/local/bin/docker-entrypoint.sh"]
 
-RUN ["/usr/local/bin/docker-entrypoint.sh", "postgres"]
+# RUN ["/usr/local/bin/docker-entrypoint.sh", "postgres"]
 
-# final build stage
-RUN postgres:17
+# # final build stage
+# FROM postgres:17
 
-COPY --from=dumper /data $PGDATA
+# COPY --from=dumper /data $PGDATA
