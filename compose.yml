@@ -234,6 +234,12 @@ services:
       MODEL_REGISTRY_URI: http://mlflow:5001
       # DVC_REMOTE: s3: dagshub
 
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
 # ── dev services ──────────────────────────────────────────────────
   # MLflow tracking server
   # look at dagshub docs

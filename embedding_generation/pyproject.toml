@@ -1,10 +1,11 @@
 [project]
 name = "MeaLeon-Embedding-Generator"
-version = "0.1.0"
+version = "0.1.2"
 description = "This is the embedding generator environment for MeaLeon: a full stack data science project using machine learning, natural language processing, recommendation engine, and MLOps"
 authors = [{ name = "Aaron W. Chen", email = "awc33@cornell.edu" }]
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 dependencies = [
+    "fastapi",
     "flask",
     "flask_babel",
     "flask_httpauth",
@@ -26,4 +27,5 @@ dependencies = [
     "uvicorn",
     "dill",
     "wtforms",
+    "psycopg"
 ]

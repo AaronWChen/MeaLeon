@@ -10,12 +10,21 @@ WORKDIR /app
 # Copy from the cache instead of linking since it's a mounted volume
 ENV UV_LINK_MODE=copy
 
+# Need some dependencies that are not in slim, then removing 
+# extra files to reduce container size
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        libpq-dev \
+        libffi-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install project's dependencies using `lockfile` and settings
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-install-project --no-dev
-    
+
 # Add project source code and install
 # Installing separately from dependences allows optimal layer caching
 COPY . /app

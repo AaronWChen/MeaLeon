@@ -1,10 +1,11 @@
 [project]
 name = "MeaLeon-Backend"
-version = "0.1.0"
+version = "0.1.2"
 description = "This is the backend environment for MeaLeon: a full stack data science project using machine learning, natural language processing, recommendation engine, and MLOps"
 authors = [{ name = "Aaron W. Chen", email = "awc33@cornell.edu" }]
 requires-python = ">=3.11"
 dependencies = [
+    "fastapi[standard]",
     "flask",
     "flask_babel",
     "flask_httpauth",
@@ -13,11 +14,9 @@ dependencies = [
     "flask_migrate",
     "flask_moment",
     "flask_wtf",
-    "gunicorn",
     "requests",
     "redis",
     "sqlalchemy",
     "pydantic",
-    "uvicorn",
     "wtforms",
 ]
