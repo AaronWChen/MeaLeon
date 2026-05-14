@@ -8,5 +8,6 @@ dependencies = [
     "fastapi",
     "redis",
     "pydantic",
-    "uvicorn"
+    "uvicorn",
+    "httpx"
 ]

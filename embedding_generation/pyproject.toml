@@ -27,5 +27,20 @@ dependencies = [
     "uvicorn",
     "dill",
     "wtforms",
-    "psycopg"
+    "psycopg",
+    "mlflow",
+    "torch",
+    # "torchaudio",
+    # "torchvision",
+    "sentence_transformers"
 ]
+
+[[tool.uv.index]]
+name="pytorch"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+# torchaudio = { index = "pytorch" }
+# torchvision = { index = "pytorch" }

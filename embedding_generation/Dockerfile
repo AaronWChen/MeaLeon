@@ -34,8 +34,12 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Place executables in the env at the front of the PATH
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Execute python to pre-download Stanza resources
-RUN python -c "import stanza; stanza.download('en')"
+# # Execute python to pre-download Stanza resources
+# RUN python -c "import stanza; stanza.download('en')"
+
+# Execute Python script to download models
+COPY download_models.py .
+RUN python download_models.py
 
 # Update environment variables for flask
 ENV FLASK_APP app.py
