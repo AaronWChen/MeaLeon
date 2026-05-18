@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 import dill as pickle
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, field_validator
 from typing import List, Optional
 import mlflow
 import mlflow.pytorch
@@ -80,11 +80,20 @@ class EmbeddingRequest(BaseModel):
 
 
 class EmbeddingResponse(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     embeddings: List[List[float]]
     model: str
     bow_embeddings: pd.DataFrame
     bow_model: str
     dimensions: int
+
+    @field_validator("df")
+    def check_dataframe(cls, v):
+        if not isinstance(v, pd.DataFrame):
+            raise TypeError("df must be a pandas DataFrame")
+
+        return v
 
 
 class CustomSKLearnAnalyzer:
