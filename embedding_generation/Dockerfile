@@ -41,13 +41,5 @@ ENV PATH="/app/.venv/bin:$PATH"
 COPY download_models.py .
 RUN python download_models.py
 
-# Update environment variables for flask
-ENV FLASK_APP app.py
-ENV FLASK_ENV prod
-ENV FLASK_RUN_PORT 8000
-ENV FLASK_RUN_HOST 0.0.0.0
-
-EXPOSE 8000
-
-# Reset the entrypoint, don't invoke `uv`
-ENTRYPOINT ["flask", "run"]
+# Run the application
+CMD ["run", "app/app.py", "--host", "0.0.0.0", "--port", "8000"]

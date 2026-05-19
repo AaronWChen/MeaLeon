@@ -88,10 +88,10 @@ class EmbeddingResponse(BaseModel):
     bow_model: str
     dimensions: int
 
-    @field_validator("df")
+    @field_validator("bow_embeddings")
     def check_dataframe(cls, v):
         if not isinstance(v, pd.DataFrame):
-            raise TypeError("df must be a pandas DataFrame")
+            raise TypeError("bow_embeddings must be a pandas DataFrame")
 
         return v
 

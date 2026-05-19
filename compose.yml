@@ -215,6 +215,7 @@ services:
     volumes:
       - ./models:/app/models
       - dvc-cache:/root/.dvc/cache
+      
     
     deploy:
       resources:
@@ -245,10 +246,9 @@ services:
   # MLflow tracking server
   # look at dagshub docs
   mlflow:
-    # build: 
-    #   context: ./embedding_generation
-    #   dockerfile: Dockerfile
-    image: ghcr.io/mlflow/mlflow:v3.11.1-full
+    build: 
+      context: ./embedding_generation
+      dockerfile: Dockerfile
 
     ports:
       - "5001:5001"

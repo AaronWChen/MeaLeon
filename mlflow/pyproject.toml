@@ -15,7 +15,7 @@ dependencies = [
     # "flask_moment",
     # "flask_wtf",
     "mlflow",
-    "psycopg",
+    "psycopg2",
     # "requests",
     # "redis",
     # "sqlalchemy",
