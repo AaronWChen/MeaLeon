@@ -42,4 +42,4 @@ COPY download_models.py .
 RUN python download_models.py
 
 # Run the application
-CMD ["run", "app/app.py", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "app/app.py", "--host", "0.0.0.0", "--port", "8000"]
