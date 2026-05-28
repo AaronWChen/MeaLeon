@@ -17,6 +17,11 @@
 
 set -e
 
+# Export DB password from secret file so SQLAlchemy can connect
+if [ -f /run/secrets/db_password ]; then
+    export POSTGRES_PASSWORD=$(cat /run/secrets/db_password)
+fi
+
 echo "Waiting for database..."
 until flask db upgrade 2>/dev/null; do
     echo "  db not ready yet, retrying in 2s..."

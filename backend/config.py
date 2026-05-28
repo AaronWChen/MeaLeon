@@ -6,20 +6,26 @@ load_dotenv(os.path.join(basedir, ".env"))
 
 
 def _build_database_uri() -> str:
-    # Priority 1: full URL from environment (DigitalOcean, Heroku, etc.)
     if url := os.environ.get("DATABASE_URL"):
         return url
 
-    # Priority 2: individual credential env vars (Docker Compose)
     user = os.environ.get("POSTGRES_USER")
-    password = os.environ.get("POSTGRES_PASSWORD")
     host = os.environ.get("POSTGRES_HOST", "db:5432")
-    db = os.environ.get("PG_DATABASE", "mealeon")
+    db = os.environ.get("POSTGRES_DB", "mealeon")
+
+    # Read password from secret file if available, fall back to env var
+    password = None
+    secret_file = "/run/secrets/db_password"
+    if os.path.exists(secret_file):
+        with open(secret_file) as f:
+            password = f.read().strip()
+    else:
+        password = os.environ.get("POSTGRES_PASSWORD")
+
     if user and password:
         return f"postgresql+psycopg://{user}:{password}@{host}/{db}"
 
-    # Priority 3: local dev fallback (SQLite-style path was wrong before)
-    return f"postgresql+psycopg://localhost/mealeon"
+    return "postgresql+psycopg://localhost/mealeon"
 
 
 class Config:
