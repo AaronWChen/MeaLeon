@@ -23,7 +23,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 import redis.asyncio as aioredis
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(0, "/app")
 from shared.secrets import get_redis_url
 
 from .edamam_client import EdamamClient

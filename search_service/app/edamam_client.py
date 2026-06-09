@@ -25,7 +25,7 @@ import httpx
 from .models import RecipeSearchResult
 
 # shared/ is two levels up from search_service/app/
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(0, "/app")
 from shared.secrets import get_edamam_creds
 
 logger = logging.getLogger(__name__)
