@@ -276,28 +276,32 @@ async def embed(request: Request, body: EmbeddingRequest):
     bow_model = request.app.state.bow_model
 
     try:
-        with mlflow.start_run(run_name="inference", nested=True):
-            mlflow.log_param("num_texts", len(body.texts))
-            mlflow.log_param("model_version", body.model_version)
-            mlflow.log_param("bow_model_version", body.bow_model_version)
+        embeddings = embedding_model.encode(
+            body.texts,
+            normalize_embeddings=body.normalize,
+            batch_size=32,
+            show_progress_bar=False,
+        )
 
-            embeddings = embedding_model.encode(
-                body.texts,
-                normalize_embeddings=body.normalize,
-                batch_size=32,
-                show_progress_bar=False,
+        # BoW embeddings — gracefully disabled if sklearn model unavailable
+        if bow_model is not None:
+            bow_df: pd.DataFrame = bow_model.predict(
+                pd.Series(body.ingredients, name="ingredients")
             )
+            bow_dict = bow_df.to_dict(orient="list")
+        else:
+            bow_dict = {}
 
-            # BoW embeddings — gracefully disabled if sklearn model unavailable
-            if bow_model is not None:
-                bow_df: pd.DataFrame = bow_model.predict(
-                    pd.Series(body.ingredients, name="ingredients")
-                )
-                bow_dict = bow_df.to_dict(orient="list")
-            else:
-                bow_dict = {}
+        # if MLflow is available
+        try:
+            with mlflow.start_run(run_name="inference", nested=True):
+                mlflow.log_param("num_texts", len(body.texts))
+                mlflow.log_param("model_version", body.model_version)
+                mlflow.log_param("bow_model_version", body.bow_model_version)
 
-            mlflow.log_metric("batch_size", len(body.texts))
+                mlflow.log_metric("batch_size", len(body.texts))
+        except Exception as mlflow_err:
+            print(f"MLflow tracking skipped: {mlflow_err}")
 
         return EmbeddingResponse(
             embeddings=embeddings.tolist(),

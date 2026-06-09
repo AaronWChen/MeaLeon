@@ -22,6 +22,23 @@ from .models import SearchResponse
 logger = logging.getLogger(__name__)
 
 DEFAULT_TTL = 12 * 60 * 60  # 12 hours in seconds
+POPULAR_TTL = 24 * 60 * 60  # 24 hours — for high-traffic queries
+
+# Dishes that get a longer TTL because they're frequently searched
+# and the Edamam results won't change much.
+POPULAR_DISHES = {
+    "lasagna",
+    "pasta",
+    "chicken",
+    "salad",
+    "soup",
+    "pizza",
+    "tacos",
+    "burger",
+    "stir fry",
+    "curry",
+    "risotto",
+}
 
 
 class SearchCache:
@@ -41,6 +58,8 @@ class SearchCache:
 
     def _ttl(self, dish_name: str) -> int:
         """Return appropriate TTL based on whether this is a popular query."""
+        if dish_name.strip().lower() in POPULAR_DISHES:
+            return POPULAR_TTL
         return DEFAULT_TTL
 
     async def get(self, key: str) -> Optional[SearchResponse]:

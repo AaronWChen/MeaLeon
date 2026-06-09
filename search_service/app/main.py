@@ -17,21 +17,31 @@ Why a separate service:
 from contextlib import asynccontextmanager
 import logging
 import os
+import sys
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 import redis.asyncio as aioredis
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+from shared.secrets import get_redis_url
 
 from .edamam_client import EdamamClient
 from .cache import SearchCache
 from .models import SearchRequest, SearchResponse
 
 logger = logging.getLogger(__name__)
-with open("/run/secrets/EDAMAM_API_APPID") as eda_app_id:
-    app_id = eda_app_id.read().strip()
 
-with open("/run/secrets/EDAMAM_API_APPKEY") as eda_key:
-    app_key = eda_key.read().strip()
+# set edamam api access
+# app_id = os.environ.get("EDAMAM_API_APPID")
+# app_key = os.environ.get("EDAMAM_API_APPKEY")
+
+
+# with open("/run/secrets/edamam_api_appid") as eda_app_id:
+#     app_id = eda_app_id.read().strip()
+
+# with open("/run/secrets/edamam_api_appkey") as eda_key:
+#     app_key = eda_key.read().strip()
 
 # ---------------------------------------------------------------------------
 # Lifespan — set up shared resources once at startup, tear down on shutdown
@@ -40,13 +50,10 @@ with open("/run/secrets/EDAMAM_API_APPKEY") as eda_key:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    redis_url = os.environ.get("REDIS_URL", "redis://redis:6379")
+    redis_url = get_redis_url()
     app.state.redis = aioredis.from_url(redis_url, decode_responses=True)
     app.state.cache = SearchCache(app.state.redis)
-    app.state.edamam = EdamamClient(
-        app_id=app_id,
-        app_key=app_key,
-    )
+    app.state.edamam = EdamamClient()
     logger.info("Search service ready")
     yield
     await app.state.redis.aclose()

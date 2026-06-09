@@ -1,8 +1,13 @@
 from dotenv import load_dotenv
 import os
+import sys
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, ".env"))
+
+# shared/ is a sibling of backend/ — add parent to path
+sys.path.insert(0, os.path.join(basedir, ".."))
+from shared.secrets import get_db_url, get_service_url, get_optional
 
 
 def _build_database_uri() -> str:
@@ -14,13 +19,13 @@ def _build_database_uri() -> str:
     db = os.environ.get("POSTGRES_DB", "mealeon")
 
     # Read password from secret file if available, fall back to env var
-    password = None
-    secret_file = "/run/secrets/db_password"
-    if os.path.exists(secret_file):
-        with open(secret_file) as f:
-            password = f.read().strip()
-    else:
-        password = os.environ.get("POSTGRES_PASSWORD")
+    password = os.environ.get("POSTGRES_PASSWORD")
+    # secret_file = "/run/secrets/db_password"
+    # if os.path.exists(secret_file):
+    #     with open(secret_file) as f:
+    #         password = f.read().strip()
+    # else:
+    #     password = os.environ.get("POSTGRES_PASSWORD")
 
     if user and password:
         return f"postgresql+psycopg://{user}:{password}@{host}/{db}"

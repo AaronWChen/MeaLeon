@@ -15,12 +15,18 @@ Key improvements over the original:
 
 import asyncio
 import logging
+import os
 import re
+import sys
 from typing import List, Optional
 
 import httpx
 
 from .models import RecipeSearchResult
+
+# shared/ is two levels up from search_service/app/
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+from shared.secrets import get_edamam_creds
 
 logger = logging.getLogger(__name__)
 
@@ -38,12 +44,22 @@ class EdamamRateLimitError(EdamamError):
 
 
 class EdamamClient:
-    def __init__(self, app_id: str, app_key: str, timeout: float = DEFAULT_TIMEOUT):
-        if not app_id or not app_key:
-            raise ValueError("EDAMAM_API_APPID and EDAMAM_API_APPKEY must be set")
-        self.app_id = app_id
-        self.app_key = app_key
+    def __init__(self, timeout: float = DEFAULT_TIMEOUT):
+        # Read from env var first, fall back to secret file
+        self.app_id, self.app_key = get_edamam_creds()
         self.timeout = timeout
+
+    @staticmethod
+    def _read_secret(name: str) -> str | None:
+        """Read a Docker secret file, trying both upper and lowercase names."""
+        for path in [
+            f"/run/secrets/{name}",
+            f"/run/secrets/{name.lower()}",
+        ]:
+            if os.path.exists(path):
+                with open(path) as f:
+                    return f.read().strip()
+        return None
 
     async def search(
         self,

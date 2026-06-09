@@ -6,6 +6,7 @@ import jwt
 import secrets
 import sqlalchemy as sa
 import sqlalchemy.orm as so  # refactor out the ORM stuff
+from sqlalchemy.dialects.postgresql import ARRAY
 from time import time
 from typing import Optional
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -50,6 +51,49 @@ class PaginatedAPIMixin(object):
         return data
 
 
+class UserPreferences(db.Model):
+    """
+    Stores a user's dietary preferences and restrictions.
+    One-to-one with User.
+
+    Using PostgreSQL ARRAY columns for the list fields — this avoids
+    needing a separate join table for something that's always read
+    and written as a unit. If you move off Postgres, swap to JSON columns.
+    """
+
+    __tablename__ = "user_preferences"
+
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    user_id: so.Mapped[int] = so.mapped_column(
+        sa.ForeignKey("user.id"), unique=True, index=True
+    )
+
+    # e.g. ["vegan", "gluten-free"]
+    diet_labels: so.Mapped[list] = so.mapped_column(
+        sa.ARRAY(sa.String), server_default="{}", nullable=False
+    )
+    # e.g. ["peanut-free", "shellfish-free"]
+    health_labels: so.Mapped[list] = so.mapped_column(
+        sa.ARRAY(sa.String), server_default="{}", nullable=False
+    )
+    # Hard excludes — individual ingredient names
+    excluded_ingredients: so.Mapped[list] = so.mapped_column(
+        sa.ARRAY(sa.String), server_default="{}", nullable=False
+    )
+    # Soft ranking signals — not hard filters
+    preferred_cuisines: so.Mapped[list] = so.mapped_column(
+        sa.ARRAY(sa.String), server_default="{}", nullable=False
+    )
+    disliked_cuisines: so.Mapped[list] = so.mapped_column(
+        sa.ARRAY(sa.String), server_default="{}", nullable=False
+    )
+
+    user: so.Mapped["User"] = so.relationship(back_populates="preferences")
+
+    def __repr__(self):
+        return f"<UserPreferences user_id={self.user_id}>"
+
+
 class User(
     PaginatedAPIMixin,
     UserMixin,
@@ -86,6 +130,10 @@ class User(
         sa.String(32), index=True, unique=True
     )
     token_expiration: so.Mapped[Optional[datetime]]
+
+    preferences: so.Mapped[Optional["UserPreferences"]] = so.relationship(
+        back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return "<User {}>".format(self.username)

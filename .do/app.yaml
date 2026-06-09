@@ -1,21 +1,200 @@
-ingress:
-  rules:
-  - component:
-      name: mealeon
-    match:
-      path:
-        prefix: /
-name: squid-app
+# .do/app.yaml
+#
+# DigitalOcean App Platform spec for MeaLeon.
+#
+# Deploy with:
+#   doctl apps create --spec .do/app.yaml
+#   doctl apps update <app-id> --spec .do/app.yaml
+#
+# Key differences from docker-compose:
+#
+# 1. Secrets: set once via DO dashboard or doctl, then referenced
+#    as ${SECRET_NAME}. DO injects them as env vars — shared/secrets.py
+#    reads them transparently.
+#
+# 2. Service URLs: DO injects ${service-name.PRIVATE_URL} for internal
+#    service-to-service communication. These replace localhost/service-name
+#    references from docker-compose.
+#
+# 3. Databases: use DO managed Postgres and Redis add-ons.
+#    DO injects DATABASE_URL and REDIS_URL automatically.
+#
+# 4. Vespa and Neo4j: not supported as managed services on DO App Platform.
+#    Options:
+#      a) Run as a DO Droplet and reference by private IP
+#      b) Use Vespa Cloud (vespa.ai/cloud)
+#      c) Use Neo4j AuraDB (free tier available)
+#    Their URLs are passed as env vars below.
+
+name: mealeon
 region: sfo
+
+# ── Managed databases ────────────────────────────────────────────────────
+
+databases:
+  - name: mealeon-db
+    engine: PG
+    version: "17"
+    size: db-s-1vcpu-1gb   # upgrade for production
+    num_nodes: 1
+
+  - name: mealeon-redis
+    engine: REDIS
+    version: "7"
+    size: db-s-1vcpu-1gb
+
+# ── Services ─────────────────────────────────────────────────────────────
+
 services:
-- environment_slug: python
-  github:
-    branch: main
-    deploy_on_push: true
-    repo: AaronWChen/MeaLeon
-  http_port: 8080
-  instance_count: 1
-  instance_size_slug: basic-s
-  name: mealeon
-  run_command: gunicorn --worker-tmp-dir /dev/shm app:app
-  source_dir: /
+
+  - name: backend
+    github:
+      repo: AaronWChen/MeaLeon
+      branch: main
+      deploy_on_push: true
+    source_dir: backend
+    dockerfile_path: backend/Dockerfile
+    http_port: 5000
+    instance_size_slug: basic-s
+    instance_count: 1
+    run_command: /entrypoint.sh
+
+    envs:
+      # DO injects DATABASE_URL from the managed Postgres add-on
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        value: ${mealeon-db.DATABASE_URL}
+
+      # DO injects REDIS_URL from the managed Redis add-on
+      - key: REDIS_URL
+        scope: RUN_TIME
+        value: ${mealeon-redis.DATABASE_URL}
+
+      # Internal service URLs — DO injects PRIVATE_URL for each service
+      - key: SEARCH_SERVICE_URL
+        scope: RUN_TIME
+        value: ${search-service.PRIVATE_URL}
+
+      - key: RECOMMEND_SERVICE_URL
+        scope: RUN_TIME
+        value: ${recommend-service.PRIVATE_URL}
+
+      - key: ML_SERVICE_URL
+        scope: RUN_TIME
+        value: ${embedding-generation.PRIVATE_URL}
+
+      # External services (Vespa Cloud / Neo4j AuraDB)
+      - key: VESPA_URL
+        scope: RUN_TIME
+        value: ${VESPA_URL}   # set in DO dashboard
+
+      - key: NEO4J_URL
+        scope: RUN_TIME
+        value: ${NEO4J_URL}   # set in DO dashboard
+
+      - key: SECRET_KEY
+        scope: RUN_TIME
+        value: ${SECRET_KEY}  # set in DO dashboard
+
+      - key: FLASK_APP
+        scope: RUN_AND_BUILD_TIME
+        value: app.py
+
+      - key: FLASK_ENV
+        scope: RUN_AND_BUILD_TIME
+        value: prod
+
+    routes:
+      - path: /api
+      - path: /auth
+
+  - name: search-service
+    github:
+      repo: AaronWChen/MeaLeon
+      branch: main
+      deploy_on_push: true
+    source_dir: search_service
+    dockerfile_path: search_service/Dockerfile_claude
+    http_port: 8001
+    instance_size_slug: basic-s
+    instance_count: 1
+
+    envs:
+      - key: REDIS_URL
+        scope: RUN_TIME
+        value: ${mealeon-redis.DATABASE_URL}
+
+      # Secrets — set once in DO dashboard, referenced here
+      - key: EDAMAM_API_APPID
+        scope: RUN_TIME
+        value: ${EDAMAM_API_APPID}
+
+      - key: EDAMAM_API_APPKEY
+        scope: RUN_TIME
+        value: ${EDAMAM_API_APPKEY}
+
+  - name: recommend-service
+    github:
+      repo: AaronWChen/MeaLeon
+      branch: main
+      deploy_on_push: true
+    source_dir: recommend_service
+    dockerfile_path: recommend_service/Dockerfile_claude
+    http_port: 8002
+    instance_size_slug: basic-s
+    instance_count: 1
+
+    envs:
+      - key: REDIS_URL
+        scope: RUN_TIME
+        value: ${mealeon-redis.DATABASE_URL}
+
+      - key: VESPA_URL
+        scope: RUN_TIME
+        value: ${VESPA_URL}
+
+      - key: ML_SERVICE_URL
+        scope: RUN_TIME
+        value: ${embedding-generation.PRIVATE_URL}
+
+      - key: SEARCH_SERVICE_URL
+        scope: RUN_TIME
+        value: ${search-service.PRIVATE_URL}
+
+  - name: embedding-generation
+    github:
+      repo: AaronWChen/MeaLeon
+      branch: main
+      deploy_on_push: true
+    source_dir: embedding_generation
+    dockerfile_path: embedding_generation/DOCKERFILE
+    http_port: 8000
+    # Needs more RAM for PyTorch — professional-xs minimum
+    instance_size_slug: professional-xs
+    instance_count: 1
+
+    envs:
+      - key: MLFLOW_TRACKING_URI
+        scope: RUN_TIME
+        value: ${MLFLOW_TRACKING_URI}  # set in DO dashboard
+
+  - name: frontend
+    github:
+      repo: AaronWChen/MeaLeon
+      branch: main
+      deploy_on_push: true
+    source_dir: frontend
+    dockerfile_path: frontend/Dockerfile
+    http_port: 80
+    instance_size_slug: basic-xxs
+    instance_count: 1
+
+    routes:
+      - path: /
+
+# ── Global env vars (non-secret, available to all services) ─────────────
+
+envs:
+  - key: ENVIRONMENT
+    scope: RUN_AND_BUILD_TIME
+    value: production

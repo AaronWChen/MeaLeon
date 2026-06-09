@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- vespa/services.xml
+     Required for Vespa application deployment alongside the schema.
+     This is a single-node dev/staging config.
+     For production, increase nodes and redundancy. -->
+<services version="1.0">
+
+  <container id="mealeon_container" version="1.0">
+    <search />
+    <document-api />
+    <!-- HTTP server on 8080 — matches compose_claude.yml port mapping -->
+    <http>
+      <server id="default" port="8080" />
+    </http>
+  </container>
+
+  <content id="mealeon_content" version="1.0">
+    <redundancy>1</redundancy>  <!-- increase to 2+ for production -->
+    <documents>
+      <document type="recipe" mode="index" />
+    </documents>
+    <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+  </content>
+
+</services>

@@ -1,0 +1,172 @@
+# Vespa schema for MeaLeon recipes.
+#
+# Derived from your existing conversion scripts, which show these fields:
+#   id, title, ingredients (list), steps (list), cuisine (list),
+#   language, description, origin
+#
+# Adds two new fields for hybrid search:
+#   embedding       — dense vector from sentence-transformers (384d)
+#   ingredients_bow — sparse weighted set from your sklearn TF-IDF
+#
+# Ranking profiles:
+#   hybrid (default) — RRF fusion of dense + sparse
+#   dense_only       — semantic only, for A/B testing
+#   sparse_only      — BM25 only, matches old TF-IDF behaviour
+
+schema recipe {
+
+    document recipe {
+
+        # ── Core fields (match your existing conversion scripts) ──────────
+
+        field id type string {
+            indexing: summary | attribute
+        }
+
+        field origin type string {
+            # "epicurious" or "postgres" — matches your converter's origin field
+            indexing: summary | attribute
+        }
+
+        field title type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field description type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        # Stored as array<string> — matches your converter's list handling
+        field ingredients type array<string> {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field steps type array<string> {
+            indexing: summary | index
+        }
+
+        # Your converter produces a list for cuisine (can be multi-label)
+        field cuisine type array<string> {
+            indexing: summary | attribute
+        }
+
+        field language type string {
+            indexing: summary | attribute
+        }
+
+        # ── Hybrid search fields ──────────────────────────────────────────
+
+        # Dense embedding — 384 dimensions from sentence-transformers
+        # all-MiniLM-L6-v2 (your embedding_generation default).
+        # If you switch to bge-large (1024d), change the tensor size here.
+        field embedding type tensor<float>(x[384]) {
+            indexing: summary | attribute
+            attribute {
+                distance-metric: angular  # cosine similarity = angular distance
+            }
+        }
+
+        # Sparse weighted set — TF-IDF scores from your sklearn transformer.
+        # weightedset<string> lets Vespa use WAND (Weak AND) for fast
+        # approximate sparse retrieval — much faster than scanning all docs.
+        field ingredients_bow type weightedset<string> {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+
+        # Useful for cuisine-based hard filtering in YQL
+        field cuisine_str type string {
+            indexing: summary | attribute
+            rank: filter
+        }
+    }
+
+    # ── Field sets — what gets searched by default ────────────────────────
+
+    fieldset default {
+        fields: title, ingredients, description
+    }
+
+    # ── Rank profiles ─────────────────────────────────────────────────────
+
+    # 1. Hybrid — the main profile used by the recommend service.
+    #    Reciprocal Rank Fusion (RRF) combines dense and sparse rankings.
+    #    RRF formula: 1/(k + rank) where k=60 is the standard constant.
+    #    No weight tuning required — RRF is robust to this.
+    rank-profile hybrid inherits default {
+
+        inputs {
+            query(q_embedding) tensor<float>(x[384])
+        }
+
+        first-phase {
+            expression {
+                reciprocal_rank_fusion(
+                    closeness(field, embedding),
+                    bm25(ingredients)
+                )
+            }
+        }
+
+        # Second phase: re-rank top 50 with a more expensive combined score.
+        # This is cheap because it only touches the top candidates.
+        second-phase {
+            rerank-count: 50
+            expression {
+                0.7 * closeness(field, embedding) +
+                0.3 * bm25(ingredients)
+            }
+        }
+
+        match-features {
+            closeness(field, embedding)
+            bm25(ingredients)
+            bm25(title)
+        }
+    }
+
+    # 2. Dense only — pure semantic search. Use for A/B testing or when
+    #    query terms are very short (single-word queries get poor BM25).
+    rank-profile dense_only inherits default {
+
+        inputs {
+            query(q_embedding) tensor<float>(x[384])
+        }
+
+        first-phase {
+            expression: closeness(field, embedding)
+        }
+    }
+
+    # 3. Sparse only — BM25 keyword search. Closest to your existing
+    #    TF-IDF cosine approach. Use as baseline for comparison.
+    rank-profile sparse_only inherits default {
+
+        first-phase {
+            expression: bm25(ingredients)
+        }
+    }
+
+    # 4. Cuisine-boosted hybrid — boosts results that match preferred cuisines.
+    #    Used when user_context includes preferred_cuisines.
+    rank-profile hybrid_cuisine_boost inherits hybrid {
+
+        inputs {
+            query(q_embedding) tensor<float>(x[384])
+            query(preferred_cuisine) string
+        }
+
+        second-phase {
+            rerank-count: 50
+            expression {
+                0.7 * closeness(field, embedding) +
+                0.3 * bm25(ingredients) +
+                # Soft boost: +0.1 if recipe cuisine matches preference
+                if (matches(cuisine_str, query(preferred_cuisine)), 0.1, 0.0)
+            }
+        }
+    }
+}

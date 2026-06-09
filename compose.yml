@@ -2,18 +2,20 @@ services:
   # ── Databases ────────────────────────────────────────────────────────────
   # postgres database for most data
   db:
-    image: postgres:17  
+    build: 
+      context: ./db
+      dockerfile: Dockerfile
     restart: always
     environment:
       # PG_ROOT_PW_FILE: /run/secrets/db_root_password
       PG_DATABASE: mealeon
       POSTGRES_DB: mealeon
       POSTGRES_USER: docker_user
-      POSTGRES_PASSWORD_FILE: /run/secrets/DB_PASSWORD
-      POSTGRES_ROOT_PASSWORD_FILE: /run/secrets/DB_ROOT_PASSWORD
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
     secrets:
-      - DB_PASSWORD
-      - DB_ROOT_PASSWORD
+      - db_password
+      - db_root_password
     ports:
       - ${POSTGRES_DOCKER_PORT:-5432}:5432
     volumes: 
@@ -109,12 +111,9 @@ services:
     
     networks:
       - mealeon_network
-
-    # depends_on:
-    #   - backend
     
-    environment:
-      REACT_APP_API_URL: http://backend:5000
+    # environment:
+    #   REACT_APP_API_URL: http://backend:5000
 
     volumes: 
       - ./static:/usr/share/nginx/html:ro
@@ -132,18 +131,18 @@ services:
       POSTGRES_USER: docker_user
       POSTGRES_HOST: db:5432
 
-      EDAMAM_API_APPID_FILE: /run/secrets/EDAMAM_API_APPID
-      EDAMAM_API_APPKEY_FILE: /run/secrets/EDAMAM_API_APPKEY
+      EDAMAM_API_APPID_FILE: /run/secrets/edamam_api_appid
+      EDAMAM_API_APPKEY_FILE: /run/secrets/edamam_api_appkey
       PG_DATABASE: mealeon
       POSTGRES_DB: mealeon
-      POSTGRES_PASSWORD_FILE: /run/secrets/DB_PASSWORD
-      POSTGRES_ROOT_PASSWORD_FILE: /run/secrets/DB_ROOT_PASSWORD
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
 
       SEARCH_SERVICE_URL: http://search_service:8001
       # RECOMMEND_SERVICE_URL: http://recommend_service:8002
       ML_SERVICE_URL: http://ml-service:8000
       VECTOR_DB_URL: http://vector-db:6333
-      DATABASE_URL: postgresql+psycopg://$${POSTGRES_USER}:$${cat /run/secrets/db_password}@$${POSTGRES_HOST}/mealeon
+      # DATABASE_URL: postgresql+psycopg://$${POSTGRES_USER}:$${cat /run/secrets/db_password}@$${POSTGRES_HOST}/mealeon
       REDIS_URL: redis://redis:6379
     
     depends_on:
@@ -162,10 +161,10 @@ services:
       - ./models:/app/models
     
     secrets:
-      - DB_PASSWORD
-      - DB_ROOT_PASSWORD
-      - EDAMAM_API_APPID
-      - EDAMAM_API_APPKEY
+      - db_password
+      - db_root_password
+      - edamam_api_appid
+      - edamam_api_appkey
   
   # search service is an Edamam wrapper
   search_service:
@@ -176,9 +175,11 @@ services:
       - "8001:8001"
     environment:
       REDIS_URL: redis://redis:6379
+      EDAMAM_API_APPID_FILE: /run/secrets/edamam_api_appid
+      EDAMAM_API_APPKEY_FILE: /run/secrets/edamam_api_appkey
     secrets:
-      - EDAMAM_API_APPID
-      - EDAMAM_API_APPKEY
+      - edamam_api_appid
+      - edamam_api_appkey
     depends_on:
       redis:
         condition: service_healthy
@@ -193,27 +194,27 @@ services:
 
 
   # recommender service - intentional stub 
-  # recommend_service:
-  #   build:
-  #     context: ./recommend_service
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8002:8002"
-  #   environment:
-  #     REDIS_URL: redis://redis:6379
-  #     VESPA_URL: http://vespa:8080
-  #     NEO4J_URL: bolt://neo4j:7687
-  #     ML_SERVICE_URL: http://embedding_generation:8000
-  #     SEARCH_SERVICE_URL: http://search_service:8001
-  #   depends_on:
-  #     search_service:
-  #       condition: service_healthy
-  #     vespa:
-  #       condition: service_healthy
-  #     redis:
-  #       condition: service_healthy
-  #   networks:
-  #     - mealeon_network
+  recommend_service:
+    build:
+      context: ./recommend_service
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      REDIS_URL: redis://redis:6379
+      VESPA_URL: http://vespa:8080
+      NEO4J_URL: bolt://neo4j:7687
+      ML_SERVICE_URL: http://embedding_generation:8000
+      SEARCH_SERVICE_URL: http://search_service:8001
+    depends_on:
+      search_service:
+        condition: service_healthy
+      vespa:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    networks:
+      - mealeon_network
   
   # create embeddings 
   embedding_generation:
@@ -277,8 +278,8 @@ services:
       DEFAULT_ARTIFACT_ROOT: /mlflow/artifacts
 
     secrets:
-      - DB_PASSWORD
-      - DB_ROOT_PASSWORD
+      - db_password
+      - db_root_password
 
     depends_on:
       db:
@@ -326,14 +327,14 @@ services:
   
 # ── dev services ──────────────────────────────────────────────────
 secrets:
-  DB_PASSWORD:
+  db_password:
     file: ./secrets/db_password.txt
-  DB_ROOT_PASSWORD:
+  db_root_password:
     file: ./secrets/db_root_password.txt
 
-  EDAMAM_API_APPID:
+  edamam_api_appid:
     file: ./secrets/edamam_id.txt
-  EDAMAM_API_APPKEY:
+  edamam_api_appkey:
     file: ./secrets/edamam_key.txt
 
 # ── volumes ──────────────────────────────────────────────────
