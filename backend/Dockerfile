@@ -27,7 +27,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Add project source code and install
 # Installing separately from dependences allows optimal layer caching
-COPY . /app
+COPY backend/ /app
 COPY shared/ /app/shared/
 
 RUN --mount=type=cache,target=/root/.cache/uv \
@@ -45,7 +45,7 @@ ENV FLASK_RUN_HOST 0.0.0.0
 EXPOSE 5000
 
 # Copy and permission the entrypoint script
-COPY entrypoint.sh /entrypoint.sh
+COPY backend/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Run migrations then start Flask

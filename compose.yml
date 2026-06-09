@@ -3,8 +3,8 @@ services:
   # postgres database for most data
   db:
     build: 
-      context: ./db
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: db/Dockerfile
     restart: always
     environment:
       # PG_ROOT_PW_FILE: /run/secrets/db_root_password
@@ -90,8 +90,8 @@ services:
   # nginx networking proxy
   proxy:
     build: 
-      context: ./proxy
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: proxy/Dockerfile
     ports:
       - "80:80"
     depends_on:
@@ -103,8 +103,8 @@ services:
   # React frontend
   frontend:
     build: 
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
     
     ports: 
       - "3000:80"
@@ -121,8 +121,8 @@ services:
   # flask python app
   backend:
     build: 
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     
     ports:
       - "5000:5000"
@@ -169,8 +169,8 @@ services:
   # search service is an Edamam wrapper
   search_service:
     build:
-      context: ./search_service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: search_service/Dockerfile
     ports:
       - "8001:8001"
     environment:
@@ -196,8 +196,8 @@ services:
   # recommender service - intentional stub 
   recommend_service:
     build:
-      context: ./recommend_service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: recommend_service/Dockerfile
     ports:
       - "8002:8002"
     environment:
@@ -219,8 +219,8 @@ services:
   # create embeddings 
   embedding_generation:
     build: 
-      context: ./embedding_generation
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: embedding_generation/Dockerfile
 
     ports:
       - "8000:8000"
@@ -262,8 +262,8 @@ services:
   # look at dagshub docs
   mlflow:
     build: 
-      context: ./mlflow
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: mlflow/Dockerfile
 
     ports:
       - "5001:5001"
@@ -301,8 +301,8 @@ services:
   # look in dagshub docs
   ml_training:
     build: 
-      context: ./ml-training
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ml-training/Dockerfile
 
     volumes:
       - ./data:/app/data

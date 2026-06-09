@@ -38,7 +38,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 # RUN python -c "import stanza; stanza.download('en')"
 
 # Execute Python script to download models
-COPY download_models.py .
+COPY embedding_generation/download_models.py .
 RUN python download_models.py
 
 # Run the application

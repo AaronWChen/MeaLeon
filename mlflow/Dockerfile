@@ -28,7 +28,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Add project source code and install
 # Installing separately from dependences allows optimal layer caching
-COPY . /app
+COPY mlflow/ /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 

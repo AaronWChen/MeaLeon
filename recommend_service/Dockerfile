@@ -23,7 +23,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Add project source code and install
 # Installing separately from dependences allows optimal layer caching
-COPY . /app
+COPY recommend_service/ /app
 COPY shared/ /app/shared/
 
 RUN --mount=type=cache,target=/root/.cache/uv \
@@ -32,7 +32,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Place executables in the env at the front of the PATH
 ENV PATH="/app/.venv/bin:$PATH"
 
-COPY . .
+COPY recommend_service/ .
 
 ENV PYTHONUNBUFFERED=1
 
