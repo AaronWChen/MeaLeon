@@ -18,9 +18,10 @@
 set -e
 
 # Export DB password from secret file so SQLAlchemy can connect
-if [ -f /run/secrets/DB_PASSWORD ]; then
-    export POSTGRES_PASSWORD=$(cat /run/secrets/DB_PASSWORD)
-fi
+# if [ -f /run/secrets/db_password ]; then
+#     export POSTGRES_PASSWORD=$(cat /run/secrets/db_password)
+# fi
+export POSTGRES_PASSWORD=$(cat /run/secrets/db_password)
 
 export DATABASE_URL="postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${PG_DATABASE}"
 
