@@ -18,15 +18,27 @@
 set -e
 
 # Export DB password from secret file so SQLAlchemy can connect
-if [ -f /run/secrets/db_password ]; then
-    export POSTGRES_PASSWORD=$(cat /run/secrets/db_password)
+if [ -f /run/secrets/DB_PASSWORD ]; then
+    export POSTGRES_PASSWORD=$(cat /run/secrets/DB_PASSWORD)
 fi
 
+export DATABASE_URL="postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${PG_DATABASE}"
+
+echo "DATABASE_URL host: ${POSTGRES_HOST}"  # log for debugging
+
 echo "Waiting for database..."
-until flask db upgrade 2>/dev/null; do
-    echo "  db not ready yet, retrying in 2s..."
+MAX_RETRIES=30
+COUNT=0
+until flask db upgrade 2>&1; do
+    COUNT=$((COUNT + 1))
+    if [ $COUNT -ge $MAX_RETRIES ]; then
+        echo "Max retries reached, exiting"
+        exit 1
+    fi
+
+    echo "  db not ready yet, retrying in 2s... ($COUNT / $MAX_RETRIES)"
     sleep 2
 done
 
 echo "Migrations applied. Starting Flask..."
-exec flask run
+exec flask run --host=0.0.0.0 --port=5000

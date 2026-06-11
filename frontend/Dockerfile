@@ -15,7 +15,7 @@
 
 FROM nginx:stable-alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Serve the existing static site from the repo root's static/ directory.
 # In compose.yml, bind-mount it: volumes: - ../static:/usr/share/nginx/html:ro

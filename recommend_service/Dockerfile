@@ -17,8 +17,8 @@ ENV UV_LINK_MODE=copy
 
 # Install project's dependencies using `lockfile` and settings
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    --mount=type=bind,source=recommend_service/uv.lock,target=uv.lock \
+    --mount=type=bind,source=recommend_service/pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-install-project --no-dev
 
 # Add project source code and install
@@ -32,7 +32,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Place executables in the env at the front of the PATH
 ENV PATH="/app/.venv/bin:$PATH"
 
-COPY recommend_service/ .
+# COPY recommend_service/ .
 
 ENV PYTHONUNBUFFERED=1
 
