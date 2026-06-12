@@ -102,23 +102,32 @@ schema recipe {
             query(q_embedding) tensor<float>(x[384])
         }
 
+        # first-phase: cheap approximate scoring on ALL retrieved candidates
         first-phase {
+            expression {
+                closeness(field, embedding)
+            }
+        }
+
+        # Second phase: re-rank top 50 with a more expensive combined score.
+        # This is cheap because it only touches the top candidates.
+        # second-phase {
+        #     rerank-count: 50
+        #     expression {
+        #         0.7 * closeness(field, embedding) +
+        #         0.3 * bm25(ingredients)
+        #     }
+        # }
+
+        # global-phase: expensive RRF fusion, only on top candidates after first-phase
+        global-phase {
             expression {
                 reciprocal_rank_fusion(
                     closeness(field, embedding),
                     bm25(ingredients)
                 )
             }
-        }
-
-        # Second phase: re-rank top 50 with a more expensive combined score.
-        # This is cheap because it only touches the top candidates.
-        second-phase {
             rerank-count: 50
-            expression {
-                0.7 * closeness(field, embedding) +
-                0.3 * bm25(ingredients)
-            }
         }
 
         match-features {
@@ -159,14 +168,18 @@ schema recipe {
             query(preferred_cuisine) string
         }
 
-        second-phase {
+        global-phase {
             rerank-count: 50
             expression {
-                0.7 * closeness(field, embedding) +
-                0.3 * bm25(ingredients) +
-                # Soft boost: +0.1 if recipe cuisine matches preference
-                if (matches(cuisine_str, query(preferred_cuisine)), 0.1, 0.0)
+                reciprocal_rank_fusion(
+                    closeness(field, embedding),
+                    bm25(ingredients)
+                )
             }
+
+                # Soft boost: +0.1 if recipe cuisine matches preference
+                # if (matches(cuisine_str, query(preferred_cuisine)), 0.1, 0.0)
+            
         }
     }
 }

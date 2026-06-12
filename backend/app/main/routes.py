@@ -292,7 +292,7 @@ def get_similar_dishes(dish, cuisine):
     return results, ingreds, rec_weights
 
 
-@bp.route("/get_results", methods=["POST"])
+@bp.route("/get_results", methods=["GET", "POST"])
 def get_results():
     """Display the five most similar recipes from the database based on the
     inputs."""

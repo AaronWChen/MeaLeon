@@ -61,9 +61,15 @@ class VespaHybridClient:
         query_ingredients_str = " ".join(ingredients)
 
         # Step 1: Get embeddings from ML service
-        dense_vec, sparse_map = await self._get_query_embeddings(
-            query_text, query_ingredients_str
-        )
+        try:
+            dense_vec, sparse_map = await self._get_query_embeddings(
+                query_text, query_ingredients_str
+            )
+
+        except Exception as e:
+            logger.error(f"Embedding service unavailable: {e}")
+            dense_vec = [0.0] * 384
+            sparse_map = {}
 
         # Step 2: Choose ranking profile
         rank_profile = "hybrid_cuisine_boost" if preferred_cuisines else "hybrid"
@@ -144,7 +150,7 @@ class VespaHybridClient:
         self, query_text: str, ingredients_str: str
     ) -> tuple[list[float], dict]:
         """Call the ML service to embed the query."""
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=5.0) as client:
             resp = await client.post(
                 f"{self.ml_service_url}/embed",
                 json={

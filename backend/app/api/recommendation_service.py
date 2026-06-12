@@ -60,11 +60,23 @@ def recommend():
     # ------------------------------------------------------------------
     try:
         search_resp = _call_search_service(dish_name, cuisine)
+
     except httpx.HTTPError as e:
         logger.error("Search service error: %s", e)
         return error_response(502, "Search service unavailable")
 
-    ingredients = search_resp.get("all_ingredients", [])
+    recipes = search_resp.get("recipes", [])
+
+    seen = set()
+
+    # ingredients = search_resp.get("all_ingredients", [])
+    ingredients = []
+    for recipe in recipes:
+        for ingred in recipe.get("ingredient_names", []):
+            if ingred not in seen:
+                seen.add(ingred)
+                ingredients.append(ingred)
+
     if not ingredients:
         return jsonify(
             {

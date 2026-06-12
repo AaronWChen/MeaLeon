@@ -60,11 +60,11 @@ def create_app(config_class=Config):
 
     from app.api.recommendation_service import bp as recommend_bp
 
-    app.register_blueprint(recommend_bp, url_prefix="/recommend")
+    app.register_blueprint(recommend_bp, url_prefix="/api")
 
     from app.api.preferences import bp as preferences_bp
 
-    app.register_blueprint(preferences_bp, url_prefix="/preferences")
+    app.register_blueprint(preferences_bp, url_prefix="/api")
 
     if not app.debug and not app.testing:
         if app.config["MAIL_SERVER"]:

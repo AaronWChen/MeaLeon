@@ -93,9 +93,43 @@ def run_migrations_online():
 
     connectable = get_engine()
 
+    EXCLUDE_TABLES = {
+        # MLflow tables — managed by MLflow itself, not Flask-Migrate
+        "runs",
+        "experiments",
+        "metrics",
+        "params",
+        "tags",
+        "registered_models",
+        "model_versions",
+        "experiment_tags",
+        "registered_model_tags",
+        "model_version_tags",
+        "alembic_version",  # exclude to avoid conflicts
+        "evaluation_datasets",
+        "evaluation_dataset_tags",
+        "evaluation_dataset_records",
+        "datasets",
+        "inputs",
+        "input_tags",
+        "trace_info",
+        "trace_request_metadata",
+        "trace_tags",
+        "latest_metrics",
+        "run_inputs",
+    }
+
+    def include_object(object, name, type_, reflected, compare_to):
+        if type_ == "table" and name in EXCLUDE_TABLES:
+            return False
+        return True
+
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=get_metadata(), **conf_args
+            connection=connection,
+            target_metadata=get_metadata(),
+            include_object=include_object,
+            **conf_args,
         )
 
         with context.begin_transaction():

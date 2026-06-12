@@ -151,7 +151,7 @@ services:
       redis:
         condition: service_healthy
       embedding_generation:
-        condition: service_healthy
+        condition: service_started
     
     networks:
       - mealeon_network
@@ -228,6 +228,7 @@ services:
     volumes:
       - ./models:/app/models
       - dvc-cache:/root/.dvc/cache
+      - huggingface_cache:/root/.cache/huggingface
       
     
     deploy:
@@ -346,6 +347,7 @@ volumes:
   neo4j_data: {}
   mlflow-artifacts: {}
   dvc-cache: {}
+  huggingface_cache: {}
 
 # ── networks ──────────────────────────────────────────────────
 networks:

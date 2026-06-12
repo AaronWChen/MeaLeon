@@ -26,6 +26,9 @@ from typing import List, Optional
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5001")
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
+# Set a short timeout so MLflow connection failures fail fast
+os.environ["MLFLOW_HTTP_REQUEST_TIMEOUT"] = "5"  # 5 seconds max
+os.environ["MLFLOW_HTTP_REQUEST_MAX_RETRIES"] = "1"  # only try once
 
 # ---------------------------------------------------------------------------
 # Model loader — restored from commented-out block
@@ -112,23 +115,15 @@ def get_model(model_version: str = "latest", model_name: str = "embedding-model"
 async def lifespan(app: FastAPI):
     loop = asyncio.get_event_loop()
 
-    print("Loading embedding model...")
-    app.state.embedding_model = await loop.run_in_executor(
+    # Load both models concurrently
+    print("Loading models concurrently...")
+    embedding_future = loop.run_in_executor(
         None, lambda: get_model(model_name="embedding-model")
     )
-
-    print("Loading sklearn/BoW transformer...")
-    app.state.bow_model = await loop.run_in_executor(
+    sklearn_future = loop.run_in_executor(
         None, lambda: get_model(model_name="sklearn_transformer")
     )
-    if app.state.bow_model is None:
-        print(
-            "WARNING: BoW model unavailable — /embed will return empty bow_embeddings"
-        )
-
-    # Stanza pipeline — initialised once and stored on state
-    print("Loading Stanza pipeline...")
-    app.state.stanza_nlp = await loop.run_in_executor(
+    stanza_future = loop.run_in_executor(
         None,
         lambda: stanza.Pipeline(
             "en",
@@ -137,6 +132,19 @@ async def lifespan(app: FastAPI):
             verbose=False,
         ),
     )
+
+    # Wait for all three concurrently
+    app.state.embedding_model, app.state.bow_model, app.state.stanza_nlp = (
+        await asyncio.gather(embedding_future, sklearn_future, stanza_future)
+    )
+
+    if app.state.bow_model is None:
+        print(
+            "WARNING: BoW model unavailable — /embed will return empty bow_embeddings"
+        )
+
+    print("All models loaded — service ready.")
+    yield
 
     print("All models loaded — service ready.")
     yield

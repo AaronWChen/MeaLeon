@@ -61,21 +61,21 @@ def upgrade():
     with op.batch_alter_table("tags", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_tags_run_uuid"))
 
-    op.drop_table("tags")
+    # op.drop_table("tags")
     with op.batch_alter_table("registered_model_tags", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_registered_model_tags_workspace_name"))
 
-    op.drop_table("registered_model_tags")
+    # op.drop_table("registered_model_tags")
     with op.batch_alter_table("evaluation_datasets", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_evaluation_datasets_workspace"))
         batch_op.drop_index(batch_op.f("index_evaluation_datasets_created_time"))
         batch_op.drop_index(batch_op.f("index_evaluation_datasets_name"))
 
-    op.drop_table("evaluation_datasets")
+    # op.drop_table("evaluation_datasets")
     with op.batch_alter_table("params", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_params_run_uuid"))
 
-    op.drop_table("params")
+    # op.drop_table("params")
     with op.batch_alter_table("endpoint_model_mappings", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_endpoint_model_mappings_endpoint_id"))
         batch_op.drop_index(
@@ -83,167 +83,167 @@ def upgrade():
         )
         batch_op.drop_index(batch_op.f("unique_endpoint_model_linkage_mapping"))
 
-    op.drop_table("endpoint_model_mappings")
+    # op.drop_table("endpoint_model_mappings")
     with op.batch_alter_table("webhook_events", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_webhook_events_action"))
         batch_op.drop_index(batch_op.f("idx_webhook_events_entity"))
         batch_op.drop_index(batch_op.f("idx_webhook_events_entity_action"))
 
-    op.drop_table("webhook_events")
+    # op.drop_table("webhook_events")
     with op.batch_alter_table("span_metrics", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_span_metrics_trace_id_span_id"))
 
-    op.drop_table("span_metrics")
+    # op.drop_table("span_metrics")
     with op.batch_alter_table("issues", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_issues_experiment_id"))
         batch_op.drop_index(batch_op.f("index_issues_source_run_id"))
         batch_op.drop_index(batch_op.f("index_issues_status"))
 
-    op.drop_table("issues")
-    op.drop_table("logged_model_tags")
+    # op.drop_table("issues")
+    # op.drop_table("logged_model_tags")
     with op.batch_alter_table("trace_tags", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_trace_tags_request_id"))
 
-    op.drop_table("trace_tags")
+    # op.drop_table("trace_tags")
     with op.batch_alter_table("entity_associations", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_entity_associations_association_id"))
         batch_op.drop_index(batch_op.f("index_entity_associations_reverse_lookup"))
 
-    op.drop_table("entity_associations")
+    # op.drop_table("entity_associations")
     with op.batch_alter_table("spans", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_spans_experiment_id"))
         batch_op.drop_index(batch_op.f("index_spans_experiment_id_duration"))
         batch_op.drop_index(batch_op.f("index_spans_experiment_id_status_type"))
         batch_op.drop_index(batch_op.f("index_spans_experiment_id_type_status"))
 
-    op.drop_table("spans")
+    # op.drop_table("spans")
     with op.batch_alter_table("model_version_tags", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_model_version_tags_workspace_name_version"))
 
-    op.drop_table("model_version_tags")
+    # op.drop_table("model_version_tags")
     with op.batch_alter_table("model_definitions", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_model_definitions_workspace"))
         batch_op.drop_index(batch_op.f("index_model_definitions_provider"))
         batch_op.drop_index(batch_op.f("index_model_definitions_secret_id"))
 
-    op.drop_table("model_definitions")
+    # op.drop_table("model_definitions")
     with op.batch_alter_table("trace_metrics", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_trace_metrics_request_id"))
 
-    op.drop_table("trace_metrics")
+    # op.drop_table("trace_metrics")
     with op.batch_alter_table("latest_metrics", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_latest_metrics_run_uuid"))
 
-    op.drop_table("latest_metrics")
+    # op.drop_table("latest_metrics")
     with op.batch_alter_table("metrics", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_metrics_run_uuid"))
         batch_op.drop_index(batch_op.f("index_metrics_run_uuid_key_step"))
 
-    op.drop_table("metrics")
-    op.drop_table("online_scoring_configs")
+    # op.drop_table("metrics")
+    # op.drop_table("online_scoring_configs")
     with op.batch_alter_table("guardrails", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_guardrails_scorer"))
         batch_op.drop_index(batch_op.f("idx_guardrails_workspace"))
 
-    op.drop_table("guardrails")
+    # op.drop_table("guardrails")
     with op.batch_alter_table("endpoint_tags", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_endpoint_tags_endpoint_id"))
 
-    op.drop_table("endpoint_tags")
-    op.drop_table("endpoint_bindings")
+    # op.drop_table("endpoint_tags")
+    # op.drop_table("endpoint_bindings")
     with op.batch_alter_table("endpoints", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_endpoints_workspace"))
 
-    op.drop_table("endpoints")
-    op.drop_table("workspaces")
+    # op.drop_table("endpoints")
+    # op.drop_table("workspaces")
     with op.batch_alter_table("guardrail_configs", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_guardrail_configs_endpoint_id"))
         batch_op.drop_index(batch_op.f("idx_guardrail_configs_guardrail_id"))
 
-    op.drop_table("guardrail_configs")
+    # op.drop_table("guardrail_configs")
     with op.batch_alter_table("scorer_versions", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_scorer_versions_scorer_id"))
 
-    op.drop_table("scorer_versions")
+    # op.drop_table("scorer_versions")
     with op.batch_alter_table("trace_info", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_trace_info_experiment_id_timestamp_ms"))
 
-    op.drop_table("trace_info")
+    # op.drop_table("trace_info")
     with op.batch_alter_table("evaluation_dataset_tags", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_evaluation_dataset_tags_dataset_id"))
 
-    op.drop_table("evaluation_dataset_tags")
+    # op.drop_table("evaluation_dataset_tags")
     with op.batch_alter_table("webhooks", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_webhooks_name"))
         batch_op.drop_index(batch_op.f("idx_webhooks_status"))
         batch_op.drop_index(batch_op.f("idx_webhooks_workspace"))
 
-    op.drop_table("webhooks")
+    # op.drop_table("webhooks")
     with op.batch_alter_table("inputs", schema=None) as batch_op:
         batch_op.drop_index(
             batch_op.f("index_inputs_destination_type_destination_id_source_type")
         )
         batch_op.drop_index(batch_op.f("index_inputs_input_uuid"))
 
-    op.drop_table("inputs")
-    op.drop_table("input_tags")
+    # op.drop_table("inputs")
+    # op.drop_table("input_tags")
     with op.batch_alter_table("scorers", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_scorers_experiment_id_scorer_name"))
 
-    op.drop_table("scorers")
+    # op.drop_table("scorers")
     with op.batch_alter_table("registered_models", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_registered_models_workspace"))
 
-    op.drop_table("registered_models")
-    op.drop_table("logged_model_params")
+    # op.drop_table("registered_models")
+    # op.drop_table("logged_model_params")
     with op.batch_alter_table("secrets", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_secrets_workspace"))
 
-    op.drop_table("secrets")
+    # op.drop_table("secrets")
     with op.batch_alter_table("jobs", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_jobs_name_status_creation_time"))
 
-    op.drop_table("jobs")
+    # op.drop_table("jobs")
     with op.batch_alter_table("evaluation_dataset_records", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_evaluation_dataset_records_dataset_id"))
 
-    op.drop_table("evaluation_dataset_records")
-    op.drop_table("logged_models")
+    # op.drop_table("evaluation_dataset_records")
+    # op.drop_table("logged_models")
     with op.batch_alter_table("trace_request_metadata", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_trace_request_metadata_request_id"))
 
-    op.drop_table("trace_request_metadata")
+    # op.drop_table("trace_request_metadata")
     with op.batch_alter_table("assessments", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_assessments_assessment_type"))
         batch_op.drop_index(batch_op.f("index_assessments_last_updated_timestamp"))
         batch_op.drop_index(batch_op.f("index_assessments_run_id_created_timestamp"))
         batch_op.drop_index(batch_op.f("index_assessments_trace_id_created_timestamp"))
 
-    op.drop_table("assessments")
+    # op.drop_table("assessments")
     with op.batch_alter_table("datasets", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_datasets_dataset_uuid"))
         batch_op.drop_index(
             batch_op.f("index_datasets_experiment_id_dataset_source_type")
         )
 
-    op.drop_table("datasets")
-    op.drop_table("runs")
+    # op.drop_table("datasets")
+    # op.drop_table("runs")
     with op.batch_alter_table("experiments", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_experiments_workspace"))
         batch_op.drop_index(batch_op.f("idx_experiments_workspace_creation_time"))
 
-    op.drop_table("experiments")
+    # op.drop_table("experiments")
     with op.batch_alter_table("logged_model_metrics", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("index_logged_model_metrics_model_id"))
 
-    op.drop_table("logged_model_metrics")
-    op.drop_table("experiment_tags")
+    # op.drop_table("logged_model_metrics")
+    # op.drop_table("experiment_tags")
     with op.batch_alter_table("budget_policies", schema=None) as batch_op:
         batch_op.drop_index(batch_op.f("idx_budget_policies_workspace"))
 
-    op.drop_table("budget_policies")
-    op.drop_table("registered_model_aliases")
-    op.drop_table("model_versions")
+    # op.drop_table("budget_policies")
+    # op.drop_table("registered_model_aliases")
+    # op.drop_table("model_versions")
     # ### end Alembic commands ###
 
 

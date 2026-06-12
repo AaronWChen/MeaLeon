@@ -82,7 +82,8 @@ async def recommend(request: RecommendRequest):
         )
     except Exception as exc:
         logger.error("Vespa search failed: %s", exc)
-        raise HTTPException(status_code=502, detail=f"Search backend error: {exc}")
+        # raise HTTPException(status_code=502, detail=f"Search backend error: {exc}")
+        results = []
 
     return RecommendResponse(
         results=results,
