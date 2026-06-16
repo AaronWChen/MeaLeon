@@ -8,6 +8,7 @@ from app.main.forms import (
 )
 from app.models import User, Review
 from app.translate import translate
+from .routes_get_similar_dishes import get_similar_dishes
 
 # from src.nltk import dish_predictor as dp  # import find_similar_dishes
 
@@ -294,47 +295,12 @@ def get_similar_dishes(dish, cuisine):
 
 @bp.route("/get_results", methods=["GET", "POST"])
 def get_results():
-    """Display the five most similar recipes from the database based on the
-    inputs."""
     data = request.form
-
     expected_features = ("dish_name", "cuisine_name")
-
-    # if data and all(feature in data for feature in expected_features):
-    #     # Convert the dict of fields into a list
-    #     dish = data["dish_name"]
-    #     cuisine = data["cuisine_name"]
-    #     results, ingreds, rec_weights = dp.find_similar_dishes(dish, cuisine)
-    #     try:
-    #         resp = httpx.post(
-    #             current_app.config["SEARCH_SERVICE_URL"] + "/search",
-    #             json={"dish_name": dish, "cuisine": cuisine},
-    #             timeout=15.0,
-    #         )
-    #         resp.raise_for_status()
-    #         results = resp.json().get("recipes", [])
-    #     except Exception as e:
-    #         results = []
-    #         current_app.logger.error(f"Search service error: {e}")
-
-    #     return render_template(
-    #         "results.html",
-    #         results=results,
-    #         dish=dish,
-    #         cuisine=cuisine,
-    #         ingreds=ingreds,
-    #         recipe_weights=rec_weights,
-    #     )
-    # else:
-    #     return abort(400)
-
     if data and all(feature in data for feature in expected_features):
         dish = data["dish_name"]
         cuisine = data["cuisine_name"]
         results, ingreds, rec_weights = get_similar_dishes(dish, cuisine)
-
-        # One thing to note: rec_weights are placeholder 1.0 values for now since Edamam doesn't return similarity scores. Once Vespa is feeding the recommend service, you'd replace this route to call /api/recommend instead of /search directly, and the real scores would come back in similarity_score on each result.
-
         return render_template(
             "results.html",
             results=results,

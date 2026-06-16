@@ -86,6 +86,7 @@ def recommend():
                 "total": 0,
             }
         )
+    source = "vespa"
 
     # ------------------------------------------------------------------
     # Step 3: Call recommendation service
@@ -97,11 +98,34 @@ def recommend():
             ingredients=ingredients,
             user_context=user_context,
         )
+        candidates = recommend_resp.get("results", [])
+
     except httpx.HTTPError as e:
         logger.error("Recommend service error: %s", e)
         return error_response(502, "Recommendation service unavailable")
 
-    candidates = recommend_resp.get("results", [])
+    # If Vespa has no results yet (empty index), fall back to Edamam
+    # results from the search phase — but apply cuisine exclusion here
+    # so we still show cross-cuisine recommendations
+    if not candidates:
+        source = "edamam_fallback"
+        search_recipes = search_resp.get("recipes", [])
+        cuisine_lower = cuisine.lower() if cuisine else ""
+        cross_cuisine = [
+            r
+            for r in search_recipes
+            if cuisine_lower not in [c.lower() for c in r.get("cuisine_types", [])]
+        ]
+        # If everything matched the queried cuisine (unlikely but possible),
+        # return all results rather than nothing — better UX while corpus is small
+        candidates = cross_cuisine if cross_cuisine else recipes
+
+        if not cross_cuisine and recipes:
+            logger.info(
+                "All Edamam results matched queried cuisine '%s' — "
+                "returning unfiltered. Consider expanding the search.",
+                cuisine,
+            )
 
     # ------------------------------------------------------------------
     # Step 4: Apply user restriction filters
@@ -117,6 +141,7 @@ def recommend():
             "query": {"dish_name": dish_name, "cuisine": cuisine},
             "user_filtered": user_filtered,
             "total": len(results),
+            "source": source,
         }
     )
 
