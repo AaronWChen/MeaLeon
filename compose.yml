@@ -103,8 +103,8 @@ services:
   # React frontend
   frontend:
     build: 
-      context: .
-      dockerfile: frontend/Dockerfile
+      context: frontend/
+      dockerfile: Dockerfile
     
     ports: 
       - "3000:80"
@@ -112,11 +112,6 @@ services:
     networks:
       - mealeon_network
     
-    # environment:
-    #   REACT_APP_API_URL: http://backend:5000
-
-    volumes: 
-      - ./static:/usr/share/nginx/html:ro
 
   # flask python app
   backend:

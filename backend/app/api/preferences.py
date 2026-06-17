@@ -4,7 +4,7 @@ backend/app/api/preferences.py
 User preferences endpoints — lets the React app read and update
 dietary restrictions, health labels, and cuisine preferences.
 
-These feed directly into _build_user_context() in recommend_claude.py,
+These feed directly into _build_user_context() in recommend_service.py,
 which is why they live in the Flask backend rather than in a separate service:
 they're tightly coupled to the User model and auth system Flask already owns.
 """

@@ -12,7 +12,7 @@
  *   - Components stay clean — they call functions, not fetch()
  */
 
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const BASE_URL = process.env.REACT_APP_API_URL || "";
 
 // ---------------------------------------------------------------------------
 // Core fetch wrapper

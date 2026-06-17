@@ -114,7 +114,7 @@ services:
       branch: main
       deploy_on_push: true
     source_dir: search_service
-    dockerfile_path: search_service/Dockerfile_claude
+    dockerfile_path: search_service/Dockerfile
     http_port: 8001
     instance_size_slug: basic-s
     instance_count: 1
@@ -139,7 +139,7 @@ services:
       branch: main
       deploy_on_push: true
     source_dir: recommend_service
-    dockerfile_path: recommend_service/Dockerfile_claude
+    dockerfile_path: recommend_service/Dockerfile
     http_port: 8002
     instance_size_slug: basic-s
     instance_count: 1

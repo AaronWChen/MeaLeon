@@ -10,12 +10,35 @@
 import { useState } from "react";
 import { useSearch } from "../hooks/useSearch";
 import { RecipeResults } from "./RecipeResults";
-import { CuisineChoices } from "../constants/cuisine";
+
+const CUISINE_CHOICES = [
+  { value: "american", label: "American" },
+  { value: "asian", label: "Asian" },
+  { value: "british", label: "British" },
+  { value: "caribbean", label: "Caribbean" },
+  { value: "central europe", label: "Central European" },
+  { value: "chinese", label: "Chinese" },
+  { value: "eastern europe", label: "Eastern European" },
+  { value: "french", label: "French" },
+  { value: "greek", label: "Greek" },
+  { value: "indian", label: "Indian" },
+  { value: "italian", label: "Italian" },
+  { value: "japanese", label: "Japanese" },
+  { value: "korean", label: "Korean" },
+  { value: "kosher", label: "Kosher" },
+  { value: "mediterranean", label: "Mediterranean" },
+  { value: "mexican", label: "Mexican" },
+  { value: "middle eastern", label: "Middle Eastern" },
+  { value: "nordic", label: "Nordic" },
+  { value: "south american", label: "South American" },
+  { value: "south east asian", label: "South East Asian" },
+  { value: "world", label: "World" },
+];
 
 export function SearchBar() {
   const [dishName, setDishName] = useState("");
   const [cuisine, setCuisine] = useState("");
-  const { results, loading, error, search } = useSearch();
+  const { results, loading, error, search, source } = useSearch();
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -33,6 +56,7 @@ export function SearchBar() {
           onChange={(e) => setDishName(e.target.value)}
           required
           aria-label="Dish name"
+          style={{ minWidth: 200, flex: 1 }}
         />
         <select
           className="form-select"
@@ -42,7 +66,7 @@ export function SearchBar() {
           style={{ maxWidth: 200 }}
         >
           <option value="">Any cuisine</option>
-          {CuisineChoices.map((c) => (
+          {CUISINE_CHOICES.map((c) => (
             <option key={c.value} value={c.value}>
               {c.label}
             </option>
@@ -53,7 +77,7 @@ export function SearchBar() {
           className="btn btn-primary"
           disabled={loading}
         >
-          {loading ? "Searching…" : "Find recipes"}
+          {loading ? "Searching…" : "Find similar recipes"}
         </button>
       </form>
 
@@ -63,7 +87,20 @@ export function SearchBar() {
         </div>
       )}
 
-      {results.length > 0 && <RecipeResults results={results} />}
+      {results.length > 0 && (
+        <>
+          {source === "edamam_fallback" && (
+            <div className="alert alert-info py-2 small mb-3">
+              Showing results from Edamam — local recipe index still loading.
+            </div>
+          )}
+          <RecipeResults results={results} dishName={dishName} cuisine={cuisine} />
+        </>
+      )}
+
+      {!loading && !error && results.length === 0 && dishName && (
+        <p className="text-muted">No results found. Try a different dish or cuisine.</p>
+      )}
     </div>
   );
 }

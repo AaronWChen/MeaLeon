@@ -111,11 +111,18 @@ def recommend():
         source = "edamam_fallback"
         search_recipes = search_resp.get("recipes", [])
         cuisine_lower = cuisine.lower() if cuisine else ""
-        cross_cuisine = [
-            r
-            for r in search_recipes
-            if cuisine_lower not in [c.lower() for c in r.get("cuisine_types", [])]
-        ]
+        cross_cuisine = []
+
+        for r in recipes:
+            cuisine_types = r.get("cuisine_types", [])
+            # Handle both list and string formats from Edamam
+            if isinstance(cuisine_types, str):
+                cuisine_types = [cuisine_types]
+            recipe_cuisines = [c.lower() for c in cuisine_types]
+
+            if cuisine_lower not in recipe_cuisines:
+                cross_cuisine.append(r)
+
         # If everything matched the queried cuisine (unlikely but possible),
         # return all results rather than nothing — better UX while corpus is small
         candidates = cross_cuisine if cross_cuisine else recipes
@@ -185,7 +192,6 @@ def _call_search_service(dish_name: str, cuisine: str) -> dict:
             url,
             json={
                 "dish_name": dish_name,
-                "cuisine": cuisine,
                 "max_results": 10,
             },
         )

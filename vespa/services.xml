@@ -8,7 +8,7 @@
   <container id="mealeon_container" version="1.0">
     <search />
     <document-api />
-    <!-- HTTP server on 8080 — matches compose_claude.yml port mapping -->
+    <!-- HTTP server on 8080 — matches compose.yml port mapping -->
     <http>
       <server id="default" port="8080" />
     </http>

@@ -1,4 +1,4 @@
-# recommend_service/Dockerfile_claude
+# recommend_service/Dockerfile
 #
 # Lightweight FastAPI service — no ML dependencies.
 # All model inference happens in embedding_generation service.
