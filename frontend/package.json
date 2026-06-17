@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bootstrap": "^5.3.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-scripts": "^0.0.0"
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -29,5 +30,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:5000"
 }
