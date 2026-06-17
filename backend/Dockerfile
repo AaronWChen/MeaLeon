@@ -29,6 +29,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Installing separately from dependences allows optimal layer caching
 COPY backend/ /app
 COPY shared/ /app/shared/
+COPY backend/app/translations /app/translations
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev

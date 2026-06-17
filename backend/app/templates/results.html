@@ -99,8 +99,8 @@
                             <h5>{{ result['hed'] }}</h5>
                             <div class="details">
                                 <p>{{ _('Cuisine: %(cuisine_label)s', cuisine_label=result['imputed_label']) }}</p>
-                                <p>{{ _('Cosine Similarity of Ingredients: %(cos_sim)s', cos_sim=result['rounded']) }}</p>
-                                <p>{% if result['rounded'] is not none %} {{ _('Cosine Similarity of Ingredients: %(cos_sim)s', cos_sim=result['rounded']) }} {% else %} Similarity score: N/A {% endif %} </p>
+                                <p>{% if result['rounded'] is not none %} {{ _('Cosine Similarity of Ingredients: %(cos_sim)s', cos_sim=result['rounded']) }} {% else %} Similarity score: N/A {% endif %}</p>
+                                <p>{{ _('Five Most Important Ingredients: %(top_five_ingreds)s', top_five_ingreds= result["ingred_weights"]) }} </p>
                             </div>
                         </div>
 

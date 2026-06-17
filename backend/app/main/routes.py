@@ -240,57 +240,57 @@ def translate_text():
 
 
 # Replace the route body:
-def get_similar_dishes(dish, cuisine):
-    """
-    Replaces dp.find_similar_dishes() — calls search_service instead.
-    Returns (results, ingreds, rec_weights) to match the original signature
-    so results.html doesn't need to change.
-    """
-    try:
-        resp = httpx.post(
-            current_app.config["SEARCH_SERVICE_URL"] + "/search",
-            json={"dish_name": dish, "cuisine": cuisine, "max_results": 5},
-            timeout=15.0,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-    except Exception as e:
-        current_app.logger.error(f"Search service error: {e}")
-        return [], [], []
+# def get_similar_dishes(dish, cuisine):
+#     """
+#     Replaces dp.find_similar_dishes() — calls search_service instead.
+#     Returns (results, ingreds, rec_weights) to match the original signature
+#     so results.html doesn't need to change.
+#     """
+#     try:
+#         resp = httpx.post(
+#             current_app.config["SEARCH_SERVICE_URL"] + "/search",
+#             json={"dish_name": dish, "cuisine": cuisine, "max_results": 5},
+#             timeout=15.0,
+#         )
+#         resp.raise_for_status()
+#         data = resp.json()
+#     except Exception as e:
+#         current_app.logger.error(f"Search service error: {e}")
+#         return [], [], []
 
-    recipes = data.get("recipes", [])
+#     recipes = data.get("recipes", [])
 
-    # Reshape Edamam results to match the shape results.html expects
-    # from the old Epicurious data — map field names across
-    results = [
-        {
-            "hed": r.get("label", ""),
-            "title": r.get("label", ""),  # same as hed
-            "fixed_url": r.get("url", ""),  # was url
-            "photo": r.get("image_url") or "",  # was filename
-            "imputed_label": ", ".join(r.get("cuisine_types", [])),
-            "ingred_weights": r.get("ingredient_names", [])[:5],
-            "rounded": round(1.0, 4),  # placeholder score
-            "ingredients": r.get("ingredient_lines", []),
-            "source": r.get("source", ""),
-        }
-        for r in recipes
-    ]
+#     # Reshape Edamam results to match the shape results.html expects
+#     # from the old Epicurious data — map field names across
+#     results = [
+#         {
+#             "hed": r.get("label", ""),
+#             "title": r.get("label", ""),  # same as hed
+#             "fixed_url": r.get("url", ""),  # was url
+#             "photo": r.get("image_url") or "",  # was filename
+#             "imputed_label": ", ".join(r.get("cuisine_types", [])),
+#             "ingred_weights": r.get("ingredient_names", [])[:5],
+#             "rounded": round(1.0, 4),  # placeholder score
+#             "ingredients": r.get("ingredient_lines", []),
+#             "source": r.get("source", ""),
+#         }
+#         for r in recipes
+#     ]
 
-    # ingreds — flat deduplicated list across all recipes
-    seen = set()
-    ingreds = [
-        i
-        for r in recipes
-        for i in r.get("ingredient_names", [])
-        if not (i in seen or seen.add(i))
-    ]
+#     # ingreds — flat deduplicated list across all recipes
+#     seen = set()
+#     ingreds = [
+#         i
+#         for r in recipes
+#         for i in r.get("ingredient_names", [])
+#         if not (i in seen or seen.add(i))
+#     ]
 
-    # rec_weights — similarity scores (Edamam doesn't provide these,
-    # use placeholder 1.0 until recommend_service is wired in)
-    rec_weights = [1.0] * len(results)
+#     # rec_weights — similarity scores (Edamam doesn't provide these,
+#     # use placeholder 1.0 until recommend_service is wired in)
+#     rec_weights = [1.0] * len(results)
 
-    return results, ingreds, rec_weights
+#     return results, ingreds, rec_weights
 
 
 @bp.route("/get_results", methods=["GET", "POST"])
