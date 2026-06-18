@@ -182,3 +182,6 @@ models/
 .idea/**/uiDesigner.xml
 
 nbs/.last_checked
+
+# ignore node modules due to package.json
+frontend/node_modules/

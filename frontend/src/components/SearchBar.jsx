@@ -38,7 +38,15 @@ const CUISINE_CHOICES = [
 export function SearchBar() {
   const [dishName, setDishName] = useState("");
   const [cuisine, setCuisine] = useState("");
-  const { results, loading, error, search, source } = useSearch();
+  const {
+    results,
+    loading,
+    error,
+    source,
+    topQueryIngredients,
+    query,
+    search,
+  } = useSearch();
 
   function handleSubmit(e) {
     e.preventDefault();

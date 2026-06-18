@@ -6,18 +6,49 @@
  * after merging search + recommendation + user preference filtering.
  */
 
-export function RecipeResults({ results, dishName, cuisine }) {
+export function RecipeResults({ results, query, topQueryIngredients }) {
   if (!results.length) return null;
+
+  // Guard against null query on first render
+  const dishName = query?.dish_name ?? "";
+  const cuisine  = query?.cuisine ?? "";
 
   return (
     <div>
-      <h2 className="h5 mb-1">
-        {results.length} similar recipe{results.length !== 1 ? "s" : ""} found
+      {/* Query summary */}
+      <div className="mb-4 p-3 rounded" style={{ backgroundColor: "rgba(0,0,0,0.3)" }}>
+        <p className="text-white mb-1">
+          You searched for{" "}
+          <strong className="text-capitalize">{dishName}</strong>
+          {cuisine && (
+            <> (<span className="text-capitalize">{cuisine}</span>)</>
+          )}
+        </p>
+
+        {topQueryIngredients.length > 0 && (
+          <div>
+            <p className="text-white-50 small mb-1">
+              Top 5 most distinctive ingredients of your dish:
+            </p>
+            <div className="d-flex flex-wrap gap-1">
+              {topQueryIngredients.map((ing, i) => (
+                <span
+                  key={i}
+                  className="badge"
+                  style={{ backgroundColor: "rgba(255,255,255,0.85)", color: "#333" }}
+                >
+                  {ing}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <h2 className="h5 mb-3 text-white">
+        {results.length} similar recipe{results.length !== 1 ? "s" : ""} from other cuisines
       </h2>
-      <p className="text-muted small mb-3">
-        You searched for <strong>{dishName}</strong>
-        {cuisine && <> ({cuisine})</>} — showing cross-cuisine alternatives
-      </p>
+
       <div className="row g-3">
         {results.map((recipe, i) => (
           <div key={recipe.id || recipe.fixed_url || i} className="col-md-6">
@@ -36,20 +67,24 @@ export function RecipeResults({ results, dishName, cuisine }) {
 }
 
 function RecipeCard({ recipe }) {
-  const similarityScore = recipe.similarity_score > 0
-    ? `${Math.round(recipe.similarity_score * 10000) / 10000}`
-    : "N/A (Vespa index pending)";
+  const similarityScore =
+    recipe.similarity_score > 0
+      ? `${Math.round(recipe.similarity_score * 10000) / 10000}`
+      : null;
 
-  const cuisine = recipe.imputed_label
-    || (recipe.cuisine_types?.join(", "))
-    || "Unknown cuisine";
+  const cuisine =
+    recipe.imputed_label ||
+    recipe.cuisine_types?.join(", ") ||
+    "Unknown cuisine";
 
-  const topIngredients = recipe.ingred_weights?.length
-    ? recipe.ingred_weights
-    : recipe.ingredient_names?.slice(0, 5) ?? [];
+  const shared      = recipe.shared_ingredients ?? [];
+  const distinctive = recipe.distinctive_ingredients ?? recipe.ingred_weights ?? [];
 
   return (
-    <div className="card h-100">
+    <div
+      className="card h-100"
+      style={{ backgroundColor: "rgba(255,255,255,0.92)" }}
+    >
       <div className="card-body d-flex flex-column">
         <h3 className="card-title h6 mb-1">
           <a
@@ -63,20 +98,49 @@ function RecipeCard({ recipe }) {
         </h3>
 
         <p className="card-text text-muted small mb-2">
-          {recipe.source} &mdash; {cuisine}
+          {recipe.source} &mdash;{" "}
+          <span className="text-capitalize">{cuisine}</span>
         </p>
 
-        <p className="card-text small mb-2">
-          <span className="text-muted">Similarity: </span>
-          {similarityScore}
-        </p>
+        {similarityScore && (
+          <p className="card-text small mb-2">
+            <span className="text-muted">Similarity: </span>
+            {similarityScore}
+          </p>
+        )}
 
-        {topIngredients.length > 0 && (
+        {/* Shared ingredients — highlighted green, shows why it matched */}
+        {shared.length > 0 && (
           <div className="mb-2">
-            <p className="small text-muted mb-1">Distinctive ingredients:</p>
+            <p className="small text-muted mb-1">
+              Shared with your dish:
+            </p>
             <div className="d-flex flex-wrap gap-1">
-              {topIngredients.map((ing, i) => (
-                <span key={i} className="badge bg-light text-dark border">
+              {shared.map((ing, i) => (
+                <span
+                  key={i}
+                  className="badge"
+                  style={{ backgroundColor: "#d4edda", color: "#155724", border: "1px solid #c3e6cb" }}
+                >
+                  {ing}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Distinctive ingredients — shows what's different */}
+        {distinctive.length > 0 && (
+          <div className="mb-2">
+            <p className="small text-muted mb-1">
+              What makes it different:
+            </p>
+            <div className="d-flex flex-wrap gap-1">
+              {distinctive.map((ing, i) => (
+                <span
+                  key={i}
+                  className="badge bg-light text-dark border"
+                >
                   {ing}
                 </span>
               ))}

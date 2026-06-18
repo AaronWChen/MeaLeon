@@ -33,7 +33,13 @@ function App() {
       <div style={{ minHeight: "100vh", backgroundColor: "rgba(0,0,0,0.3)" }}>
 
         {/* Nav */}
-        <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
+        <nav className="navbar navbar-expand-lg navbar-dark" style={{ 
+          backgroundColor: "rgba(0,0,0,0.6)",
+          position: "sticky",
+          top: 0,
+          zIndex: 1000,
+          backdropFilter: "blur(4px)", 
+        }}>
           <div className="container">
             <a className="navbar-brand d-flex align-items-center" href="/">
               <img

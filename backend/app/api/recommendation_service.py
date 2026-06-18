@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 
 bp = Blueprint("recommend", __name__)
 
+VESPA_INDEXED = False
+MAX_RESULTS = 5
 
 # ---------------------------------------------------------------------------
 # Route
@@ -84,8 +86,28 @@ def recommend():
                 "query": {"dish_name": dish_name, "cuisine": cuisine},
                 "user_filtered": False,
                 "total": 0,
+                "query_ingredients": [],
+                "top_query_ingredients": [],
+                "source": "none",
             }
         )
+
+    # ------------------------------------------------------------------
+    # Compute top 5 distinctive ingredients of the queried dish
+    # using inverse-frequency scoring across all search results.
+    # Ingredients that appear in fewer recipes are more distinctive.
+    # ------------------------------------------------------------------
+    all_ings_flat = [
+        ing for r in recipes_from_search for ing in r.get("ingredient_names", [])
+    ]
+    ingredient_freq = Counter(all_ings_flat)
+
+    # Score query ingredients by rarity (lower freq = more distinctive)
+    top_query_ingredients = sorted(
+        query_ingredients,
+        key=lambda ing: ingredient_freq.get(ing, 1),
+    )[:5]
+
     source = "vespa"
 
     # ------------------------------------------------------------------
@@ -109,7 +131,6 @@ def recommend():
     # so we still show cross-cuisine recommendations
     if not candidates:
         source = "edamam_fallback"
-        search_recipes = search_resp.get("recipes", [])
         cuisine_lower = cuisine.lower() if cuisine else ""
         cross_cuisine = []
 
@@ -125,14 +146,22 @@ def recommend():
 
         # If everything matched the queried cuisine (unlikely but possible),
         # return all results rather than nothing — better UX while corpus is small
-        candidates = cross_cuisine if cross_cuisine else recipes
-
-        if not cross_cuisine and recipes:
+        if cross_cuisine:
+            candidates = cross_cuisine[:MAX_RESULTS]
+        else:
             logger.info(
                 "All Edamam results matched queried cuisine '%s' — "
                 "returning unfiltered. Consider expanding the search.",
                 cuisine,
             )
+            candidates = recipes[:MAX_RESULTS]
+
+    # ------------------------------------------------------------------
+    # Enrich each candidate with shared + distinctive ingredients
+    # relative to the query dish
+    # ------------------------------------------------------------------
+    query_ing_set = {i.lower() for i in query_ingredients}
+    enriched = _enrich_with_ingredient_overlap(candidates, query_ing_set)
 
     # ------------------------------------------------------------------
     # Step 4: Apply user restriction filters
@@ -146,9 +175,12 @@ def recommend():
         {
             "results": results,
             "query": {"dish_name": dish_name, "cuisine": cuisine},
+            # Top-level query ingredient signals for display above results
+            "query_ingredients": ingredients[:20],  # full list (capped)
+            "top_query_ingredients": top_query_ingredients,  # top 5 distinctive
             "user_filtered": user_filtered,
-            "total": len(results),
             "source": source,
+            "total": len(results),
         }
     )
 
@@ -156,6 +188,49 @@ def recommend():
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+def _enrich_with_ingredient_overlap(candidates: list, query_ing_set: set) -> list:
+    """
+    For each candidate recipe, compute:
+
+    shared_ingredients: ingredients the result shares with the query dish.
+      These get highlighted in the UI — shows WHY this recipe was matched.
+
+    distinctive_ingredients: ingredients unique to this result (not in query).
+      These show what's DIFFERENT about this recipe — the interesting part.
+
+    Both lists are capped at 5 for display.
+    """
+    all_result_ings = [ing for r in candidates for ing in r.get("ingredient_names", [])]
+    result_freq = Counter(all_result_ings)
+
+    enriched = []
+    for r in candidates:
+        result_ings = r.get("ingredient_names", [])
+        result_ing_set = {i.lower() for i in result_ings}
+
+        # Shared: in both query and result
+        shared = [ing for ing in result_ings if ing.lower() in query_ing_set]
+
+        # Distinctive: in result but NOT in query, sorted by rarity
+        # (rare across all results = most distinctive)
+        distinctive = sorted(
+            [ing for ing in result_ings if ing.lower() not in query_ing_set],
+            key=lambda ing: result_freq.get(ing, 1),
+        )
+
+        enriched.append(
+            {
+                **r,
+                "shared_ingredients": shared[:5],
+                "distinctive_ingredients": distinctive[:5],
+                # Keep ingred_weights for backward compat with Jinja2 template
+                "ingred_weights": distinctive[:5],
+            }
+        )
+
+    return enriched
 
 
 def _build_user_context(user) -> dict:
