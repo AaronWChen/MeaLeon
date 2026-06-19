@@ -38,6 +38,7 @@ const CUISINE_CHOICES = [
 export function SearchBar() {
   const [dishName, setDishName] = useState("");
   const [cuisine, setCuisine] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
   const {
     results,
     loading,
@@ -50,8 +51,10 @@ export function SearchBar() {
 
   function handleSubmit(e) {
     e.preventDefault();
+    setHasSearched(true);
     search(dishName, cuisine);
   }
+
 
   return (
     <div>
@@ -59,6 +62,7 @@ export function SearchBar() {
         <input
           type="text"
           className="form-control"
+          id="dish-name"
           placeholder="Dish name, e.g. lasagna"
           value={dishName}
           onChange={(e) => setDishName(e.target.value)}
@@ -69,6 +73,7 @@ export function SearchBar() {
         <select
           className="form-select"
           value={cuisine}
+          id="cuisine"
           onChange={(e) => setCuisine(e.target.value)}
           aria-label="Cuisine type"
           style={{ maxWidth: 200 }}
@@ -102,11 +107,15 @@ export function SearchBar() {
               Showing results from Edamam — local recipe index still loading.
             </div>
           )}
-          <RecipeResults results={results} dishName={dishName} cuisine={cuisine} />
+          <RecipeResults
+            results={results}
+            query={query}
+            topQueryIngredients={topQueryIngredients}
+          />
         </>
       )}
 
-      {!loading && !error && results.length === 0 && dishName && (
+      {!loading && !error && results.length === 0 && hasSearched && (
         <p className="text-muted">No results found. Try a different dish or cuisine.</p>
       )}
     </div>

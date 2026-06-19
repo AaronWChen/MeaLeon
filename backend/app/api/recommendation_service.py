@@ -8,6 +8,7 @@ Flow:
   6. Return merged response
 """
 
+from collections import Counter
 import httpx
 import logging
 from flask import Blueprint, request, jsonify, current_app
@@ -97,14 +98,12 @@ def recommend():
     # using inverse-frequency scoring across all search results.
     # Ingredients that appear in fewer recipes are more distinctive.
     # ------------------------------------------------------------------
-    all_ings_flat = [
-        ing for r in recipes_from_search for ing in r.get("ingredient_names", [])
-    ]
+    all_ings_flat = [ing for r in recipes for ing in r.get("ingredient_names", [])]
     ingredient_freq = Counter(all_ings_flat)
 
     # Score query ingredients by rarity (lower freq = more distinctive)
     top_query_ingredients = sorted(
-        query_ingredients,
+        ingredients,
         key=lambda ing: ingredient_freq.get(ing, 1),
     )[:5]
 
@@ -160,7 +159,7 @@ def recommend():
     # Enrich each candidate with shared + distinctive ingredients
     # relative to the query dish
     # ------------------------------------------------------------------
-    query_ing_set = {i.lower() for i in query_ingredients}
+    query_ing_set = {i.lower() for i in ingredients}
     enriched = _enrich_with_ingredient_overlap(candidates, query_ing_set)
 
     # ------------------------------------------------------------------

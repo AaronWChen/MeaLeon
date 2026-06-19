@@ -1,15 +1,15 @@
 /**
- * frontend/src/index.js
+ * frontend/src/main.jsx
  *
- * React entry point. Mounts the App component into #root.
- * Bootstrap CSS loaded here so it's available everywhere.
+ * Vite entry point — replaces index.js.
+ * Same content, just renamed/relocated per Vite convention
+ * (Vite looks for the entry referenced in index.html's <script> tag).
  */
 
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 
-// Bootstrap for styling — matches what the existing static site uses
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

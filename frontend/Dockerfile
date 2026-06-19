@@ -1,7 +1,5 @@
 # syntax=docker/dockerfile:1
 
-# Stage 1: build React app
-
 FROM node:22-alpine AS build
 
 WORKDIR /app
@@ -12,8 +10,11 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Copy source and build
+COPY index.html ./
+COPY vite.config.js ./
 COPY public/ ./public/
 COPY src/ ./src/
+
 RUN npm run build
 
 # Stage 2: serve with nginx
