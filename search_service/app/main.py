@@ -24,7 +24,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import redis.asyncio as aioredis
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
-from shared.secrets import get_redis_url
+from shared.secrets import get_redis_url, get_edamam_creds
 
 from .edamam_client import EdamamClient
 from .cache import SearchCache
@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 # set edamam api access
 # app_id = os.environ.get("EDAMAM_API_APPID")
 # app_key = os.environ.get("EDAMAM_API_APPKEY")
+app_id, app_key = get_edamam_creds()
 
 
 # with open("/run/secrets/edamam_api_appid") as eda_app_id:

@@ -30,6 +30,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 COPY backend/ /app
 COPY shared/ /app/shared/
 COPY backend/app/translations /app/translations
+COPY backend/migrations/ /app/migrations/
+
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
