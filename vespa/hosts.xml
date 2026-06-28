@@ -3,7 +3,7 @@
      Maps logical host alias to the actual hostname.
      In Docker Compose, the Vespa container is called "vespa". -->
 <hosts>
-  <host name="vespa">
+  <host name="localhost">
     <alias>node1</alias>
   </host>
 </hosts>
