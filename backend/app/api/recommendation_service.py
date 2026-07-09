@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 bp = Blueprint("recommend", __name__)
 
-VESPA_INDEXED = False
+VESPA_INDEXED = True
 MAX_RESULTS = 5
 
 # ---------------------------------------------------------------------------

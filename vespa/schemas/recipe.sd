@@ -57,6 +57,14 @@ schema recipe {
             indexing: summary | attribute
         }
 
+        field url type string {
+            indexing: summary | attribute
+        }
+
+        field image_url type string {
+            indexing: summary | attribute
+        }
+
         # ── Hybrid search fields ──────────────────────────────────────────
 
         # Dense embedding — 384 dimensions from sentence-transformers

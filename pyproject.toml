@@ -33,6 +33,7 @@ dependencies = [
     "gunicorn>=23.0.0",
     "hdbscan>=0.8.40",
     "httpie>=3.2.4",
+    "httpx>=0.28.1",
     "importlib-metadata>=8.7.0",
     "importlib-resources>=6.5.2",
     "jupyter>=1.1.1",
