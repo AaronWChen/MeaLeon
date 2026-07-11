@@ -34,6 +34,11 @@ logger = logging.getLogger(__name__)
 # Higher = better recall, slower query. 100 is a good starting point.
 ANN_TARGET_HITS = 100
 
+# Placeholder cuisine values that mean "no real cuisine data" — these
+# get excluded from cross-cuisine recommendations the same way empty
+# cuisine_str is, since neither represents a genuine cuisine label.
+UNKNOWN_CUISINE_VALUES = {"missing cuisine", "unknown", "n/a", "none"}
+
 
 class VespaHybridClient:
     def __init__(self, vespa_url: str, ml_service_url: str):
@@ -48,48 +53,44 @@ class VespaHybridClient:
         preferred_cuisines: list[str] = [],
         top_k: int = 10,
     ) -> list[dict]:
-        """
-        Run a hybrid search query against Vespa.
-
-        Steps:
-          1. Build a text representation of the query ingredients
-          2. Get dense embedding + sparse BoW from the ML service
-          3. Build YQL with ANN + WAND + optional cuisine filter
-          4. Fire the query, parse and return results
-        """
         query_text = f"{dish_name}. Ingredients: {', '.join(ingredients)}"
         query_ingredients_str = " ".join(ingredients)
 
-        # Step 1: Get embeddings from ML service
         try:
             dense_vec, sparse_map = await self._get_query_embeddings(
                 query_text, query_ingredients_str
             )
-
         except Exception as e:
-            logger.error(f"Embedding service unavailable: {e}")
+            logger.error("Embedding service unavailable, using zero vector: %s", e)
             dense_vec = [0.0] * 384
             sparse_map = {}
 
-        # Step 2: Choose ranking profile
+        has_bow = bool(sparse_map)
+
         rank_profile = "hybrid_cuisine_boost" if preferred_cuisines else "hybrid"
 
-        # Step 3: Build the YQL query
+        # YQL now built conditionally based on BoW availability
         yql = self._build_yql(
             exclude_cuisine=exclude_cuisine,
+            dish_name=dish_name,
             top_k=top_k,
+            has_bow=has_bow,
         )
 
-        # Step 4: Build the full request body
         body = {
             "yql": yql,
             "ranking.profile": rank_profile,
             "hits": top_k,
-            # Dense query vector — used by closeness(field, embedding) in ranking
             "input.query(q_embedding)": dense_vec,
-            # Sparse query terms for WAND — Vespa syntax for weightedset query
-            "input.query(q_bow)": sparse_map,
-            # Preferred cuisine for the cuisine_boost profile
+            **(
+                # Only include q_bow in the request when we actually have terms —
+                # an empty dict still trips Vespa's "input not set" validation
+                # in some versions, so we omit the key entirely rather than
+                # sending {}.
+                {"input.query(q_bow)": sparse_map}
+                if has_bow
+                else {}
+            ),
             **(
                 {"input.query(preferred_cuisine)": preferred_cuisines[0]}
                 if preferred_cuisines
@@ -97,7 +98,6 @@ class VespaHybridClient:
             ),
         }
 
-        # Step 5: Fire the query
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.post(
                 f"{self.vespa_url}/search/",
@@ -108,41 +108,56 @@ class VespaHybridClient:
 
         return self._parse_results(data, dense_vec)
 
-    def _build_yql(self, exclude_cuisine: str, top_k: int) -> str:
+    def _build_yql(
+        self, exclude_cuisine: str, dish_name: str, top_k: int, has_bow: bool = False
+    ) -> str:
         """
-        Build the YQL query string.
+        Build YQL conditionally based on BoW availability.
 
-        This combines:
-        - nearestNeighbor() for ANN on the dense embedding field
-        - weakAnd() for sparse WAND retrieval on ingredients_bow
-        - optional cuisine filter
+        With BoW:    ANN OR weakAnd — full hybrid retrieval
+        Without BoW: ANN only — pure dense semantic search
 
-        The OR of nearestNeighbor + weakAnd means Vespa retrieves candidates
-        from BOTH paths, then RRF in the ranking profile fuses them.
-
-        Why OR not AND: AND would require a recipe to match BOTH paths,
-        which is too restrictive. OR gives more candidates for fusion to work with.
+        Once the sklearn TF-IDF model is trained and registered in MLflow,
+        has_bow will become True automatically and hybrid retrieval activates
+        with no code change needed here.
         """
-        # Core hybrid retrieval: ANN OR sparse keyword
-        retrieval = (
-            f"("
-            f"{{targetHits: {ANN_TARGET_HITS}}}nearestNeighbor(embedding, q_embedding)"
-            f" OR "
-            f"weakAnd(ingredients_bow contains @q_bow)"
-            f")"
-        )
-
-        # Hard filter: exclude the same cuisine as the query
-        # Mirrors your original filter_out_cuisine() logic
-        if exclude_cuisine:
-            cuisine_filter = f' AND !(cuisine_str contains "{exclude_cuisine.lower()}")'
+        if has_bow:
+            retrieval = (
+                f"("
+                f"{{targetHits: {ANN_TARGET_HITS}}}nearestNeighbor(embedding, q_embedding)"
+                f" OR "
+                f"weakAnd(ingredients_bow contains @q_bow)"
+                f")"
+            )
         else:
-            cuisine_filter = ""
+            # Dense-only retrieval — no @q_bow reference in the query at all
+            retrieval = f"{{targetHits: {ANN_TARGET_HITS}}}nearestNeighbor(embedding, q_embedding)"
+
+        filters = ""
+
+        if exclude_cuisine:
+            placeholder_exclusions = " AND ".join(
+                f'!(cuisine_str contains "{val}")' for val in UNKNOWN_CUISINE_VALUES
+            )
+            filters += (
+                f' AND cuisine_str matches ".+" '
+                f"AND {placeholder_exclusions} "
+                f'AND !(cuisine_str contains "{exclude_cuisine.lower()}")'
+            )
+
+        if dish_name:
+            # Exclude results whose title contains the queried dish name —
+            # prevents "American Lasagna" from showing up when searching
+            # for "lasagna, italian". Using the primary word of dish_name
+            # (first token) keeps this from being overly strict on
+            # multi-word dish names.
+            primary_word = dish_name.strip().lower().split()[0]
+            filters += f' AND !(title contains "{primary_word}")'
 
         return (
-            f"select id, title, ingredients, cuisine, origin, description "
+            f"select id, title, ingredients, cuisine, origin, description, url, image_url "
             f"from recipe "
-            f"where {retrieval}{cuisine_filter} "
+            f"where {retrieval}{filters} "
             f"limit {top_k}"
         )
 
@@ -223,7 +238,9 @@ class VespaHybridClient:
                     "cuisine_types": fields.get("cuisine", []),
                     "description": fields.get("description", ""),
                     "origin": fields.get("origin", ""),
-                    "url": "",  # Epicurious URL not stored — add if needed
+                    "url": fields.get(
+                        "url", ""
+                    ),  # Epicurious URL not stored — add if needed
                     "image_url": None,  # Not stored in Vespa — pulled from Edamam
                     # Scores for debugging / display
                     "similarity_score": hit.get("relevance", 0.0),
