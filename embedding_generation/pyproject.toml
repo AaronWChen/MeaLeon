@@ -1,0 +1,46 @@
+[project]
+name = "MeaLeon-Embedding-Generator"
+version = "0.1.2"
+description = "This is the embedding generator environment for MeaLeon: a full stack data science project using machine learning, natural language processing, recommendation engine, and MLOps"
+authors = [{ name = "Aaron W. Chen", email = "awc33@cornell.edu" }]
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi",
+    "flask",
+    "flask_babel",
+    "flask_httpauth",
+    "flask_login",
+    "flask_mail",
+    "flask_migrate",
+    "flask_moment",
+    "flask_wtf",
+    "gunicorn",
+    "pandas",
+    "numpy",
+    "nltk",
+    "requests",
+    "redis",
+    "scikit-learn",
+    "sqlalchemy",
+    "stanza",
+    "pydantic",
+    "uvicorn",
+    "dill",
+    "wtforms",
+    "psycopg",
+    "mlflow",
+    "torch",
+    # "torchaudio",
+    # "torchvision",
+    "sentence_transformers"
+]
+
+[[tool.uv.index]]
+name="pytorch"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+# torchaudio = { index = "pytorch" }
+# torchvision = { index = "pytorch" }

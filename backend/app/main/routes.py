@@ -8,7 +8,11 @@ from app.main.forms import (
 )
 from app.models import User, Review
 from app.translate import translate
-from src.nltk import dish_predictor as dp  # import find_similar_dishes
+from .routes_get_similar_dishes import get_similar_dishes
+
+# from src.nltk import dish_predictor as dp  # import find_similar_dishes
+
+import httpx
 
 from datetime import datetime, timezone
 from flask import (
@@ -235,19 +239,68 @@ def translate_text():
     }
 
 
-@bp.route("/get_results", methods=["POST"])
+# Replace the route body:
+# def get_similar_dishes(dish, cuisine):
+#     """
+#     Replaces dp.find_similar_dishes() — calls search_service instead.
+#     Returns (results, ingreds, rec_weights) to match the original signature
+#     so results.html doesn't need to change.
+#     """
+#     try:
+#         resp = httpx.post(
+#             current_app.config["SEARCH_SERVICE_URL"] + "/search",
+#             json={"dish_name": dish, "cuisine": cuisine, "max_results": 5},
+#             timeout=15.0,
+#         )
+#         resp.raise_for_status()
+#         data = resp.json()
+#     except Exception as e:
+#         current_app.logger.error(f"Search service error: {e}")
+#         return [], [], []
+
+#     recipes = data.get("recipes", [])
+
+#     # Reshape Edamam results to match the shape results.html expects
+#     # from the old Epicurious data — map field names across
+#     results = [
+#         {
+#             "hed": r.get("label", ""),
+#             "title": r.get("label", ""),  # same as hed
+#             "fixed_url": r.get("url", ""),  # was url
+#             "photo": r.get("image_url") or "",  # was filename
+#             "imputed_label": ", ".join(r.get("cuisine_types", [])),
+#             "ingred_weights": r.get("ingredient_names", [])[:5],
+#             "rounded": round(1.0, 4),  # placeholder score
+#             "ingredients": r.get("ingredient_lines", []),
+#             "source": r.get("source", ""),
+#         }
+#         for r in recipes
+#     ]
+
+#     # ingreds — flat deduplicated list across all recipes
+#     seen = set()
+#     ingreds = [
+#         i
+#         for r in recipes
+#         for i in r.get("ingredient_names", [])
+#         if not (i in seen or seen.add(i))
+#     ]
+
+#     # rec_weights — similarity scores (Edamam doesn't provide these,
+#     # use placeholder 1.0 until recommend_service is wired in)
+#     rec_weights = [1.0] * len(results)
+
+#     return results, ingreds, rec_weights
+
+
+@bp.route("/get_results", methods=["GET", "POST"])
 def get_results():
-    """Display the five most similar recipes from the database based on the
-    inputs."""
     data = request.form
-
     expected_features = ("dish_name", "cuisine_name")
-
     if data and all(feature in data for feature in expected_features):
-        # Convert the dict of fields into a list
         dish = data["dish_name"]
         cuisine = data["cuisine_name"]
-        results, ingreds, rec_weights = dp.find_similar_dishes(dish, cuisine)
+        results, ingreds, rec_weights = get_similar_dishes(dish, cuisine)
         return render_template(
             "results.html",
             results=results,
@@ -258,6 +311,7 @@ def get_results():
         )
     else:
         return abort(400)
+
     # reviews = [
     #     {
     #         'author': {'username':'John'},

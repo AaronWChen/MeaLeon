@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- vespa/hosts.xml
+     Maps logical host alias to the actual hostname.
+     In Docker Compose, the Vespa container is called "vespa". -->
+<hosts>
+  <host name="localhost">
+    <alias>node1</alias>
+  </host>
+</hosts>

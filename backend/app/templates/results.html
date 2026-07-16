@@ -69,7 +69,7 @@
                 <h2>_('You looked for...')</h2>
                 <h4>{{ _('Dish: %(dish)s', dish=dish) }}</h4>
                 <h4>{{ _('Cuisine: %(cuisine)s', cuisine=cuisine) }}</h4>
-                <h4>{{ _('Weights: %(recipe_weights)s', recipe_weights=recipe_weights) }}</h4>
+                <h4>{% if recipe_weights and recipe_weights | select | list %} {{ _('Similarity scores: %(recipe_weights)s', recipe_weights=recipe_weights | map('default', 'N/A') | list) }} {% else %} Similarity scores: N/A (Vespa index not yet populated) {% endif %}</h4>
             </div>
         </div>
 
@@ -99,7 +99,7 @@
                             <h5>{{ result['hed'] }}</h5>
                             <div class="details">
                                 <p>{{ _('Cuisine: %(cuisine_label)s', cuisine_label=result['imputed_label']) }}</p>
-                                <p>{{ _('Cosine Similarity of Ingredients: %(cos_sim)s', cos_sim=result['rounded']) }}</p>
+                                <p>{% if result['rounded'] is not none %} {{ _('Cosine Similarity of Ingredients: %(cos_sim)s', cos_sim=result['rounded']) }} {% else %} Similarity score: N/A {% endif %}</p>
                                 <p>{{ _('Five Most Important Ingredients: %(top_five_ingreds)s', top_five_ingreds= result["ingred_weights"]) }} </p>
                             </div>
                         </div>
