@@ -24,6 +24,7 @@ HNSW index to find approximate nearest neighbours in O(log n) time.
 
 import json
 import logging
+import re
 from typing import Optional
 
 import httpx
@@ -74,7 +75,7 @@ class VespaHybridClient:
             exclude_cuisine=exclude_cuisine,
             dish_name=dish_name,
             top_k=top_k,
-            has_bow=has_bow,
+            sparse_map=sparse_map,
         )
 
         body = {
@@ -82,15 +83,6 @@ class VespaHybridClient:
             "ranking.profile": rank_profile,
             "hits": top_k,
             "input.query(q_embedding)": dense_vec,
-            **(
-                # Only include q_bow in the request when we actually have terms —
-                # an empty dict still trips Vespa's "input not set" validation
-                # in some versions, so we omit the key entirely rather than
-                # sending {}.
-                {"input.query(q_bow)": sparse_map}
-                if has_bow
-                else {}
-            ),
             **(
                 {"input.query(preferred_cuisine)": preferred_cuisines[0]}
                 if preferred_cuisines
@@ -108,29 +100,54 @@ class VespaHybridClient:
 
         return self._parse_results(data, dense_vec)
 
+    def _sanitize_term(term: str) -> str:
+        """
+        Escape double quotes in a term so it's safe to embed directly in YQL.
+        Terms are TF-IDF vocabulary entries (ingredient words/bigrams) —
+        should rarely contain quotes, but sanitize defensively since these
+        are being string-interpolated into a query.
+        """
+        return term.replace('"', '\\"')
+
     def _build_yql(
-        self, exclude_cuisine: str, dish_name: str, top_k: int, has_bow: bool = False
+        self,
+        exclude_cuisine: str,
+        dish_name: str,
+        top_k: int,
+        sparse_map: dict = None,
     ) -> str:
         """
-        Build YQL conditionally based on BoW availability.
+        Build the YQL query string.
 
-        With BoW:    ANN OR weakAnd — full hybrid retrieval
-        Without BoW: ANN only — pure dense semantic search
+        Retrieval clause:
+        With BoW terms: nearestNeighbor(embedding) OR weakAnd(inline terms)
+        Without BoW:     nearestNeighbor(embedding) only
 
-        Once the sklearn TF-IDF model is trained and registered in MLflow,
-        has_bow will become True automatically and hybrid retrieval activates
-        with no code change needed here.
+        sparse_map terms are now embedded directly into the YQL string
+        rather than passed as a bound @q_bow variable — avoids needing a
+        query profile type declaration for weightedset inputs, which Vespa
+        doesn't support at that config layer.
         """
+        has_bow = bool(sparse_map)
+
         if has_bow:
+            # Cap to top 30 terms in the WAND clause — keeps the query string
+            # a reasonable size; sparse_map is already sorted by weight
+            # descending from _get_query_embeddings(), so this keeps the
+            # most distinctive terms.
+            top_terms = list(sparse_map.items())[:30]
+            wand_terms = ", ".join(
+                f'ingredients_bow contains "{_sanitize_term(term)}"'
+                for term, _weight in top_terms
+            )
             retrieval = (
                 f"("
                 f"{{targetHits: {ANN_TARGET_HITS}}}nearestNeighbor(embedding, q_embedding)"
                 f" OR "
-                f"weakAnd(ingredients_bow contains @q_bow)"
+                f"weakAnd({wand_terms})"
                 f")"
             )
         else:
-            # Dense-only retrieval — no @q_bow reference in the query at all
             retrieval = f"{{targetHits: {ANN_TARGET_HITS}}}nearestNeighbor(embedding, q_embedding)"
 
         filters = ""
@@ -146,11 +163,6 @@ class VespaHybridClient:
             )
 
         if dish_name:
-            # Exclude results whose title contains the queried dish name —
-            # prevents "American Lasagna" from showing up when searching
-            # for "lasagna, italian". Using the primary word of dish_name
-            # (first token) keeps this from being overly strict on
-            # multi-word dish names.
             primary_word = dish_name.strip().lower().split()[0]
             filters += f' AND !(title contains "{primary_word}")'
 

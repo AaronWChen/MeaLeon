@@ -9,6 +9,7 @@ import mlflow.pytorch
 import mlflow.pyfunc
 import numpy as np
 import pandas as pd
+import polars as pl
 import stanza
 import torch
 from fastapi import FastAPI, HTTPException, Request
@@ -293,10 +294,21 @@ async def embed(request: Request, body: EmbeddingRequest):
 
         # BoW embeddings — gracefully disabled if sklearn model unavailable
         if bow_model is not None:
-            bow_df: pd.DataFrame = bow_model.predict(
-                pd.Series(body.ingredients, name="ingredients")
+            bow_df: pl.DataFrame = bow_model.predict(
+                pl.Series(body.ingredients)  # , name="ingredients")
             )
-            bow_dict = bow_df.to_dict(orient="list")
+
+            row_dict = bow_df.row(0, named=True)
+
+            # Filter to nonzero terms only — with 200k+ TF-IDF vocabulary columns,
+            # sending the full dict per request is wasteful. Each value is a
+            # single-row list (one document per /embed call), so index [0].
+
+            bow_dict = {
+                term: float(value)
+                for term, value in row_dict.items()
+                if value is not None and float(value) != 0.0
+            }
         else:
             bow_dict = {}
 

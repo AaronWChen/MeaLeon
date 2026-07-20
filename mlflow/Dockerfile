@@ -2,7 +2,6 @@
 
 # use modified image with uv installed
 # using Python 3.11
-
 FROM ghcr.io/astral-sh/uv:python3.11-trixie-slim
 
 # Set and install project into `/app`
@@ -34,3 +33,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Place executables in the env at the front of the PATH
 ENV PATH="/app/.venv/bin:$PATH"
+
+# Explicitly place entrypoint.sh at root so compose's entrypoint: matches
+COPY mlflow/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh

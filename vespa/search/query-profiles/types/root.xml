@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  vespa/search/query-profiles/types/root.xml
+
+  Declares q_bow as a weightedset<string> query input.
+
+  Why this is needed: q_embedding works via the rank-profile's `inputs`
+  block (used only for ranking expressions like closeness()). But q_bow
+  is referenced directly inside the YQL WHERE clause via
+  `weakAnd(ingredients_bow contains @q_bow)` — YQL's parser requires
+  any @variable referenced this way to be declared at the query profile
+  type level, separately from rank-profile inputs. Without this file,
+  Vespa rejects the query with "Input 'q_bow' is not set" even when the
+  value is correctly included in the request body.
+-->
+<query-profile-type id="root">
+    <field name="q_bow" type="weightedset&lt;string&gt;" />
+</query-profile-type>
