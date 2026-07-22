@@ -142,6 +142,7 @@ schema recipe {
             closeness(field, embedding)
             bm25(ingredients)
             bm25(title)
+            rawScore(ingredients_bow)
         }
     }
 

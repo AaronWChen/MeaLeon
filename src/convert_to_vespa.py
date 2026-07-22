@@ -39,58 +39,63 @@ SOURCE_FILES = {
     "cookstr": "data/recipes-en-201706/cookstr-recipes-to-vespa.json",
 }
 
+WEIGHT_SCALE = 10000
+
+
+def _scale_weights_to_int(bow_dict: dict) -> dict:
+    """
+    Convert float TF-IDF weights to integers for Vespa's WeightedSet type.
+    Scales by WEIGHT_SCALE and rounds. Filters out any terms that round
+    to zero (extremely low weights) since a zero-weight entry in a
+    weightedset is meaningless.
+    """
+    scaled = {term: round(weight * WEIGHT_SCALE) for term, weight in bow_dict.items()}
+    return {term: w for term, w in scaled.items() if w > 0}
+
 
 def get_embeddings_batch(recipes: list[dict]) -> tuple[list, list]:
     """
-    Call embedding service for a batch of recipes.
-    Returns (dense_embeddings, bow_embeddings).
-    Falls back to zero vectors on failure so conversion doesn't stop.
+    Call embedding service — one request per recipe, since /embed's
+    current implementation only correctly processes a single document's
+    ingredients per call despite the request schema accepting lists.
     """
-    texts = [
-        f"{r['title']}. Ingredients: {', '.join(r.get('ingredients', []))}"
-        for r in recipes
-    ]
-    ingredient_strings = [" ".join(r.get("ingredients", [])) for r in recipes]
+    dense_embeddings = []
+    bow_embeddings = []
 
-    try:
-        resp = httpx.post(
-            f"{ML_SERVICE_URL}/embed",
-            json={
-                "texts": texts,
-                "ingredients": ingredient_strings,
-                "normalize": True,
-            },
-            timeout=60.0,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-        dense = data.get("embeddings", [])
-        bow_raw = data.get("bow_embeddings", {})
+    for recipe in recipes:
+        text = f"{recipe['title']}. Ingredients: {', '.join(recipe.get('ingredients', []))}"
+        ingredients_str = " ".join(recipe.get("ingredients", []))
 
-        # bow_embeddings comes back as dict keyed by feature name
-        # with list of scores per document — transpose to per-doc dicts
-        if isinstance(bow_raw, dict) and bow_raw:
-            n = len(recipes)
-            bow = []
-            for i in range(n):
-                doc_bow = {
-                    k: float(v[i])
-                    for k, v in bow_raw.items()
-                    if isinstance(v, list) and i < len(v) and float(v[i]) > 0
-                }
-                # Keep top 200 by weight
-                top = dict(
-                    sorted(doc_bow.items(), key=lambda x: x[1], reverse=True)[:200]
-                )
-                bow.append(top)
-        else:
-            bow = [{} for _ in recipes]
+        try:
+            resp = httpx.post(
+                f"{ML_SERVICE_URL}/embed",
+                json={
+                    "texts": [text],
+                    "ingredients": [ingredients_str],
+                    "normalize": True,
+                },
+                timeout=30.0,
+            )
+            resp.raise_for_status()
+            data = resp.json()
 
-        return dense, bow
+            dense_embeddings.append(data.get("embeddings", [[0.0] * 384])[0])
 
-    except Exception as e:
-        print(f"\nWarning: embedding batch failed: {e}. Using zero vectors.")
-        return [[0.0] * 384 for _ in recipes], [{} for _ in recipes]
+            bow_raw = data.get("bow_embeddings", {})
+            # Flat {term: score} dict for this single document —
+            # filter to nonzero, keep top 200 by weight
+            bow_filtered = {k: float(v) for k, v in bow_raw.items() if float(v) > 0}
+            top = dict(
+                sorted(bow_filtered.items(), key=lambda x: x[1], reverse=True)[:200]
+            )
+            bow_embeddings.append(_scale_weights_to_int(top))
+
+        except Exception as e:
+            print(f"\nWarning: embedding failed for '{recipe.get('title', '?')}': {e}")
+            dense_embeddings.append([0.0] * 384)
+            bow_embeddings.append({})
+
+    return dense_embeddings, bow_embeddings
 
 
 def _clean_text(value):

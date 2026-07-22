@@ -3,7 +3,7 @@ name = "MeaLeon-Search-Service"
 version = "0.1.1"
 description = "This is the search service environment for MeaLeon. The search service is a wrapper for the Edamam API. MeaLeon is a full stack data science project using machine learning, natural language processing, recommendation engine, and MLOps"
 authors = [{ name = "Aaron W. Chen", email = "awc33@cornell.edu" }]
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 dependencies = [
     "fastapi",
     "redis",

@@ -3,7 +3,7 @@ name = "MeaLeon-Embedding-Generator"
 version = "0.1.2"
 description = "This is the embedding generator environment for MeaLeon: a full stack data science project using machine learning, natural language processing, recommendation engine, and MLOps"
 authors = [{ name = "Aaron W. Chen", email = "awc33@cornell.edu" }]
-requires-python = ">=3.13"
+requires-python = ">=3.11,<3.12"
 dependencies = [
     "fastapi",
     "flask",
@@ -32,7 +32,8 @@ dependencies = [
     "torch",
     # "torchaudio",
     # "torchvision",
-    "sentence_transformers"
+    "sentence_transformers",
+    "polars>=1.42.1",
 ]
 
 [[tool.uv.index]]

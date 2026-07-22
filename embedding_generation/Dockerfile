@@ -2,7 +2,7 @@
 
 # use modified image with uv installed
 # using Python 3.11
-FROM ghcr.io/astral-sh/uv:python3.13-trixie-slim
+FROM ghcr.io/astral-sh/uv:python3.11-trixie-slim
 
 # Set and install project into `/app`
 WORKDIR /app

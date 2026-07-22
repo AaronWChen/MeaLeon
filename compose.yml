@@ -222,10 +222,11 @@ services:
 
     volumes:
       - ./models:/app/models
+      - ./src:/app/src  
+      - mlflow-artifacts:/mlflow/artifacts 
       - dvc-cache:/root/.dvc/cache
       - huggingface_cache:/root/.cache/huggingface
       
-    
     deploy:
       resources:
         limits:
@@ -266,17 +267,18 @@ services:
 
     volumes:
       - mlflow-artifacts:/mlflow/artifacts
+      - mlflow-db:/mlflow/db
       - ./mlruns:/mlflow/mlruns
-      - ./mlflow/entrypoint.sh:/entrypoint.sh
-      - mlflow_data:/mlflow
+      - ./models:/app/models
+      - ./src:/app/src    
     
     environment:
       # BACKEND_STORE_URI: postgresql+psycopg://docker_user:$${cat /run/secrets/db_password}@db:5432/mealeon
-      DEFAULT_ARTIFACT_ROOT: /mlflow/artifacts
+      - DEFAULT_ARTIFACT_ROOT=/mlflow/artifacts
 
     secrets:
       - db_password
-      - db_root_password
+      # - db_root_password
 
     depends_on:
       db:
@@ -345,6 +347,7 @@ volumes:
   dvc-cache: {}
   huggingface_cache: {}
   mlflow_data: {}
+  mlflow-db: {}
 
 # ── networks ──────────────────────────────────────────────────
 networks:

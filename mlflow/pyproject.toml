@@ -3,22 +3,17 @@ name = "MeaLeon-MLflow"
 version = "0.1.2"
 description = "This is the MLflow environment for MeaLeon: a full stack data science project using machine learning, natural language processing, recommendation engine, and MLOps"
 authors = [{ name = "Aaron W. Chen", email = "awc33@cornell.edu" }]
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 dependencies = [
-    # "fastapi[standard]",
-    # "flask",
-    # "flask_babel",
-    # "flask_httpauth",
-    # "flask_login",
-    # "flask_mail",
-    # "flask_migrate",
-    # "flask_moment",
-    # "flask_wtf",
+    "dill",
     "mlflow",
     "psycopg",
+    "polars",
+    "scikit-learn",
     # "requests",
     # "redis",
     # "sqlalchemy",
     # "pydantic",
     # "wtforms",
+    "stanza",
 ]
