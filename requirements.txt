@@ -224,7 +224,7 @@ docker==7.1.0
     #   pyvespa
 dpath==2.2.0
     # via dvc
-dulwich==0.23.1
+dulwich==1.2.5
     # via
     #   dvc
     #   dvc-studio-client
