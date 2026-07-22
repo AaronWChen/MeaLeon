@@ -1000,7 +1000,7 @@ sentence-transformers==5.0.0
     # via
     #   bertopic
     #   flagembedding
-setuptools==80.9.0
+setuptools==83.0.0
     # via
     #   jupyterlab
     #   marisa-trie
