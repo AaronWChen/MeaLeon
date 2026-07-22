@@ -41,6 +41,16 @@ ANN_TARGET_HITS = 100
 UNKNOWN_CUISINE_VALUES = {"missing cuisine", "unknown", "n/a", "none"}
 
 
+def _sanitize_term(term: str) -> str:
+    """
+    Escape double quotes in a term so it's safe to embed directly in YQL.
+    Terms are TF-IDF vocabulary entries (ingredient words/bigrams) —
+    should rarely contain quotes, but sanitize defensively since these
+    are being string-interpolated into a query.
+    """
+    return term.replace('"', '\\"')
+
+
 class VespaHybridClient:
     def __init__(self, vespa_url: str, ml_service_url: str):
         self.vespa_url = vespa_url.rstrip("/")
@@ -99,15 +109,6 @@ class VespaHybridClient:
             data = resp.json()
 
         return self._parse_results(data, dense_vec)
-
-    def _sanitize_term(term: str) -> str:
-        """
-        Escape double quotes in a term so it's safe to embed directly in YQL.
-        Terms are TF-IDF vocabulary entries (ingredient words/bigrams) —
-        should rarely contain quotes, but sanitize defensively since these
-        are being string-interpolated into a query.
-        """
-        return term.replace('"', '\\"')
 
     def _build_yql(
         self,
@@ -244,23 +245,22 @@ class VespaHybridClient:
                     "id": fields.get("id", ""),
                     "title": fields.get("title", ""),
                     "ingredients": fields.get("ingredients", []),
-                    "ingredient_names": fields.get(
-                        "ingredients", []
-                    ),  # alias for Flask layer
+                    "ingredient_names": fields.get("ingredients", []),
                     "cuisine_types": fields.get("cuisine", []),
                     "description": fields.get("description", ""),
                     "origin": fields.get("origin", ""),
-                    "url": fields.get(
-                        "url", ""
-                    ),  # Epicurious URL not stored — add if needed
-                    "image_url": None,  # Not stored in Vespa — pulled from Edamam
-                    # Scores for debugging / display
+                    "url": fields.get("url", ""),
+                    "image_url": fields.get("image_url"),
                     "similarity_score": hit.get("relevance", 0.0),
                     "dense_score": match_features.get(
                         "closeness(field,embedding)", 0.0
                     ),
-                    "sparse_score": match_features.get("bm25(ingredients)", 0.0),
-                    # No health/diet labels in Epicurious data — comes from Edamam results
+                    # sparse_score now reflects WAND/ingredients_bow specifically
+                    "sparse_score": match_features.get(
+                        "rawScore(ingredients_bow)", 0.0
+                    ),
+                    # bm25_score is the separate plain-text keyword relevance signal
+                    "bm25_score": match_features.get("bm25(ingredients)", 0.0),
                     "diet_labels": [],
                     "health_labels": [],
                 }

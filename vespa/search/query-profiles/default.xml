@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!--
-  vespa/search/query-profiles/default.xml
- 
-  Activates the "root" query profile type for all queries — this is
-  what makes the q_bow declaration in types/root.xml actually apply.
--->
-<query-profile id="default" type="root">
-</query-profile>

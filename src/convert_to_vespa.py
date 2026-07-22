@@ -39,6 +39,19 @@ SOURCE_FILES = {
     "cookstr": "data/recipes-en-201706/cookstr-recipes-to-vespa.json",
 }
 
+WEIGHT_SCALE = 10000
+
+
+def _scale_weights_to_int(bow_dict: dict) -> dict:
+    """
+    Convert float TF-IDF weights to integers for Vespa's WeightedSet type.
+    Scales by WEIGHT_SCALE and rounds. Filters out any terms that round
+    to zero (extremely low weights) since a zero-weight entry in a
+    weightedset is meaningless.
+    """
+    scaled = {term: round(weight * WEIGHT_SCALE) for term, weight in bow_dict.items()}
+    return {term: w for term, w in scaled.items() if w > 0}
+
 
 def get_embeddings_batch(recipes: list[dict]) -> tuple[list, list]:
     """
@@ -75,7 +88,7 @@ def get_embeddings_batch(recipes: list[dict]) -> tuple[list, list]:
             top = dict(
                 sorted(bow_filtered.items(), key=lambda x: x[1], reverse=True)[:200]
             )
-            bow_embeddings.append(top)
+            bow_embeddings.append(_scale_weights_to_int(top))
 
         except Exception as e:
             print(f"\nWarning: embedding failed for '{recipe.get('title', '?')}': {e}")
