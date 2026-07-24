@@ -1,0 +1,107 @@
+{
+  "threshold": 0.05,
+  "cuisine_to_cluster": {
+    "african": 12,
+    "american": 4,
+    "asian": 1,
+    "cajun/creole": 13,
+    "caribbean": 9,
+    "chinese": 1,
+    "eastern european": 4,
+    "english": 6,
+    "french": 4,
+    "german": 5,
+    "indian": 10,
+    "irish": 7,
+    "italian": 11,
+    "japanese": 3,
+    "kosher": 4,
+    "latin american": 8,
+    "mediterranean": 11,
+    "mexican": 8,
+    "middle eastern": 12,
+    "moroccan": 12,
+    "scandinavian": 4,
+    "southwestern": 8,
+    "thai": 2,
+    "vietnamese": 1
+  },
+  "cluster_members": {
+    "12": [
+      "african",
+      "middle eastern",
+      "moroccan"
+    ],
+    "4": [
+      "american",
+      "eastern european",
+      "french",
+      "kosher",
+      "scandinavian"
+    ],
+    "1": [
+      "asian",
+      "chinese",
+      "vietnamese"
+    ],
+    "13": [
+      "cajun/creole"
+    ],
+    "9": [
+      "caribbean"
+    ],
+    "6": [
+      "english"
+    ],
+    "5": [
+      "german"
+    ],
+    "10": [
+      "indian"
+    ],
+    "7": [
+      "irish"
+    ],
+    "11": [
+      "italian",
+      "mediterranean"
+    ],
+    "3": [
+      "japanese"
+    ],
+    "8": [
+      "latin american",
+      "mexican",
+      "southwestern"
+    ],
+    "2": [
+      "thai"
+    ]
+  },
+  "recipe_counts": {
+    "african": 92,
+    "american": 5484,
+    "asian": 1270,
+    "cajun/creole": 144,
+    "caribbean": 189,
+    "chinese": 115,
+    "eastern european": 167,
+    "english": 225,
+    "french": 1293,
+    "german": 79,
+    "indian": 355,
+    "irish": 120,
+    "italian": 2117,
+    "japanese": 91,
+    "kosher": 353,
+    "latin american": 153,
+    "mediterranean": 914,
+    "mexican": 809,
+    "middle eastern": 289,
+    "moroccan": 117,
+    "scandinavian": 131,
+    "southwestern": 148,
+    "thai": 120,
+    "vietnamese": 57
+  }
+}

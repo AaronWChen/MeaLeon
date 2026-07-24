@@ -1,0 +1,52 @@
+=== Clusters at threshold 0.05 ===
+Cluster 1: asian, chinese, vietnamese
+Cluster 2: thai
+Cluster 3: japanese
+Cluster 4: american, eastern european, french, kosher, scandinavian
+Cluster 5: german
+Cluster 6: english
+Cluster 7: irish
+Cluster 8: latin american, mexican, southwestern
+Cluster 9: caribbean
+Cluster 10: indian
+Cluster 11: italian, mediterranean
+Cluster 12: african, middle eastern, moroccan
+Cluster 13: cajun/creole
+
+
+
+=== Clusters at threshold 0.065 ===
+Cluster 1: asian, chinese, thai, vietnamese
+Cluster 2: japanese
+Cluster 3: american, eastern european, english, french, german, irish, kosher, scandinavian
+Cluster 4: latin american, mexican, southwestern
+Cluster 5: caribbean, indian
+Cluster 6: african, italian, mediterranean, middle eastern, moroccan
+Cluster 7: cajun/creole
+
+
+
+=== Clusters at threshold 0.07 ===
+Cluster 1: asian, chinese, thai, vietnamese
+Cluster 2: japanese
+Cluster 3: american, eastern european, english, french, german, irish, kosher, scandinavian
+Cluster 4: latin american, mexican, southwestern
+Cluster 5: african, caribbean, indian, italian, mediterranean, middle eastern, moroccan
+Cluster 6: cajun/creole
+
+
+
+=== Clusters at threshold 0.0725 ===
+Cluster 1: asian, chinese, thai, vietnamese
+Cluster 2: japanese
+Cluster 3: american, eastern european, english, french, german, irish, kosher, scandinavian
+Cluster 4: latin american, mexican, southwestern
+Cluster 5: african, cajun/creole, caribbean, indian, italian, mediterranean, middle eastern, moroccan
+
+
+
+=== Clusters at threshold 0.075 ===
+Cluster 1: asian, chinese, japanese, thai, vietnamese
+Cluster 2: american, eastern european, english, french, german, irish, kosher, scandinavian
+Cluster 3: latin american, mexican, southwestern
+Cluster 4: african, cajun/creole, caribbean, indian, italian, mediterranean, middle eastern, moroccan
