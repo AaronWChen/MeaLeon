@@ -1920,7 +1920,7 @@ wheels = [
 
 [[package]]
 name = "stanza"
-version = "1.11.1"
+version = "1.12.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "emoji" },
@@ -1933,9 +1933,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "udtools" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f6/bd/c2d7f7c3e13688dd07738a5cf911a30ba760d260752df55c7c77ed4b070f/stanza-1.11.1.tar.gz", hash = "sha256:eff84c40c9dab1badf89d09f04a9d887eebff01976e14f876582c0bd4bcc51e8", size = 1489287, upload-time = "2026-02-27T00:28:52.476Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/33/8d/091be6e3f21ce031cc9b31776a167a39f12a354fc19fe2f8764960f5da75/stanza-1.12.2.tar.gz", hash = "sha256:ff59f7e4c09e18c1711e27aa7987607790139496cbd2906d2499b062d324c390", size = 1611613, upload-time = "2026-06-03T21:03:37.264Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c1/d4/38e98f8152b1f82fb2bbf89b8bafd63415383b4b2b7cf34d93f911e62d03/stanza-1.11.1-py3-none-any.whl", hash = "sha256:fb57509c182df4c8556f179ecaa3d47a1612a107d781f78d4084a24f3e7ee98c", size = 1711245, upload-time = "2026-02-27T00:28:48.512Z" },
+    { url = "https://files.pythonhosted.org/packages/90/34/7a697ec9879c0c0b5928f74f921fc8e536573749c8c65baa8d74a61feb66/stanza-1.12.2-py3-none-any.whl", hash = "sha256:b49370eb545054923520189af78510e2d9fedca423b8fe86958edf6f47b7be97", size = 1848938, upload-time = "2026-06-03T21:03:33.399Z" },
 ]
 
 [[package]]
