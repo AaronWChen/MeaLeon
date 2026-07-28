@@ -13,6 +13,7 @@ dependencies = [
     "bertopic>=0.17.0",
     "bokeh>=3.7.3",
     "boto3>=1.38.27",
+    "connectorx>=0.4.5",
     "dagshub>=0.5.10",
     "dill>=0.4.0",
     "dvc>=3.61.0",
