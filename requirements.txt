@@ -14,7 +14,7 @@ aiobotocore==2.23.0
     #   s3fs
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.13.4
+aiohttp==3.14.1
     # via
     #   aiobotocore
     #   aiohttp-retry
@@ -89,7 +89,7 @@ bertopic==0.17.0
     # via mealeon (pyproject.toml)
 billiard==4.2.1
     # via celery
-bleach==6.2.0
+bleach==6.4.0
     # via nbconvert
 blinker==1.9.0
     # via flask
@@ -224,7 +224,7 @@ docker==7.1.0
     #   pyvespa
 dpath==2.2.0
     # via dvc
-dulwich==0.23.1
+dulwich==1.2.5
     # via
     #   dvc
     #   dvc-studio-client
@@ -312,7 +312,7 @@ gensim==4.3.3
     # via mealeon (pyproject.toml)
 gitdb==4.0.12
     # via gitpython
-gitpython==3.1.44
+gitpython==3.1.52
     # via
     #   dagshub
     #   mlflow-skinny
@@ -480,7 +480,7 @@ jupyter-events==0.12.0
     # via jupyter-server
 jupyter-lsp==2.2.5
     # via jupyterlab
-jupyter-server==2.16.0
+jupyter-server==2.20.0
     # via
     #   jupyter-lsp
     #   jupyterlab
@@ -488,7 +488,7 @@ jupyter-server==2.16.0
     #   notebook-shim
 jupyter-server-terminals==0.5.3
     # via jupyter-server
-jupyterlab==4.4.8
+jupyterlab==4.5.10
     # via
     #   mealeon (pyproject.toml)
     #   jupyter
@@ -517,7 +517,7 @@ lxml==6.0.0
     # via
     #   dagshub-annotation-converter
     #   pyvespa
-mako==1.3.10
+mako==1.3.12
     # via alembic
 marisa-trie==1.2.1
     # via language-data
@@ -543,7 +543,7 @@ matplotlib-inline==0.1.7
     #   ipython
 mdurl==0.1.2
     # via markdown-it-py
-mistune==3.1.3
+mistune==3.3.0
     # via nbconvert
 mlflow==3.5.0
     # via mealeon (pyproject.toml)
@@ -745,7 +745,7 @@ pathvalidate==3.3.1
     # via dagshub
 pexpect==4.9.0
     # via ipython
-pillow==12.2.0
+pillow==12.3.0
     # via
     #   bokeh
     #   dagshub-annotation-converter
@@ -802,7 +802,7 @@ pyarrow==20.0.0
     #   arrow-odbc
     #   datasets
     #   mlflow
-pyasn1==0.6.3
+pyasn1==0.6.4
     # via
     #   pyasn1-modules
     #   rsa
@@ -1000,7 +1000,7 @@ sentence-transformers==5.0.0
     # via
     #   bertopic
     #   flagembedding
-setuptools==80.9.0
+setuptools==83.0.0
     # via
     #   jupyterlab
     #   marisa-trie
@@ -1104,7 +1104,7 @@ torchaudio @ https://download.pytorch.org/whl/cu128/torchaudio-2.7.1%2Bcu128-cp3
     # via mealeon (pyproject.toml)
 torchvision @ https://download.pytorch.org/whl/cu128/torchvision-0.22.1%2Bcu128-cp311-cp311-manylinux_2_28_x86_64.whl
     # via mealeon (pyproject.toml)
-tornado==6.5.5
+tornado==6.5.7
     # via
     #   bokeh
     #   ipykernel
@@ -1148,7 +1148,7 @@ traitlets==5.14.3
     #   nbconvert
     #   nbformat
     #   notebook
-transformers==5.0.0rc3
+transformers==5.5.0
     # via
     #   flagembedding
     #   sentence-transformers
@@ -1205,7 +1205,7 @@ umap-learn==0.5.9.post2
     #   bertopic
 uri-template==1.3.0
     # via jsonschema
-urllib3==2.6.3
+urllib3==2.7.0
     # via
     #   botocore
     #   docker
