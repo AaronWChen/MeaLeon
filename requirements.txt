@@ -797,7 +797,7 @@ pure-eval==0.2.3
     # via stack-data
 py4j==0.10.9.9
     # via pyspark
-pyarrow==20.0.0
+pyarrow==23.0.1
     # via
     #   arrow-odbc
     #   datasets
