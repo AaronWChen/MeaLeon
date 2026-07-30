@@ -597,7 +597,7 @@ networkx==3.5
     #   dvc
     #   stanza
     #   torch
-nltk==3.9.4
+nltk==3.10.0
     # via mealeon (pyproject.toml)
 notebook==6.5.7
     # via jupyter
