@@ -513,7 +513,7 @@ llvmlite==0.44.0
     # via
     #   numba
     #   pynndescent
-lxml==6.0.0
+lxml==6.1.0
     # via
     #   dagshub-annotation-converter
     #   pyvespa
