@@ -2878,7 +2878,7 @@ requires-dist = [
     { name = "seaborn", specifier = ">=0.13.2" },
     { name = "spacy", specifier = ">=3.8.7" },
     { name = "sqlmodel", specifier = ">=0.0.24" },
-    { name = "stanza", specifier = ">=1.10.1" },
+    { name = "stanza", specifier = ">=1.12.2" },
     { name = "torch", specifier = ">=2.7.1", index = "https://download.pytorch.org/whl/cu128" },
     { name = "torchaudio", specifier = ">=2.7.1", index = "https://download.pytorch.org/whl/cu128" },
     { name = "torchvision", specifier = ">=0.22.1", index = "https://download.pytorch.org/whl/cu128" },
@@ -4905,20 +4905,22 @@ wheels = [
 
 [[package]]
 name = "stanza"
-version = "1.10.1"
+version = "1.12.2"
 source = { registry = "https://pypi.org/simple/" }
 dependencies = [
     { name = "emoji" },
     { name = "networkx" },
     { name = "numpy" },
+    { name = "platformdirs" },
     { name = "protobuf" },
     { name = "requests" },
     { name = "torch" },
     { name = "tqdm" },
+    { name = "udtools" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ee/d3/1e849c2fd5c31250534407205dcf10265defce35795c7fc9846d3b689848/stanza-1.10.1.tar.gz", hash = "sha256:f1b283021323ef9273fb1a751a194c0d568e373a2a11b933e2f4b600322406b2", size = 901628, upload-time = "2024-12-24T06:07:27.09Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/33/8d/091be6e3f21ce031cc9b31776a167a39f12a354fc19fe2f8764960f5da75/stanza-1.12.2.tar.gz", hash = "sha256:ff59f7e4c09e18c1711e27aa7987607790139496cbd2906d2499b062d324c390", size = 1611613, upload-time = "2026-06-03T21:03:37.264Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ac/f6/c50d0ee85e40687a81a95d90d426938d0d83ac0683efa2b87fa4110b665c/stanza-1.10.1-py3-none-any.whl", hash = "sha256:d0ebc22c7e7a201077e0ed88d2450e654acadb4ea0d8584d5a5eb2ae1e65c060", size = 1112060, upload-time = "2024-12-24T06:07:22.898Z" },
+    { url = "https://files.pythonhosted.org/packages/90/34/7a697ec9879c0c0b5928f74f921fc8e536573749c8c65baa8d74a61feb66/stanza-1.12.2-py3-none-any.whl", hash = "sha256:b49370eb545054923520189af78510e2d9fedca423b8fe86958edf6f47b7be97", size = 1848938, upload-time = "2026-06-03T21:03:33.399Z" },
 ]
 
 [[package]]
@@ -4961,6 +4963,15 @@ source = { registry = "https://pypi.org/simple/" }
 sdist = { url = "https://files.pythonhosted.org/packages/0a/d4/2b0cd0fe285e14b36db076e78c93766ff1d529d70408bd1d2a5a84f1d929/tenacity-9.1.2.tar.gz", hash = "sha256:1169d376c297e7de388d18b4481760d478b0e99a777cad3a9c86e556f4b697cb", size = 48036, upload-time = "2025-04-02T08:25:09.966Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e5/30/643397144bfbfec6f6ef821f36f33e57d35946c44a2352d3c9f0ae847619/tenacity-9.1.2-py3-none-any.whl", hash = "sha256:f77bf36710d8b73a50b2dd155c97b870017ad21afe6ab300326b0371b3b05138", size = 28248, upload-time = "2025-04-02T08:25:07.678Z" },
+]
+
+[[package]]
+name = "termcolor"
+version = "3.3.0"
+source = { registry = "https://pypi.org/simple/" }
+sdist = { url = "https://files.pythonhosted.org/packages/46/79/cf31d7a93a8fdc6aa0fbb665be84426a8c5a557d9240b6239e9e11e35fc5/termcolor-3.3.0.tar.gz", hash = "sha256:348871ca648ec6a9a983a13ab626c0acce02f515b9e1983332b17af7979521c5", size = 14434, upload-time = "2025-12-29T12:55:21.882Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/33/d1/8bb87d21e9aeb323cc03034f5eaf2c8f69841e40e4853c2627edf8111ed3/termcolor-3.3.0-py3-none-any.whl", hash = "sha256:cf642efadaf0a8ebbbf4bc7a31cec2f9b5f21a9f726f4ccbb08192c9c26f43a5", size = 7734, upload-time = "2025-12-29T12:55:20.718Z" },
 ]
 
 [[package]]
@@ -5333,6 +5344,32 @@ source = { registry = "https://pypi.org/simple/" }
 sdist = { url = "https://files.pythonhosted.org/packages/95/32/1a225d6164441be760d75c2c42e2780dc0873fe382da3e98a2e1e48361e5/tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9", size = 196380, upload-time = "2025-03-23T13:54:43.652Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8", size = 347839, upload-time = "2025-03-23T13:54:41.845Z" },
+]
+
+[[package]]
+name = "udapi"
+version = "0.5.2"
+source = { registry = "https://pypi.org/simple/" }
+dependencies = [
+    { name = "colorama" },
+    { name = "termcolor" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/52/ce/ad2ddbd1f1adc8818709aa76e0743361fdac7d2de0d72c7724347d206d41/udapi-0.5.2.tar.gz", hash = "sha256:bea62dd380a885a485cb7810ce69d5154ba3f9345140e6198e0b39858ecb9ae8", size = 321364, upload-time = "2026-03-16T17:45:43.751Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c0/bf/7314295832b37c6c02ebafdac3a240cc557674a2a61a27a6291f32abdd50/udapi-0.5.2-py3-none-any.whl", hash = "sha256:d75939dbdb224b973acc88b9c8074fd864d7b98e05e084fef54e7f02297aa8a7", size = 418680, upload-time = "2026-03-16T17:45:42.173Z" },
+]
+
+[[package]]
+name = "udtools"
+version = "0.2.8"
+source = { registry = "https://pypi.org/simple/" }
+dependencies = [
+    { name = "regex" },
+    { name = "udapi" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/51/bc/e9402ed13ee1618f87e91e1950279ec9ce15fbceb1392d9b13087f95d2df/udtools-0.2.8.tar.gz", hash = "sha256:6dd0cbbf29200c2aa3a34ff63b0ea2705fb1b268f2f9e0fdb5ae6c492a87fe42", size = 1707883, upload-time = "2026-06-18T18:49:17.279Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ec/e0/6d021ce8f05b55c9b506662e242af66d594818e7049fd06d3089480eebfb/udtools-0.2.8-py3-none-any.whl", hash = "sha256:2139e402a004c4563c9b9650c0bfdf7bb752ce7b71ea380617796ae31a6f5ff5", size = 794185, upload-time = "2026-06-18T18:49:15.605Z" },
 ]
 
 [[package]]
