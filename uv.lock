@@ -2857,7 +2857,7 @@ requires-dist = [
     { name = "jupyterlab", specifier = ">=4.5.10" },
     { name = "langdetect", specifier = ">=1.0.9" },
     { name = "matplotlib", specifier = ">=3.10.3" },
-    { name = "mlflow", specifier = ">=3.1.1" },
+    { name = "mlflow", specifier = ">=3.11.1" },
     { name = "more-itertools", specifier = ">=10.7.0" },
     { name = "nltk", specifier = ">=3.10.0" },
     { name = "numpy", specifier = ">=1.26.4" },
