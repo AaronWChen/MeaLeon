@@ -67,7 +67,7 @@ asttokens==3.0.0
     # via stack-data
 async-lru==2.0.5
     # via jupyterlab
-asyncssh==2.21.0
+asyncssh==2.24.0
     # via scmrepo
 atpublic==6.0.1
     # via flufl-lock
