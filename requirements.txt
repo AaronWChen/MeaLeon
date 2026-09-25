@@ -354,7 +354,7 @@ hdbscan==0.8.40
     #   bertopic
 hf-xet==1.1.5
     # via huggingface-hub
-hpack==4.1.0
+hpack==4.2.0
     # via h2
 httpcore==1.0.9
     # via httpx
