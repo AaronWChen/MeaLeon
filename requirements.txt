@@ -289,7 +289,7 @@ frozenlist==1.7.0
     # via
     #   aiohttp
     #   aiosignal
-fsspec==2025.5.1
+fsspec==2026.6.0
     # via
     #   datasets
     #   dvc
