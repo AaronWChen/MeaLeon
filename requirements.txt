@@ -325,7 +325,7 @@ grandalf==0.8
     # via dvc
 graphene==3.4.3
     # via mlflow
-graphql-core==3.2.6
+graphql-core==3.2.12
     # via
     #   gql
     #   graphene
