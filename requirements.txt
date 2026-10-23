@@ -681,7 +681,7 @@ omegaconf==2.3.0
     #   hydra-core
 openai==1.93.1
     # via mealeon (pyproject.toml)
-opentelemetry-api==1.16.0
+opentelemetry-api==1.45.1
     # via
     #   mlflow-skinny
     #   opentelemetry-sdk
