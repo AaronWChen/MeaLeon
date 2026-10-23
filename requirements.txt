@@ -120,7 +120,7 @@ celery==5.5.3
     # via
     #   dvc
     #   dvc-task
-certifi==2025.6.15
+certifi==2026.10.19
     # via
     #   httpcore
     #   httpx
