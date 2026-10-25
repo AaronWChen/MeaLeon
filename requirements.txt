@@ -545,7 +545,7 @@ mdurl==0.1.2
     # via markdown-it-py
 mistune==3.3.3
     # via nbconvert
-mlflow==3.16.0
+mlflow==3.17.2
     # via mealeon (pyproject.toml)
 mlflow-skinny==3.1.1
     # via mlflow
