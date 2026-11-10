@@ -1248,6 +1248,24 @@ wheels = [
 ]
 
 [[package]]
+name = "orjson"
+version = "3.13.0"
+source = { registry = "https://pypi.org/simple/" }
+sdist = { url = "https://files.pythonhosted.org/packages/f2/72/380b97dc45bd162d23afe5194721ef678d9eac7cfaa549fe2873f7f0a518/orjson-3.13.0.tar.gz", hash = "sha256:d1de5eb04485110c5da4c657e49168995d55e076b1ce60f1a042e254f4186c4f", size = 2732604, upload-time = "2026-10-07T14:09:25.719Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ce/a3/0be3b115907fea61ed340639fb0e1562cd18969bad5b3f486f808197aaff/orjson-3.13.0-cp311-cp311-macosx_10_15_x86_64.macosx_11_0_arm64.macosx_10_15_universal2.whl", hash = "sha256:948bad47f2e2e43527f14248364a0e5dee26dd3184691010ec4a1ebeb0fd6771", size = 223146, upload-time = "2026-10-07T14:08:06.474Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/f7/665935edb16163f8b764182e29a30cf056947a66893ed032191e5f01eb3d/orjson-3.13.0-cp311-cp311-macosx_15_0_arm64.whl", hash = "sha256:1807c2fa49d393c7ee95fd1ef1b39cbb24aa3ccd81f30b84503ba59407666960", size = 123546, upload-time = "2026-10-07T14:08:08.324Z" },
+    { url = "https://files.pythonhosted.org/packages/67/ec/e7cde480c0e212594d17ba2b2bd210c002052e9147fc1a1aeafaabe722fb/orjson-3.13.0-cp311-cp311-manylinux2014_armv7l.manylinux_2_17_armv7l.whl", hash = "sha256:637dbca1fccffe83780e806fbc0f17427c0c59bf822528eb0acc8f0aa9f19acb", size = 113290, upload-time = "2026-10-07T14:08:09.816Z" },
+    { url = "https://files.pythonhosted.org/packages/36/59/4455fb11a297af73611dfc437f0f89456220227ed1cb1544a5a0ee9d6c03/orjson-3.13.0-cp311-cp311-manylinux2014_i686.manylinux_2_17_i686.whl", hash = "sha256:554948becd1110123ef9f6a6e1310fd92b2d07d2cbac6dbf65df3de75702e736", size = 130342, upload-time = "2026-10-07T14:08:11.253Z" },
+    { url = "https://files.pythonhosted.org/packages/ca/80/0eec5fbde2e52407646b4cb3118f63175bdcee1e2390c2759dc96e0bc62a/orjson-3.13.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:dd9d9a101bd8dbfad112170f009cd155e52bb8c936468821a0d03cbb96c0e426", size = 129138, upload-time = "2026-10-07T14:08:12.814Z" },
+    { url = "https://files.pythonhosted.org/packages/cd/cc/c0874f13819ae346d69ca00d074d464710b494abd4442bdebf75ac404a98/orjson-3.13.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:89bcf2d4bc6c9a7e1763c8cf534f38712e66b76a0fefda7fb7785462f0d635e4", size = 130518, upload-time = "2026-10-07T14:08:14.392Z" },
+    { url = "https://files.pythonhosted.org/packages/25/ab/140dd9adff84bf64b862c4fcfe2d055af6014d5ba03a075f95c9addb2ec7/orjson-3.13.0-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:a79cdc4934fe81f593072c94e13da3095e9d41c2deef8f6ff2901794ca1c5042", size = 134924, upload-time = "2026-10-07T14:08:16.09Z" },
+    { url = "https://files.pythonhosted.org/packages/08/0a/e8f6deb032b1d98a39043cf99b863d8b9e842e2ffc2d2067d2e2a88c18e4/orjson-3.13.0-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:50a5202ba388b3850ba24437951727d3aa6d79a21964a30ae8dc6a059a5fd34c", size = 126704, upload-time = "2026-10-07T14:08:17.439Z" },
+    { url = "https://files.pythonhosted.org/packages/af/cf/be64b99ff75f7983488390d4ef5df72115119770eed295691c0a715d492a/orjson-3.13.0-cp311-cp311-win_amd64.whl", hash = "sha256:a0377d6962fa431c93ecd78fdea771bb62ec545b24ee0c5d4e32acf2260af259", size = 121287, upload-time = "2026-10-07T14:08:18.843Z" },
+    { url = "https://files.pythonhosted.org/packages/ca/ab/1b8ca186baf3420f12db1f2819fcc5f2cae69e4cf051168501726a64c0fa/orjson-3.13.0-cp311-cp311-win_arm64.whl", hash = "sha256:1d84820b2ec4ac975cba482214032de5b0dbdd17046170c98e642ef9c4a4ee4b", size = 126314, upload-time = "2026-10-07T14:08:20.452Z" },
+]
+
+[[package]]
 name = "packaging"
 version = "26.2"
 source = { registry = "https://pypi.org/simple/" }
@@ -1751,13 +1769,14 @@ wheels = [
 
 [[package]]
 name = "stanza"
-version = "1.14.0"
+version = "1.15.0"
 source = { registry = "https://pypi.org/simple/" }
 dependencies = [
     { name = "emoji" },
     { name = "huggingface-hub" },
     { name = "networkx" },
     { name = "numpy" },
+    { name = "orjson" },
     { name = "platformdirs" },
     { name = "protobuf" },
     { name = "requests" },
@@ -1765,9 +1784,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "udtools" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8c/84/7e079cb5b4d54c57bf21f54a8591c8ec2cd2d1f32fc3e69eeeffecae419c/stanza-1.14.0.tar.gz", hash = "sha256:edd1eb171d34bea920c4d06d3f007a2232a63991f20f398370204ca3ddc8287f", size = 1707642, upload-time = "2026-07-15T01:58:27.644Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7a/5a/a3e09cc6a5f2676ba0c5b548f580f47b1bc7877b0b334a9a6b338c349410/stanza-1.15.0.tar.gz", hash = "sha256:69f18af136ac5f88611f930af8dc37e89ae9e073e23860b3604bad9a941b44b2", size = 1790258, upload-time = "2026-10-01T05:46:45.952Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/62/d4/82b548b1953a296a86a2dcb991357c582f1847e0dde8556bd53c40ec2f89/stanza-1.14.0-py3-none-any.whl", hash = "sha256:b5e81d742e39671de146e69f3c6ca7ff76cc4201ed07cab3083d815b2cbab544", size = 1956577, upload-time = "2026-07-15T01:58:23.705Z" },
+    { url = "https://files.pythonhosted.org/packages/df/bc/78a8f73009619cf1bcbd2657c1966a64990ab9f78a59de785c0cf0f2923c/stanza-1.15.0-py3-none-any.whl", hash = "sha256:1da8a072de5ff82a9776016d87e1c09fe08b35336e5f8071b79dc324aece0c7a", size = 2041107, upload-time = "2026-10-01T05:46:40.872Z" },
 ]
 
 [[package]]
