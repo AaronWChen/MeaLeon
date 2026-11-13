@@ -17,11 +17,13 @@ from flask_login import current_user
 from app.models import User
 from app.api.errors import bad_request, error_response
 
+import os
+
 logger = logging.getLogger(__name__)
 
 bp = Blueprint("recommend", __name__)
 
-VESPA_INDEXED = True
+VESPA_INDEXED = os.environ.get("VESPA_INDEXED", "true").lower() == "true"
 MAX_RESULTS = 5
 
 # ---------------------------------------------------------------------------

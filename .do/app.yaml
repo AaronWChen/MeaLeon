@@ -26,158 +26,186 @@
 #      c) Use Neo4j AuraDB (free tier available)
 #    Their URLs are passed as env vars below.
 
+# Deliberately NOT included yet: recommend-service, embedding-generation,
+# mlflow, vespa, neo4j. Stage 1 proves the DO plumbing (builds, secrets,
+# private networking, managed DBs, ingress). The recommender itself runs in
+# Edamam-fallback mode until stage 2 brings up Vespa + the embedding service.
+#
+# Verify before applying (docs last verified 5 Nov 2026):
+#   - instance_size_slug values: `doctl apps tier instance-size list`
+#   - cache engine name (REDIS vs VALKEY) and PG version DO currently offers
+#   - ${search-service.PRIVATE_URL} binding; if it does not resolve, add
+#     `internal_ports: [8001]` to search-service per the bindable-variables docs
+#
+# Apply:   doctl apps create --spec .do/app.yaml
+# Update:  doctl apps update <app-id> --spec .do/app.yaml
+
 name: mealeon
 region: sfo
 
 # ── Managed databases ────────────────────────────────────────────────────
 
 databases:
-  - name: mealeon-db
+  - name: db
     engine: PG
-    version: "17"
-    size: db-s-1vcpu-1gb   # upgrade for production
-    num_nodes: 1
 
-  - name: mealeon-redis
-    engine: REDIS
-    version: "7"
-    size: db-s-1vcpu-1gb
+  - name: cache
+    engine: REDIS # DO may have renamed this to VALKEY; check the current spec reference
+
 
 # ── Services ─────────────────────────────────────────────────────────────
 
 services:
 
+  # Flask API
   - name: backend
     github:
       repo: AaronWChen/MeaLeon
       branch: main
       deploy_on_push: true
-    source_dir: backend
+    source_dir: /
     dockerfile_path: backend/Dockerfile
     http_port: 5000
-    instance_size_slug: basic-s
+    instance_size_slug: basic-xs
     instance_count: 1
-    run_command: /entrypoint.sh
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
 
     envs:
       # DO injects DATABASE_URL from the managed Postgres add-on
       - key: DATABASE_URL
         scope: RUN_TIME
-        value: ${mealeon-db.DATABASE_URL}
+        value: ${db.DATABASE_URL}
+        type: SECRET
 
       # DO injects REDIS_URL from the managed Redis add-on
       - key: REDIS_URL
         scope: RUN_TIME
-        value: ${mealeon-redis.DATABASE_URL}
+        value: ${cache.DATABASE_URL}
+        type: SECRET
 
       # Internal service URLs — DO injects PRIVATE_URL for each service
       - key: SEARCH_SERVICE_URL
         scope: RUN_TIME
         value: ${search-service.PRIVATE_URL}
 
-      - key: RECOMMEND_SERVICE_URL
-        scope: RUN_TIME
-        value: ${recommend-service.PRIVATE_URL}
+      # - key: RECOMMEND_SERVICE_URL
+      #   scope: RUN_TIME
+      #   value: ${recommend-service.PRIVATE_URL}
 
-      - key: ML_SERVICE_URL
-        scope: RUN_TIME
-        value: ${embedding-generation.PRIVATE_URL}
+      # - key: ML_SERVICE_URL
+      #   scope: RUN_TIME
+      #   value: ${embedding-generation.PRIVATE_URL}
 
       # External services (Vespa Cloud / Neo4j AuraDB)
-      - key: VESPA_URL
+      - key: VESPA_INDEXED
         scope: RUN_TIME
-        value: ${VESPA_URL}   # set in DO dashboard
+        value: "false"      # stage 1: no Vespa, use the Edamam fallback path
 
-      - key: NEO4J_URL
-        scope: RUN_TIME
-        value: ${NEO4J_URL}   # set in DO dashboard
+      # - key: NEO4J_URL
+      #   scope: RUN_TIME
+      #   value: ${NEO4J_URL}   # set in DO dashboard
 
       - key: SECRET_KEY
         scope: RUN_TIME
-        value: ${SECRET_KEY}  # set in DO dashboard
+        type: SECRET
 
       - key: FLASK_APP
         scope: RUN_AND_BUILD_TIME
         value: app.py
 
-      - key: FLASK_ENV
-        scope: RUN_AND_BUILD_TIME
-        value: prod
+      # - key: FLASK_ENV
+      #   scope: RUN_AND_BUILD_TIME
+      #   value: prod
 
-    routes:
-      - path: /api
-      - path: /auth
+      - key: RUN_MIGRATIONS
+        scope: RUN_TIME
+        value: "true"
+
+      - key: USE_GUNICORN
+        scope: RUN_TIME
+        value: "true"
+
+    # routes:
+    #   - path: /api
+    #   - path: /auth
 
   - name: search-service
     github:
       repo: AaronWChen/MeaLeon
       branch: main
       deploy_on_push: true
-    source_dir: search_service
+    source_dir: /
     dockerfile_path: search_service/Dockerfile
     http_port: 8001
-    instance_size_slug: basic-s
+    instance_size_slug: basic-xxs
     instance_count: 1
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 20
 
     envs:
       - key: REDIS_URL
         scope: RUN_TIME
-        value: ${mealeon-redis.DATABASE_URL}
+        value: ${cache.DATABASE_URL}
+        type: SECRET
 
       # Secrets — set once in DO dashboard, referenced here
       - key: EDAMAM_API_APPID
         scope: RUN_TIME
-        value: ${EDAMAM_API_APPID}
+        type: SECRET
 
       - key: EDAMAM_API_APPKEY
         scope: RUN_TIME
-        value: ${EDAMAM_API_APPKEY}
+        type: SECRET
 
-  - name: recommend-service
-    github:
-      repo: AaronWChen/MeaLeon
-      branch: main
-      deploy_on_push: true
-    source_dir: recommend_service
-    dockerfile_path: recommend_service/Dockerfile
-    http_port: 8002
-    instance_size_slug: basic-s
-    instance_count: 1
+  # - name: recommend-service
+  #   github:
+  #     repo: AaronWChen/MeaLeon
+  #     branch: main
+  #     deploy_on_push: true
+  #   source_dir: recommend_service
+  #   dockerfile_path: recommend_service/Dockerfile
+  #   http_port: 8002
+  #   instance_size_slug: basic-s
+  #   instance_count: 1
 
-    envs:
-      - key: REDIS_URL
-        scope: RUN_TIME
-        value: ${mealeon-redis.DATABASE_URL}
+  #   envs:
+  #     - key: REDIS_URL
+  #       scope: RUN_TIME
+  #       value: ${mealeon-redis.DATABASE_URL}
 
-      - key: VESPA_URL
-        scope: RUN_TIME
-        value: ${VESPA_URL}
+  #     - key: VESPA_URL
+  #       scope: RUN_TIME
+  #       value: ${VESPA_URL}
 
-      - key: ML_SERVICE_URL
-        scope: RUN_TIME
-        value: ${embedding-generation.PRIVATE_URL}
+  #     - key: ML_SERVICE_URL
+  #       scope: RUN_TIME
+  #       value: ${embedding-generation.PRIVATE_URL}
 
-      - key: SEARCH_SERVICE_URL
-        scope: RUN_TIME
-        value: ${search-service.PRIVATE_URL}
+  #     - key: SEARCH_SERVICE_URL
+  #       scope: RUN_TIME
+  #       value: ${search-service.PRIVATE_URL}
 
-  - name: embedding-generation
-    github:
-      repo: AaronWChen/MeaLeon
-      branch: main
-      deploy_on_push: true
-    source_dir: embedding_generation
-    dockerfile_path: embedding_generation/DOCKERFILE
-    http_port: 8000
-    # Needs more RAM for PyTorch — professional-xs minimum
-    instance_size_slug: professional-xs
-    instance_count: 1
+  # - name: embedding-generation
+  #   github:
+  #     repo: AaronWChen/MeaLeon
+  #     branch: main
+  #     deploy_on_push: true
+  #   source_dir: embedding_generation
+  #   dockerfile_path: embedding_generation/DOCKERFILE
+  #   http_port: 8000
+  #   # Needs more RAM for PyTorch — professional-xs minimum
+  #   instance_size_slug: professional-xs
+  #   instance_count: 1
 
-    envs:
-      - key: MLFLOW_TRACKING_URI
-        scope: RUN_TIME
-        value: ${MLFLOW_TRACKING_URI}  # set in DO dashboard
+  #   envs:
+  #     - key: MLFLOW_TRACKING_URI
+  #       scope: RUN_TIME
+  #       value: ${MLFLOW_TRACKING_URI}  # set in DO dashboard
 
+  # React/Fite served by nginx
   - name: frontend
     github:
       repo: AaronWChen/MeaLeon
@@ -192,9 +220,29 @@ services:
     routes:
       - path: /
 
+ingress:
+  rules:
+    - match:
+        path:
+          prefix: /api
+      component:
+        name: backend
+
+    - match:
+        path:
+          prefix: /auth
+        component:
+          name: backend
+
+    - match:
+        path:
+          prefix: /
+        component:
+          name: frontend
+
 # ── Global env vars (non-secret, available to all services) ─────────────
 
-envs:
-  - key: ENVIRONMENT
-    scope: RUN_AND_BUILD_TIME
-    value: production
+# envs:
+#   - key: ENVIRONMENT
+#     scope: RUN_AND_BUILD_TIME
+#     value: production
