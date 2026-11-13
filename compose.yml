@@ -16,8 +16,8 @@ services:
     secrets:
       - db_password
       - db_root_password
-    ports:
-      - ${POSTGRES_DOCKER_PORT:-5432}:5432
+    # ports:
+    #   - ${POSTGRES_DOCKER_PORT:-5432}:5432
     volumes: 
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -34,8 +34,8 @@ services:
   # Redis for caching user searches
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    # ports:
+    #   - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -49,31 +49,32 @@ services:
   # Vespa chosen for vector database due to hybrid search
   vespa:
     image: vespaengine/vespa:8
+    hostname: vespa
     deploy:
       resources:
         limits:
           memory: 6G
-    ports:
-      - "8080:8080"   # query / document API
-      - "19071:19071" # config server
+    # ports:
+    #   - "8081:8080"   # query / document API
+    #   - "19071:19071" # config server
     volumes:
       - vespa_data:/opt/vespa/var
       - vespa_logs:/opt/vespa/logs
     networks:
       - mealeon_network
     healthcheck:
-      test: ["CMD", "curl -sf http://localhost:19071/state/v1/health | grep -q '\"status\":\"up\"'"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:19071/state/v1/health | grep -q '\"code\":\"up\"'"]
       interval: 20s
       timeout: 10s
       retries: 10
-      start_period: 90s  # Vespa takes a while to boot
+      start_period: 90s
 
   # Neo4j — social graph (users/follows) + ingredient relationships
   neo4j:
     image: neo4j:5-community
-    ports:
-      - "7474:7474"   # browser UI
-      - "7687:7687"   # bolt protocol
+    # ports:
+    #   - "7474:7474"   # browser UI
+    #   - "7687:7687"   # bolt protocol
     environment:
       NEO4J_AUTH: none  # set to neo4j/<password> for production
     volumes:
@@ -106,8 +107,8 @@ services:
       context: frontend/
       dockerfile: Dockerfile
     
-    ports: 
-      - "3000:80"
+    # ports: 
+    #   - "3000:80"
     
     networks:
       - mealeon_network
@@ -119,8 +120,8 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     
-    ports:
-      - "5000:5000"
+    # ports:
+    #   - "5000:5000"
 
     environment:
       POSTGRES_USER: docker_user
@@ -166,8 +167,8 @@ services:
     build:
       context: .
       dockerfile: search_service/Dockerfile
-    ports:
-      - "8001:8001"
+    # ports:
+    #   - "8001:8001"
     environment:
       REDIS_URL: redis://redis:6379
       EDAMAM_API_APPID_FILE: /run/secrets/edamam_api_appid
@@ -193,8 +194,8 @@ services:
     build:
       context: .
       dockerfile: recommend_service/Dockerfile
-    ports:
-      - "8002:8002"
+    # ports:
+    #   - "8002:8002"
     environment:
       REDIS_URL: redis://redis:6379
       VESPA_URL: http://vespa:8080
@@ -217,8 +218,8 @@ services:
       context: .
       dockerfile: embedding_generation/Dockerfile
 
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
 
     volumes:
       - ./models:/app/models
@@ -262,8 +263,8 @@ services:
       context: .
       dockerfile: mlflow/Dockerfile
 
-    ports:
-      - "5001:5001"
+    # ports:
+    #   - "5001:5001"
 
     volumes:
       - mlflow-artifacts:/mlflow/artifacts

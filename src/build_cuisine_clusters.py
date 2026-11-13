@@ -18,8 +18,9 @@ import httpx
 import numpy as np
 from collections import defaultdict
 from scipy.cluster.hierarchy import linkage, fcluster
+from shared.secrets import get_service_url
 
-VESPA_URL = "http://localhost:8080"
+VESPA_URL = get_service_url("VESPA_URL", "http://vespa:8080")
 VISIT_PAGE_SIZE = 200  # documents per visit page — Vespa recommends starting modest
 
 UNKNOWN_CUISINE_VALUES = {"missing cuisine", "unknown", "n/a", "none", ""}
