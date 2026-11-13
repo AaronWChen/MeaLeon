@@ -14,7 +14,7 @@ aiobotocore==2.23.0
     #   s3fs
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.14.1
+aiohttp==3.14.4
     # via
     #   aiobotocore
     #   aiohttp-retry
@@ -42,7 +42,7 @@ antlr4-python3-runtime==4.9.3
     # via
     #   hydra-core
     #   omegaconf
-anyio==4.9.0
+anyio==4.14.2
     # via
     #   gql
     #   httpx
@@ -67,7 +67,7 @@ asttokens==3.0.0
     # via stack-data
 async-lru==2.0.5
     # via jupyterlab
-asyncssh==2.21.0
+asyncssh==2.24.0
     # via scmrepo
 atpublic==6.0.1
     # via flufl-lock
@@ -120,7 +120,7 @@ celery==5.5.3
     # via
     #   dvc
     #   dvc-task
-certifi==2025.6.15
+certifi==2026.10.19
     # via
     #   httpcore
     #   httpx
@@ -173,7 +173,7 @@ contourpy==1.3.2
     # via
     #   bokeh
     #   matplotlib
-cryptography==46.0.7
+cryptography==50.0.0
     # via
     #   asyncssh
     #   pyvespa
@@ -194,7 +194,7 @@ databricks-sdk==0.57.0
     # via mlflow-skinny
 dataclasses-json==0.6.7
     # via dagshub
-datasets==2.2.1
+datasets==5.0.1
     # via flagembedding
 debugpy==1.8.14
     # via ipykernel
@@ -224,7 +224,7 @@ docker==7.1.0
     #   pyvespa
 dpath==2.2.0
     # via dvc
-dulwich==1.2.5
+dulwich==1.2.9
     # via
     #   dvc
     #   dvc-studio-client
@@ -263,7 +263,7 @@ fastcore==1.8.4
     # via pyvespa
 fastjsonschema==2.21.1
     # via nbformat
-filelock==3.20.3
+filelock==4.2.1
     # via
     #   huggingface-hub
     #   iterative-telemetry
@@ -289,7 +289,7 @@ frozenlist==1.7.0
     # via
     #   aiohttp
     #   aiosignal
-fsspec==2025.5.1
+fsspec==2026.6.0
     # via
     #   datasets
     #   dvc
@@ -312,7 +312,7 @@ gensim==4.3.3
     # via mealeon (pyproject.toml)
 gitdb==4.0.12
     # via gitpython
-gitpython==3.1.52
+gitpython==3.2.1
     # via
     #   dagshub
     #   mlflow-skinny
@@ -325,7 +325,7 @@ grandalf==0.8
     # via dvc
 graphene==3.4.3
     # via mlflow
-graphql-core==3.2.6
+graphql-core==3.2.12
     # via
     #   gql
     #   graphene
@@ -346,7 +346,7 @@ h11==0.16.0
     # via
     #   httpcore
     #   uvicorn
-h2==4.3.0
+h2==4.4.1
     # via httpx
 hdbscan==0.8.40
     # via
@@ -354,7 +354,7 @@ hdbscan==0.8.40
     #   bertopic
 hf-xet==1.1.5
     # via huggingface-hub
-hpack==4.1.0
+hpack==4.2.0
     # via h2
 httpcore==1.0.9
     # via httpx
@@ -371,11 +371,11 @@ huggingface-hub==0.33.2
     #   sentence-transformers
     #   tokenizers
     #   transformers
-hydra-core==1.3.2
+hydra-core==1.3.8
     # via dvc
 hyperframe==6.1.0
     # via h2
-idna==3.10
+idna==3.15
     # via
     #   anyio
     #   httpx
@@ -488,7 +488,7 @@ jupyter-server==2.20.0
     #   notebook-shim
 jupyter-server-terminals==0.5.3
     # via jupyter-server
-jupyterlab==4.5.10
+jupyterlab==4.5.11
     # via
     #   mealeon (pyproject.toml)
     #   jupyter
@@ -513,11 +513,11 @@ llvmlite==0.44.0
     # via
     #   numba
     #   pynndescent
-lxml==6.0.0
+lxml==6.1.0
     # via
     #   dagshub-annotation-converter
     #   pyvespa
-mako==1.3.12
+mako==1.4.2
     # via alembic
 marisa-trie==1.2.1
     # via language-data
@@ -543,9 +543,9 @@ matplotlib-inline==0.1.7
     #   ipython
 mdurl==0.1.2
     # via markdown-it-py
-mistune==3.3.0
+mistune==3.3.3
     # via nbconvert
-mlflow==3.5.0
+mlflow==3.17.2
     # via mealeon (pyproject.toml)
 mlflow-skinny==3.1.1
     # via mlflow
@@ -575,7 +575,7 @@ nbclassic==1.3.1
     # via notebook
 nbclient==0.10.2
     # via nbconvert
-nbconvert==7.17.0
+nbconvert==7.17.2
     # via
     #   jupyter
     #   jupyter-server
@@ -597,7 +597,7 @@ networkx==3.5
     #   dvc
     #   stanza
     #   torch
-nltk==3.9.4
+nltk==3.10.4
     # via mealeon (pyproject.toml)
 notebook==6.5.7
     # via jupyter
@@ -681,7 +681,7 @@ omegaconf==2.3.0
     #   hydra-core
 openai==1.93.1
     # via mealeon (pyproject.toml)
-opentelemetry-api==1.16.0
+opentelemetry-api==1.45.1
     # via
     #   mlflow-skinny
     #   opentelemetry-sdk
@@ -745,7 +745,7 @@ pathvalidate==3.3.1
     # via dagshub
 pexpect==4.9.0
     # via ipython
-pillow==12.3.0
+pillow==13.0.0
     # via
     #   bokeh
     #   dagshub-annotation-converter
@@ -797,12 +797,12 @@ pure-eval==0.2.3
     # via stack-data
 py4j==0.10.9.9
     # via pyspark
-pyarrow==20.0.0
+pyarrow==23.0.1
     # via
     #   arrow-odbc
     #   datasets
     #   mlflow
-pyasn1==0.6.4
+pyasn1==0.6.5
     # via
     #   pyasn1-modules
     #   rsa
@@ -996,11 +996,11 @@ send2trash==1.8.3
     # via
     #   jupyter-server
     #   notebook
-sentence-transformers==5.0.0
+sentence-transformers==5.6.0
     # via
     #   bertopic
     #   flagembedding
-setuptools==83.0.0
+setuptools==84.1.0
     # via
     #   jupyterlab
     #   marisa-trie
@@ -1034,7 +1034,7 @@ sniffio==1.3.1
     # via
     #   anyio
     #   openai
-soupsieve==2.7
+soupsieve==2.9
     # via beautifulsoup4
 spacy==3.8.7
     # via mealeon (pyproject.toml)
@@ -1050,7 +1050,7 @@ sqlalchemy==2.0.41
     #   sqlmodel
 sqlmodel==0.0.24
     # via mealeon (pyproject.toml)
-sqlparse==0.5.4
+sqlparse==0.6.0
     # via mlflow-skinny
 sqltrie==0.11.2
     # via dvc-data
@@ -1062,9 +1062,9 @@ srsly==2.5.1
     #   weasel
 stack-data==0.6.3
     # via ipython
-stanza==1.10.1
+stanza==1.12.2
     # via mealeon (pyproject.toml)
-starlette==0.49.1
+starlette==1.3.1
     # via fastapi
 sympy==1.14.0
     # via torch
@@ -1104,7 +1104,7 @@ torchaudio @ https://download.pytorch.org/whl/cu128/torchaudio-2.7.1%2Bcu128-cp3
     # via mealeon (pyproject.toml)
 torchvision @ https://download.pytorch.org/whl/cu128/torchvision-0.22.1%2Bcu128-cp311-cp311-manylinux_2_28_x86_64.whl
     # via mealeon (pyproject.toml)
-tornado==6.5.7
+tornado==6.6
     # via
     #   bokeh
     #   ipykernel
@@ -1148,7 +1148,7 @@ traitlets==5.14.3
     #   nbconvert
     #   nbformat
     #   notebook
-transformers==5.5.0
+transformers==5.10.1
     # via
     #   flagembedding
     #   sentence-transformers
@@ -1205,7 +1205,7 @@ umap-learn==0.5.9.post2
     #   bertopic
 uri-template==1.3.0
     # via jsonschema
-urllib3==2.7.0
+urllib3==2.8.0
     # via
     #   botocore
     #   docker
@@ -1244,7 +1244,7 @@ webencodings==0.5.1
     #   tinycss2
 websocket-client==1.8.0
     # via jupyter-server
-werkzeug==3.1.6
+werkzeug==3.1.9
     # via flask
 widgetsnbextension==4.0.14
     # via ipywidgets
