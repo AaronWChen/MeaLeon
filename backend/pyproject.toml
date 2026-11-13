@@ -21,5 +21,6 @@ dependencies = [
     "wtforms",
     "pyjwt",
     "psycopg",
-    "langdetect"
+    "langdetect",
+    "gunicorn>=27.0.1",
 ]
