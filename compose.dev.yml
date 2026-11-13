@@ -1,0 +1,57 @@
+services:
+  db:
+    ports:
+      - ${POSTGRES_DOCKER_PORT:-5432}:5432
+    
+  redis:
+    ports:
+      - "6379:6379"
+
+  vespa:
+    ports:
+      - "8081:8080"   # query / document API
+      - "19071:19071" # config server
+    
+  neo4j:
+    ports:
+      - "7474:7474"   # browser UI
+      - "7687:7687"   # bolt protocol
+  
+  frontend:
+    ports: 
+      - "3000:80"
+
+  backend:
+    ports:
+      - "5000:5000"
+
+  search_service:
+    ports:
+      - "8001:8001"
+
+  recommend_service:
+    ports:
+      - "8002:8002"
+  
+  embedding_generation:
+    ports:
+      - "8000:8000"
+
+  mlflow:
+    ports:
+      - "5001:5001"
+
+  # ml_training:
+  #   ports:
+  #     -
+
+# secrets:
+#   db_password:
+#     file: ./secrets/db_password.txt
+#   db_root_password:
+#     file: ./secrets/db_root_password.txt
+
+#   edamam_api_appid:
+#     file: ./secrets/edamam_id.txt
+#   edamam_api_appkey:
+#     file: ./secrets/edamam_key.txt

@@ -21,8 +21,10 @@ import numpy as np
 from collections import defaultdict
 from scipy.cluster.hierarchy import dendrogram, linkage
 import matplotlib.pyplot as plt
+from shared.secrets import get_service_url
 
-VESPA_URL = "http://localhost:8080"
+VESPA_URL = get_service_url("VESPA_URL", "http://vespa:8080")
+
 BATCH_SIZE = 500
 
 # Placeholders to exclude — same set used in the recommend service's
