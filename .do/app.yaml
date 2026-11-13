@@ -107,7 +107,7 @@ services:
       #   scope: RUN_TIME
       #   value: ${NEO4J_URL}   # set in DO dashboard
 
-      - key: SECRET_KEY
+      - key: DB_PASSWORD
         scope: RUN_TIME
         type: SECRET
 
