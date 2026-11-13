@@ -12,8 +12,6 @@ ENV UV_LINK_MODE=copy
 
 # # No C extensions needed — no apt-get build-essential required here.
 # # If you add a dependency that needs compilation, add it like the backend Dockerfile.
-# COPY requirements.txt .
-# RUN uv pip install --system -r requirements.txt
 
 # Install project's dependencies using `lockfile` and settings
 RUN --mount=type=cache,target=/root/.cache/uv \
