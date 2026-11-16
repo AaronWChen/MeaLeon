@@ -63,7 +63,7 @@ services:
     networks:
       - mealeon_network
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:19071/state/v1/health | grep -q '\"code\":\"up\"'"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:19071/state/v1/health | grep -Eq '\"code\" *: *\"up\"'"]
       interval: 20s
       timeout: 10s
       retries: 10
