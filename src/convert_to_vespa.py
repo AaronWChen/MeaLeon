@@ -37,6 +37,7 @@ SOURCE_FILES = {
     "allrecipes": "data/recipes-en-201706/allrecipes-fixed-urls-uniques-to-vespa.json",
     "bbc": "data/recipes-en-201706/bbc-recipes-to-vespa.json",
     "cookstr": "data/recipes-en-201706/cookstr-recipes-to-vespa.json",
+    "epicurious_orig": "data/recipes-en-201706/epicurious-recipes_m2.json",
 }
 
 WEIGHT_SCALE = 10000
