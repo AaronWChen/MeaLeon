@@ -89,15 +89,31 @@ services:
 
 # ── Application services ──────────────────────────────────────────────────
   # nginx networking proxy
-  proxy:
-    build: 
-      context: .
-      dockerfile: proxy/Dockerfile
+  # proxy:
+  #   build: 
+  #     context: .
+  #     dockerfile: proxy/Dockerfile
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - frontend
+  #     - backend
+  #   networks:
+  #     - mealeon_network
+
+  traefik:
+    image: traefik:v3.7
+    command:
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--providers.docker.network=mealeon_network"
+      - "--providers.docker.exposedbydefault=false"
+
     ports:
       - "80:80"
-    depends_on:
-      - frontend
-      - backend
+      # - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - mealeon_network
 
@@ -109,6 +125,14 @@ services:
     
     # ports: 
     #   - "3000:80"
+
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=mealeon_network
+      - traefik.http.routers.mealeon-web.rule=Host(`mealeon.localhost`)
+      - traefik.http.services.mealeon-web.loadbalancer.server.port=80
+      - traefik.http.routers.mealeon-web.service=mealeon-web
+      - traefik.http.routers.mealeon-web.entrypoints=web
     
     networks:
       - mealeon_network
@@ -122,6 +146,13 @@ services:
     
     # ports:
     #   - "5000:5000"
+
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=mealeon_network
+      - traefik.http.routers.mealeon-api.rule=Host(`mealeon.localhost`) && (PathPrefix(`/api`) || PathPrefix(`/auth`))
+      - traefik.http.routers.mealeon-api.service=mealeon-api
+      - traefik.http.services.mealeon-api.loadbalancer.server.port=5000
 
     environment:
       POSTGRES_USER: docker_user
@@ -354,3 +385,4 @@ volumes:
 networks:
   mealeon_network:
     driver: bridge
+    name: mealeon_mealeon_network

@@ -1,0 +1,85 @@
+# compose.prod.yml: override for the DigitalOcean Droplet
+#
+# Usage:  docker compose -f compose.yml -f compose.prod.yml up -d
+# Needs Docker Compose >= 2.24 (for the !reset / !override tags).
+#
+# I have not seen your current compose.yml, so VALIDATE the merged result
+# before trusting this (can be done on your desktop):
+#   docker compose -f compose.yml -f compose.prod.yml config | grep -n -B3 published
+# Expected: only caddy 80/443 and vespa on 127.0.0.1.
+
+services:
+
+  # Only public entrypoint. Replaces the nginx `proxy` container, adds TLS.
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}          # e.g. staging.example.com; use "localhost" to rehearse locally
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data         # certificates; keep this volume
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - mealeon_network
+
+  # Not deployed (Neo4j is unused by the app code; proxy is replaced by caddy).
+  neo4j:
+    profiles: ["not-in-prod"]
+  proxy:
+    profiles: ["not-in-prod"]
+
+  # No host ports for anything internal.
+  db:
+    ports: !reset []
+    restart: unless-stopped
+  redis:
+    ports: !reset []
+    restart: unless-stopped
+  mlflow:
+    ports: !reset []
+    restart: unless-stopped
+  search_service:
+    ports: !reset []
+    restart: unless-stopped
+  recommend_service:
+    ports: !reset []
+    restart: unless-stopped
+  backend:
+    ports: !reset []
+    restart: unless-stopped
+    # environment:
+    #   USE_GUNICORN: "true"     # only if you adopted the gunicorn entrypoint
+    #   VESPA_INDEXED: "true"    # only if you made the flag env-driven
+  frontend:
+    ports: !reset []
+    restart: unless-stopped
+
+  # Loopback only: reachable through SSH or from the Droplet itself
+  # (for `vespa deploy` / `vespa feed`), never from the internet.
+  vespa:
+    ports: !override
+      - "127.0.0.1:19071:19071"
+      - "127.0.0.1:8080:8080"
+    hostname: vespa              # fixed hostname so hosts.xml matches
+    restart: unless-stopped
+
+  # No GPU on a regular Droplet: drop the nvidia reservation or the container
+  # will not start. Tune the memory limit after measuring `docker stats`.
+  embedding_generation:
+    ports: !reset []
+    restart: unless-stopped
+    deploy: !override
+      resources:
+        limits:
+          memory: 6G
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}
