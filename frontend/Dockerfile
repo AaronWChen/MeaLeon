@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 
 WORKDIR /app
 
@@ -12,13 +12,19 @@ RUN npm ci
 # Copy source and build
 COPY index.html ./
 COPY vite.config.js ./
-COPY public/ ./public/
+# COPY public/ ./public/
 COPY src/ ./src/
 
 RUN npm run build
 
 # Stage 2: serve with nginx
-# FROM nginx:stable-alpine
+FROM nginx:stable-alpine
 
-# COPY --from=build /app/dist /usr/share/nginx/html
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy built assets from the build stage
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

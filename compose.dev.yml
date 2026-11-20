@@ -49,7 +49,9 @@ services:
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
-      # - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.address=:80"
+      - "--providers.docker.network=mealeon_network"
+      - "--providers.docker.exposedbydefault=false"
 
     ports:
       - "8082:8080" # traefik dashboard

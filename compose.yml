@@ -106,6 +106,7 @@ services:
     command:
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.mealeon-web.address=:3000"
       - "--providers.docker.network=mealeon_network"
       - "--providers.docker.exposedbydefault=false"
 
@@ -123,14 +124,14 @@ services:
       context: frontend/
       dockerfile: Dockerfile
     
-    # ports: 
-    #   - "3000:80"
+    ports: 
+      - "3000:80"
 
     labels:
       - traefik.enable=true
       - traefik.docker.network=mealeon_network
       - traefik.http.routers.mealeon-web.rule=Host(`mealeon.localhost`)
-      - traefik.http.services.mealeon-web.loadbalancer.server.port=80
+      - traefik.http.services.mealeon-web.loadbalancer.server.port=3000
       - traefik.http.routers.mealeon-web.service=mealeon-web
       - traefik.http.routers.mealeon-web.entrypoints=web
     
