@@ -1,203 +1,205 @@
 services:
   # ── Databases ────────────────────────────────────────────────────────────
   # postgres database for most data
-  db:
-    build: 
-      context: .
-      dockerfile: db/Dockerfile
-    restart: always
-    environment:
-      # PG_ROOT_PW_FILE: /run/secrets/db_root_password
-      PG_DATABASE: mealeon
-      POSTGRES_DB: mealeon
-      POSTGRES_USER: docker_user
-      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
-      POSTGRES_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
-    secrets:
-      - db_password
-      - db_root_password
-    # ports:
-    #   - ${POSTGRES_DOCKER_PORT:-5432}:5432
-    volumes: 
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - mealeon_network
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "docker_user", "-d", "mealeon"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+#   db:
+#     build: 
+#       context: services/
+#       dockerfile: db/Dockerfile
+#     restart: always
+#     environment:
+#       # PG_ROOT_PW_FILE: /run/secrets/db_root_password
+#       PG_DATABASE: mealeon
+#       POSTGRES_DB: mealeon
+#       POSTGRES_USER: docker_user
+#       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+#       POSTGRES_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+#     secrets:
+#       - db_password
+#       - db_root_password
+#     # ports:
+#     #   - ${POSTGRES_DOCKER_PORT:-5432}:5432
+#     volumes: 
+#       - pgdata:/var/lib/postgresql/data
+#     networks:
+#       - mealeon_network
+#     healthcheck:
+#       test: ["CMD", "pg_isready", "-U", "docker_user", "-d", "mealeon"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
 
-  # pgadmin:
-  #   image:
+#   # pgadmin:
+#   #   image:
 
-  # Redis for caching user searches
-  redis:
-    image: redis:7-alpine
-    # ports:
-    #   - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - mealeon_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
+#   # Redis for caching user searches
+#   redis:
+#     image: redis:7-alpine
+#     # ports:
+#     #   - "6379:6379"
+#     volumes:
+#       - redis_data:/data
+#     networks:
+#       - mealeon_network
+#     healthcheck:
+#       test: ["CMD", "redis-cli", "ping"]
+#       interval: 10s
+#       timeout: 3s
+#       retries: 3
 
-  # Vespa chosen for vector database due to hybrid search
-  vespa:
-    image: vespaengine/vespa:8
-    hostname: vespa
-    deploy:
-      resources:
-        limits:
-          memory: 6G
-    # ports:
-    #   - "8081:8080"   # query / document API
-    #   - "19071:19071" # config server
-    volumes:
-      - vespa_data:/opt/vespa/var
-      - vespa_logs:/opt/vespa/logs
-    networks:
-      - mealeon_network
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:19071/state/v1/health | grep -Eq '\"code\" *: *\"up\"'"]
-      interval: 20s
-      timeout: 10s
-      retries: 10
-      start_period: 90s
+#   # Vespa chosen for vector database due to hybrid search
+#   vespa:
+#     image: vespaengine/vespa:8
+#     hostname: vespa
+#     deploy:
+#       resources:
+#         limits:
+#           memory: 6G
+#     # ports:
+#     #   - "8081:8080"   # query / document API
+#     #   - "19071:19071" # config server
+#     volumes:
+#       - vespa_data:/opt/vespa/var
+#       - vespa_logs:/opt/vespa/logs
+#     networks:
+#       - mealeon_network
+#     healthcheck:
+#       test: ["CMD-SHELL", "curl -sf http://localhost:19071/state/v1/health | grep -Eq '\"code\" *: *\"up\"'"]
+#       interval: 20s
+#       timeout: 10s
+#       retries: 10
+#       start_period: 90s
 
-  # Neo4j — social graph (users/follows) + ingredient relationships
-  neo4j:
-    image: neo4j:5-community
-    # ports:
-    #   - "7474:7474"   # browser UI
-    #   - "7687:7687"   # bolt protocol
-    environment:
-      NEO4J_AUTH: none  # set to neo4j/<password> for production
-    volumes:
-      - neo4j_data:/data
-    networks:
-      - mealeon_network
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 || exit 1"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
+#   # Neo4j — social graph (users/follows) + ingredient relationships
+#   neo4j:
+#     image: neo4j:5-community
+#     # ports:
+#     #   - "7474:7474"   # browser UI
+#     #   - "7687:7687"   # bolt protocol
+#     environment:
+#       NEO4J_AUTH: none  # set to neo4j/<password> for production
+#     volumes:
+#       - neo4j_data:/data
+#     networks:
+#       - mealeon_network
+#     healthcheck:
+#       test: ["CMD-SHELL", "wget -qO- http://localhost:7474 || exit 1"]
+#       interval: 15s
+#       timeout: 5s
+#       retries: 5
 
-# ── Application services ──────────────────────────────────────────────────
-  # nginx networking proxy
-  # proxy:
-  #   build: 
-  #     context: .
-  #     dockerfile: proxy/Dockerfile
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - frontend
-  #     - backend
-  #   networks:
-  #     - mealeon_network
+# # ── Application services ──────────────────────────────────────────────────
+#   # nginx networking proxy
+#   # proxy:
+#   #   build: 
+#   #     context: .
+#   #     dockerfile: proxy/Dockerfile
+#   #   ports:
+#   #     - "80:80"
+#   #   depends_on:
+#   #     - frontend
+#   #     - backend
+#   #   networks:
+#   #     - mealeon_network
 
-  traefik:
-    image: traefik:v3.7
-    command:
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
-      - "--providers.docker.network=mealeon_network"
-      - "--providers.docker.exposedbydefault=false"
+#   traefik:
+#     image: traefik:v3.7
+#     command:
+#       - "--providers.docker=true"
+#       - "--entrypoints.web.address=:80"
+#       - "--providers.docker.network=mealeon_network"
+#       - "--providers.docker.exposedbydefault=false"
 
-    ports:
-      - "80:80"
-      # - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - mealeon_network
+#     ports:
+#       - "80:80"
+#       # - "443:443"
+#     volumes:
+#       - /var/run/docker.sock:/var/run/docker.sock
+#     networks:
+#       - mealeon_network
 
-  # React frontend
-  frontend:
-    build: 
-      context: frontend/
-      dockerfile: Dockerfile
+#   # React frontend
+#   frontend:
+#     build: 
+#       context: services/frontend/
+#       dockerfile: Dockerfile
     
-    # ports: 
-    #   - "3000:80"
+#     # ports: 
+#     #   - "3000:80"
 
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=mealeon_network
-      - traefik.http.routers.mealeon-web.rule=Host(`mealeon.localhost`)
-      - traefik.http.services.mealeon-web.loadbalancer.server.port=80
-      - traefik.http.routers.mealeon-web.service=mealeon-web
-      - traefik.http.routers.mealeon-web.entrypoints=web
+#     labels:
+#       - traefik.enable=true
+#       - traefik.docker.network=mealeon_network
+#       - traefik.http.routers.mealeon-web.rule=Host(`mealeon.localhost`)
+#       - traefik.http.services.mealeon-web.loadbalancer.server.port=80
+#       - traefik.http.routers.mealeon-web.service=mealeon-web
+#       - traefik.http.routers.mealeon-web.entrypoints=web
     
-    networks:
-      - mealeon_network
+#     networks:
+#       - mealeon_network
     
 
-  # flask python app
-  backend:
-    build: 
-      context: .
-      dockerfile: backend/Dockerfile
+#   # flask python app
+#   backend:
+#     build: 
+#       context: services/
+#       dockerfile: backend/Dockerfile
     
-    # ports:
-    #   - "5000:5000"
+#     # ports:
+#     #   - "5000:5000"
 
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=mealeon_network
-      - traefik.http.routers.mealeon-api.rule=Host(`mealeon.localhost`) && (PathPrefix(`/api`) || PathPrefix(`/auth`))
-      - traefik.http.routers.mealeon-api.service=mealeon-api
-      - traefik.http.services.mealeon-api.loadbalancer.server.port=5000
+#     labels:
+#       - traefik.enable=true
+#       - traefik.docker.network=mealeon_network
+#       - traefik.http.routers.mealeon-api.rule=Host(`mealeon.localhost`) && (PathPrefix(`/api`) || PathPrefix(`/auth`))
+#       - traefik.http.routers.mealeon-api.service=mealeon-api
+#       - traefik.http.services.mealeon-api.loadbalancer.server.port=5000
 
-    environment:
-      POSTGRES_USER: docker_user
-      POSTGRES_HOST: db:5432
+#     environment:
+#       POSTGRES_USER: docker_user
+#       POSTGRES_HOST: db:5432
 
-      EDAMAM_API_APPID_FILE: /run/secrets/edamam_api_appid
-      EDAMAM_API_APPKEY_FILE: /run/secrets/edamam_api_appkey
-      PG_DATABASE: mealeon
-      POSTGRES_DB: mealeon
-      POSTGRES_PASSWORD_FILE: /run/secrets/DB_PASSWORD
-      POSTGRES_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+#       EDAMAM_API_APPID_FILE: /run/secrets/edamam_api_appid
+#       EDAMAM_API_APPKEY_FILE: /run/secrets/edamam_api_appkey
+#       PG_DATABASE: mealeon
+#       POSTGRES_DB: mealeon
+#       POSTGRES_PASSWORD_FILE: /run/secrets/DB_PASSWORD
+#       POSTGRES_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
 
-      SEARCH_SERVICE_URL: http://search_service:8001
-      # RECOMMEND_SERVICE_URL: http://recommend_service:8002
-      ML_SERVICE_URL: http://embedding_generation:8000
-      VECTOR_DB_URL: http://vector-db:6333
-      # DATABASE_URL: postgresql+psycopg://$${POSTGRES_USER}:$${cat /run/secrets/db_password}@$${POSTGRES_HOST}/mealeon
-      REDIS_URL: redis://redis:6379
+#       SEARCH_SERVICE_URL: http://search_service:8001
+#       # RECOMMEND_SERVICE_URL: http://recommend_service:8002
+#       ML_SERVICE_URL: http://embedding_generation:8000
+#       VECTOR_DB_URL: http://vector-db:6333
+#       # DATABASE_URL: postgresql+psycopg://$${POSTGRES_USER}:$${cat /run/secrets/db_password}@$${POSTGRES_HOST}/mealeon
+#       REDIS_URL: redis://redis:6379
     
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      embedding_generation:
-        condition: service_started
+#     depends_on:
+#       db:
+#         condition: service_healthy
+#       redis:
+#         condition: service_healthy
+#       embedding_generation:
+#         condition: service_started
     
-    networks:
-      - mealeon_network
+#     networks:
+#       - mealeon_network
 
-    volumes:
-      - ./data:/app/data
-      - ./models:/app/models
+#     volumes:
+#       - ./data:/app/data
+#       - ./models:/app/models
     
-    secrets:
-      - db_password
-      - db_root_password
-      - edamam_api_appid
-      - edamam_api_appkey
+#     secrets:
+#       - db_password
+#       - db_root_password
+#       - edamam_api_appid
+#       - edamam_api_appkey
   
   # search service is an Edamam wrapper
   search_service:
     build:
       context: .
-      dockerfile: search_service/Dockerfile
+      dockerfile: DOCKERFILE
+    command:
+      uv run --no-sync --package search_service
     # ports:
     #   - "8001:8001"
     environment:
@@ -207,9 +209,9 @@ services:
     secrets:
       - edamam_api_appid
       - edamam_api_appkey
-    depends_on:
-      redis:
-        condition: service_healthy
+    # depends_on:
+    #   redis:
+    #     condition: service_healthy
     networks:
       - mealeon_network
     healthcheck:
@@ -221,140 +223,140 @@ services:
 
 
   # recommender service - intentional stub 
-  recommend_service:
-    build:
-      context: .
-      dockerfile: recommend_service/Dockerfile
-    # ports:
-    #   - "8002:8002"
-    environment:
-      REDIS_URL: redis://redis:6379
-      VESPA_URL: http://vespa:8080
-      NEO4J_URL: bolt://neo4j:7687
-      ML_SERVICE_URL: http://embedding_generation:8000
-      SEARCH_SERVICE_URL: http://search_service:8001
-    depends_on:
-      search_service:
-        condition: service_healthy
-      vespa:
-        condition: service_started
-      redis:
-        condition: service_healthy
-    networks:
-      - mealeon_network
+#   recommend_service:
+#     build:
+#       context: services/
+#       dockerfile: recommend_service/Dockerfile
+#     # ports:
+#     #   - "8002:8002"
+#     environment:
+#       REDIS_URL: redis://redis:6379
+#       VESPA_URL: http://vespa:8080
+#       NEO4J_URL: bolt://neo4j:7687
+#       ML_SERVICE_URL: http://embedding_generation:8000
+#       SEARCH_SERVICE_URL: http://search_service:8001
+#     depends_on:
+#       search_service:
+#         condition: service_healthy
+#       vespa:
+#         condition: service_started
+#       redis:
+#         condition: service_healthy
+#     networks:
+#       - mealeon_network
   
-  # create embeddings 
-  embedding_generation:
-    build: 
-      context: .
-      dockerfile: embedding_generation/Dockerfile
+#   # create embeddings 
+#   embedding_generation:
+#     build: 
+#       context: services/
+#       dockerfile: embedding_generation/Dockerfile
 
-    # ports:
-    #   - "8000:8000"
+#     # ports:
+#     #   - "8000:8000"
 
-    volumes:
-      - ./models:/app/models
-      - ./src:/app/src  
-      - mlflow-artifacts:/mlflow/artifacts 
-      - dvc-cache:/root/.dvc/cache
-      - huggingface_cache:/root/.cache/huggingface
+#     volumes:
+#       - ./models:/app/models
+#       - ./src:/app/src  
+#       - mlflow-artifacts:/mlflow/artifacts 
+#       - dvc-cache:/root/.dvc/cache
+#       - huggingface_cache:/root/.cache/huggingface
       
-    deploy:
-      resources:
-        limits:
-          memory: 6G
-        reservations:
-          memory: 2G
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+#     deploy:
+#       resources:
+#         limits:
+#           memory: 6G
+#         reservations:
+#           memory: 2G
+#           devices:
+#             - driver: nvidia
+#               count: 1
+#               capabilities: [gpu]
     
-    networks:
-      - mealeon_network
+#     networks:
+#       - mealeon_network
     
-    environment:
-      MLFLOW_TRACKING_URI: http://mlflow:5001
-      MODEL_REGISTRY_URI: http://mlflow:5001
-      # DVC_REMOTE: s3: dagshub
+#     environment:
+#       MLFLOW_TRACKING_URI: http://mlflow:5001
+#       MODEL_REGISTRY_URI: http://mlflow:5001
+#       # DVC_REMOTE: s3: dagshub
 
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
-      # test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 210s   # model loading takes time
+#     healthcheck:
+#       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+#       # test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+#       interval: 15s
+#       timeout: 5s
+#       retries: 5
+#       start_period: 210s   # model loading takes time
 
-# ── dev services ──────────────────────────────────────────────────
-  # MLflow tracking server
-  # look at dagshub docs
-  mlflow:
-    build: 
-      context: .
-      dockerfile: mlflow/Dockerfile
+# # ── dev services ──────────────────────────────────────────────────
+#   # MLflow tracking server
+#   # look at dagshub docs
+#   mlflow:
+#     build: 
+#       context: services/
+#       dockerfile: mlflow/Dockerfile
 
-    # ports:
-    #   - "5001:5001"
+#     # ports:
+#     #   - "5001:5001"
 
-    volumes:
-      - mlflow-artifacts:/mlflow/artifacts
-      - mlflow-db:/mlflow/db
-      - ./mlruns:/mlflow/mlruns
-      - ./models:/app/models
-      - ./src:/app/src    
+#     volumes:
+#       - mlflow-artifacts:/mlflow/artifacts
+#       - mlflow-db:/mlflow/db
+#       - ./mlruns:/mlflow/mlruns
+#       - ./models:/app/models
+#       - ./src:/app/src    
     
-    environment:
-      # BACKEND_STORE_URI: postgresql+psycopg://docker_user:$${cat /run/secrets/db_password}@db:5432/mealeon
-      - DEFAULT_ARTIFACT_ROOT=/mlflow/artifacts
+#     environment:
+#       # BACKEND_STORE_URI: postgresql+psycopg://docker_user:$${cat /run/secrets/db_password}@db:5432/mealeon
+#       - DEFAULT_ARTIFACT_ROOT=/mlflow/artifacts
 
-    secrets:
-      - db_password
-      # - db_root_password
+#     secrets:
+#       - db_password
+#       # - db_root_password
 
-    depends_on:
-      db:
-        condition: service_healthy
+#     depends_on:
+#       db:
+#         condition: service_healthy
       
-    networks:
-      - mealeon_network
+#     networks:
+#       - mealeon_network
 
-    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+#     entrypoint: ["/bin/sh", "/entrypoint.sh"]
 
-    # command: > 
-    #   mlflow server
-    #   --backend-store-uri postgresql+psycopg://docker_user:$${cat /run/secrets/db_password}@db:5432/mealeon
-    #   --default-artifact-root /mlflow/artifacts
-    #   --host 0.0.0.0
-    #   --port 5001
+#     # command: > 
+#     #   mlflow server
+#     #   --backend-store-uri postgresql+psycopg://docker_user:$${cat /run/secrets/db_password}@db:5432/mealeon
+#     #   --default-artifact-root /mlflow/artifacts
+#     #   --host 0.0.0.0
+#     #   --port 5001
 
-  # Scheduled ML training service
-  # look in dagshub docs
-  ml_training:
-    build: 
-      context: .
-      dockerfile: ml-training/Dockerfile
+#   # Scheduled ML training service
+#   # look in dagshub docs
+#   ml_training:
+#     build: 
+#       context: services/
+#       dockerfile: ml-training/Dockerfile
 
-    volumes:
-      - ./data:/app/data
-      - ./models:/app/models
-      - dvc-cache:/root/.dvc/cache
-      # - ~/.aws:/root/.aws:ro 
+#     volumes:
+#       - ./data:/app/data
+#       - ./models:/app/models
+#       - dvc-cache:/root/.dvc/cache
+#       # - ~/.aws:/root/.aws:ro 
     
-    environment:
-      MLFLOW_TRACKING_URI: http://mlflow:5001
-      MODEL_REGISTRY_URI: http://mlflow:5001
-      # DVC_REMOTE: s3: dagshub
+#     environment:
+#       MLFLOW_TRACKING_URI: http://mlflow:5001
+#       MODEL_REGISTRY_URI: http://mlflow:5001
+#       # DVC_REMOTE: s3: dagshub
 
-    depends_on:
-      - mlflow
-      - db
+#     depends_on:
+#       - mlflow
+#       - db
 
-    profiles:
-      - training
+#     profiles:
+#       - training
     
-    networks:
-      - mealeon_network
+#     networks:
+#       - mealeon_network
   
 # ── dev services ──────────────────────────────────────────────────
 secrets:
@@ -369,17 +371,17 @@ secrets:
     file: ./secrets/edamam_key.txt
 
 # ── volumes ──────────────────────────────────────────────────
-volumes:
-  pgdata: {}
-  redis_data: {}
-  vespa_data: {}
-  vespa_logs: {}
-  neo4j_data: {}
-  mlflow-artifacts: {}
-  dvc-cache: {}
-  huggingface_cache: {}
-  mlflow_data: {}
-  mlflow-db: {}
+# volumes:
+#   pgdata: {}
+#   redis_data: {}
+#   vespa_data: {}
+#   vespa_logs: {}
+#   neo4j_data: {}
+#   mlflow-artifacts: {}
+#   dvc-cache: {}
+#   huggingface_cache: {}
+#   mlflow_data: {}
+#   mlflow-db: {}
 
 # ── networks ──────────────────────────────────────────────────
 networks:

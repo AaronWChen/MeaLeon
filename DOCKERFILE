@@ -1,7 +1,32 @@
 # use modified image with uv installed
-# using Python 3.11
 FROM ghcr.io/astral-sh/uv:python3.11-trixie-slim
 
-# copy database migration information into container
-COPY migrations migrations
+WORKDIR /app
 
+ENV UV_LINK_MODE=copy \
+    UV_COMPILE_BYTECODE=1 \
+    PATH="/app/.venv/bin:$PATH"
+
+# 1) Manifests only: this layer is cached until dependencies change
+COPY pyproject.toml uv.lock ./
+# COPY shared/pyproject.toml shared/
+# COPY backend/pyproject.toml backend/
+# COPY search_service/pyproject.toml search_service/
+# COPY recommend_service/pyproject.toml recommend_service/
+# COPY embedding_generation/pyproject.toml embedding_generation/
+# COPY services/ services/
+# RUN --mount=type=cache,target=/root/.cache/uv \
+#     uv sync --locked --no-dev --package search-service --no-install-workspace
+
+# 2) Source, then install the members this service needs (shared)
+COPY shared/ shared/
+COPY services/search_service/ search_service/
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-workspace --no-dev
+    # --locked --no-dev --package search-service
+
+# ENV PATH="/app/.venv/bin:$PATH"
+WORKDIR /app/search_service
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
